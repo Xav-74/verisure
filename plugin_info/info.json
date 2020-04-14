@@ -1,0 +1,20 @@
+{
+	"id" : "verisure",
+	"name" : "Alarme Verisure",
+	"description" : "Plugin Verisure pour Jeedom",
+	"licence" : "AGPL",
+	"author" : "Xav-74",
+	"require" : "4.0",
+	"category" : "security",
+	"hasDependency" : false,
+	"hasOwnDeamon" : false,
+	"maxDependancyInstallTime" : 0,
+	"changelog" : "https://xav-74.github.io/verisure/#language#/changelog",
+	"documentation" : "https://xav-74.github.io/verisure/#language#/",
+	"link" : {
+		"forum" : "",
+		"video" : ""
+	},
+	"language" : ["fr_FR"],
+	"compatibility" : ["miniplus","smart","rpi","docker","diy","v4"]
+}
