@@ -1,16 +1,18 @@
 ![Logo](../assets/images/verisure_icon.png)
 
+
 # Présentation 
 
 Ce plugin Jeedom vous permet d'interagir avec votre alarme Verisure Europe (Securitas Direct) au même titre que l'application officielle "My Verisure".
 Il est compatible avec les alarmes Verisure de dernière génération :
 
+
 ![Alarme Verisure](../assets/images/alarm_verisure.png)
+
 
 **NOTE : CE PLUGIN N'EST EN AUCUN CAS ASSOCIÉ OU LIÉ AUX SOCIÉTÉS DU GROUPE SECURITAS DIRECT - VERISURE.**
 
 L'usage de ce plugin est destiné à des fins strictement personnelles et privées.
-
 Par conséquent, le développeur n'approuve ni ne tolère aucune utilisation inappropriée, et n'assume aucune responsabilité légale pour la fonctionnalité ou la sécurité de vos alarmes et appareils.
 
 
@@ -66,7 +68,7 @@ Il vous suffit ensuite de cliquer sur le bouton **Synchroniser** pour récupére
 > **Tip**
 >
 > N'oubliez pas de **sauvegarder** vos informations !
-
+>
 > Lors de la sauvegarde, de nouvelles commandes vont se créer sur l'équipement.
 
 
@@ -87,12 +89,10 @@ Il existe actuellement plusieurs commandes qui sont décrites ci-dessous.
 	- **0** : désarmée
 	- **1** : armée
 
-
 -   **Etat Alarme** : permet de connaitre l'état de l'alarme
 	- **0** : état normal
 	- **1** : alarme déclenchée
 	- **Attention** : dans cette première version, l'évènement lié au déclenchement de l'alarme n'est pas encore pris en compte !
-
 
 -   **Mode Alarme** : permet de connaitre le mode d'activation de l'alarme
 	- **Mode total** : l'alarme est activée en mode total
