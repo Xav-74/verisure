@@ -92,12 +92,8 @@ Il existe actuellement plusieurs commandes qui sont décrites ci-dessous.
 -   **Etat Alarme** : permet de connaitre l'état de l'alarme
 	- **0** : état normal
 	- **1** : alarme déclenchée
-<<<<<<< HEAD
-	- **Attention** : dans cette première version, l'évènement lié au déclenchement de l'alarme n'est pas encore pris en compte !
-=======
 	
 	**Attention** : dans cette première version, l'évènement lié au déclenchement de l'alarme n'est pas encore pris en compte !
->>>>>>> beta
 
 -   **Mode Alarme** : permet de connaitre le mode d'activation de l'alarme
 	- **Mode total** : l'alarme est activée en mode total
