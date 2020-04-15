@@ -88,7 +88,6 @@ Il existe actuellement plusieurs commandes qui sont décrites ci-dessous.
 -   **Etat Activation** : permet de connaitre l'état d'activation de l'alarme
 	- **0** : désarmée
 	- **1** : armée
-	
 
 -   **Etat Alarme** : permet de connaitre l'état de l'alarme
 	- **0** : état normal
