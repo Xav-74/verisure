@@ -81,7 +81,7 @@ Il existe actuellement plusieurs commandes qui sont décrites ci-dessous.
 
 > **Tip**
 >
-> Les commandes ont été créées de manière à être compatible avec le plugin [Homebridge](https://www.jeedom.com/market/index.php?v=d&p=market&author=Nebz&&name=Homebridge) de Nebz !
+> Les commandes ont été créées de manière à être compatibles avec le plugin [Homebridge](https://www.jeedom.com/market/index.php?v=d&p=market&author=Nebz&&name=Homebridge) de Nebz !
 
 ## Info
 
@@ -92,7 +92,12 @@ Il existe actuellement plusieurs commandes qui sont décrites ci-dessous.
 -   **Etat Alarme** : permet de connaitre l'état de l'alarme
 	- **0** : état normal
 	- **1** : alarme déclenchée
+<<<<<<< HEAD
 	- **Attention** : dans cette première version, l'évènement lié au déclenchement de l'alarme n'est pas encore pris en compte !
+=======
+	
+	**Attention** : dans cette première version, l'évènement lié au déclenchement de l'alarme n'est pas encore pris en compte !
+>>>>>>> beta
 
 -   **Mode Alarme** : permet de connaitre le mode d'activation de l'alarme
 	- **Mode total** : l'alarme est activée en mode total
