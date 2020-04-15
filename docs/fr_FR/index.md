@@ -92,14 +92,15 @@ Il existe actuellement plusieurs commandes qui sont décrites ci-dessous.
 -   **Etat Alarme** : permet de connaitre l'état de l'alarme
 	- **0** : état normal
 	- **1** : alarme déclenchée
-	
-	**Attention** : dans cette première version, l'évènement lié au déclenchement de l'alarme n'est pas encore pris en compte !
 
 -   **Mode Alarme** : permet de connaitre le mode d'activation de l'alarme
 	- **Mode total** : l'alarme est activée en mode total
 	- **Mode nuit** : l'alarme est activée en mode nuit
 
-	D'autres modes suivront dans les futures versions du plugin.	
+D'autres modes suivront dans les futures versions du plugin.
+
+**Attention** : dans cette première version, l'évènement lié au déclenchement de l'alarme n'est pas encore pris en compte !
+	
 
 ## Action
 
