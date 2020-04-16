@@ -108,6 +108,8 @@ D'autres modes suivront dans les futures versions du plugin.
 
 -   **Mode Nuit** : active l'alarme en mode nuit
 
+-   **Mode Jour** : active l'alarme en mode jour
+
 -   **Désactivation** : désactive de l'alarme, quel que soit le mode
 
 -   **Statut Alarme** : met à jour du statut de l'Alarme
@@ -124,6 +126,7 @@ Le plugin inclus un dashboard qui permet de :
 -   Connaitre le mode e l'alarme
 -   Activer le mode total de l'alarme
 -   Activer le mode nuit de l'alarme
+-   Activer le mode jour de l'alarme
 -   Désactiver l'alarme
 -   Mettre à jour le statut de l'alarme
 
@@ -154,7 +157,7 @@ Les prochaines versions verront arriver les features suivantes :
 
 -   Gestion du déclenchement de l'alarme (sur utilisation de reception d'e-mail ?)
 -   Récupération des photos des détecteurs de mouvement image 
--   Ajout des modes Jour et Extérieur (si demandé) 
+-   Ajout du mode Extérieur (si demandé) 
 -   Récupération du journal des évènements liés à votre alarme
 
 > **Tip**

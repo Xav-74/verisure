@@ -407,6 +407,62 @@ class verisureAPI {
 	}
 
 
+	public function ArmDay()  {			// Arm the alarm in "day" mode
+		
+		$method = "GET";
+		$this->request = "ARMDAY1";
+		$params = array(
+			'request' => $this->request,
+			'ID' => $this->id,
+			'Country' => $this->country,
+			'lang' => $this->language,
+			'user' => $this->username,
+			'pwd' => $this->password,
+			'hash' => $this->verisure_hash,
+			'panel' => $this->panel,
+			'numinst' => $this->numinstall
+		);
+		$params_string = http_build_query($params);
+		
+		$result = $this->doRequest($params_string, $method);
+		
+		$httpRespCode = $result[0];
+		$RespArray = $result[1];    
+      	$result_rq = $RespArray['RES'];
+		$result_msg = $RespArray['MSG'];	
+		
+		if($result_rq == "OK")  {
+			$method = "GET";
+			$this->request = "ARMDAY2";
+			$params = array(
+				'request' => $this->request,
+				'ID' => $this->id,
+				'Country' => $this->country,
+				'lang' => $this->language,
+				'user' => $this->username,
+				'pwd' => $this->password,
+				'hash' => $this->verisure_hash,
+				'panel' => $this->panel,
+				'numinst' => $this->numinstall
+			);
+			$params_string = http_build_query($params);
+			
+			$result_rq2 = "WAIT";
+			While ($result_rq2 == "WAIT")  {
+				sleep(5);
+				$result2 = $this->doRequest($params_string, $method);
+				$httpRespCode2 = $result2[0];
+				$RespArray2 = $result2[1];    
+				$result_rq2 = $RespArray2['RES'];
+				$result_msg2 = $RespArray2['MSG'];
+				$result_status = $RespArray2['STATUS'];
+			}
+									
+			return array ($httpRespCode, $result_rq, $result_msg, $httpRespCode2, $result_rq2, $result_msg2, $result_status); 
+		}
+	}
+
+
 	public function Disarm()  {			// Disarm the alarm (all mode)
 		
 		$method = "GET";

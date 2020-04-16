@@ -193,11 +193,24 @@ class verisure extends eqLogic {
 			$cmdArmedNight->setDisplay('generic_type', 'ALARM_MODE');
 			$cmdArmedNight->save();
 		}
-				
+		
+		$cmdArmedDay = $this->getCmd(null, 'armed_day');
+		if (!is_object($cmdArmedDay)) {
+			$cmdArmedDay = new verisureCmd();
+			$cmdArmedDay->setOrder(7);
+			$cmdArmedDay->setName('Mode Jour');
+			$cmdArmedDay->setEqLogic_id($this->getId());
+			$cmdArmedDay->setLogicalId('armed_day');
+			$cmdArmedDay->setType('action');
+			$cmdArmedDay->setSubType('other');
+			$cmdArmedDay->setDisplay('generic_type', 'ALARM_MODE');
+			$cmdArmedDay->save();
+		}
+		
 		$cmdState = $this->getCmd(null, 'getstate');
 		if ( ! is_object($cmdState)) {
 			$cmdState = new verisureCmd();
-			$cmdState->setOrder(7);
+			$cmdState->setOrder(8);
 			$cmdState->setName('Statut Alarme');
 			$cmdState->setEqLogic_id($this->getId());
 			$cmdState->setLogicalId('getstate');
@@ -308,7 +321,33 @@ class verisure extends eqLogic {
 		}
 		return $result;
 	}
+	
+	public function ArmDayAlarm()	{
 		
+		log::add('verisure', 'info', ''.$jeedom_event_date.'Demande activation mode jour');
+		$MyAlarm = new verisureAPI($this->getConfiguration('numinstall'),$this->getConfiguration('username'),$this->getConfiguration('password'),$this->getConfiguration('country'));
+		$result_login = $MyAlarm->Login();
+      	log::add('verisure', 'debug', 'Login					' . var_export($result_login, true));
+		$result_armday = $MyAlarm->ArmDay();
+		log::add('verisure', 'debug', 'ArmDay				' . var_export($result_armday, true));
+		$result_logout = $MyAlarm->Logout();
+		log::add('verisure', 'debug', 'Logout				' . var_export($result_logout, true));
+				
+		if ( $result_armday[3] == 200)  {
+			if ( $result_armday[4] == "OK")  {
+				$result = $result_armday[6];
+				log::add('verisure', 'info', ''.$jeedom_event_date.'Activation mode jour OK');
+			}
+			else  {
+				$result = "Erreur de commande Verisure";	
+			}
+		}
+		else  {
+			$result = "Erreur de connexion au cloud Verisure";
+		}
+		return $result;
+	}
+	
 	public function DisarmAlarm()	{
 		
 		log::add('verisure', 'info', ''.$jeedom_event_date.'Demande désactivation');
@@ -374,6 +413,10 @@ class verisureCmd extends cmd {
 						$eqlogic->checkAndUpdateCmd('enable', "1");
 						$eqlogic->checkAndUpdateCmd('mode', "Mode Nuit");
 						break;
+					case 'P':
+						$eqlogic->checkAndUpdateCmd('enable', "1");
+						$eqlogic->checkAndUpdateCmd('mode', "Mode Jour");
+						break;	
 					case 'Erreur de connexion au cloud Verisure':
 						throw new Exception($state);
 						break;
@@ -416,7 +459,23 @@ class verisureCmd extends cmd {
 						break;
 				}
 				break;
-								
+			
+			case 'armed_day':
+				$state = $eqlogic->ArmDayAlarm();
+				switch ($state)  {
+					case 'P':
+						$eqlogic->checkAndUpdateCmd('enable', "1");
+						$eqlogic->checkAndUpdateCmd('mode', "Mode Jour");
+						break;
+					case 'Erreur de connexion au cloud Verisure':
+						throw new Exception($state);
+						break;
+					case 'Erreur de commande Verisure':
+						throw new Exception($state);
+						break;
+				}
+				break;
+			
 			case 'released':
 				$state = $eqlogic->DisarmAlarm();
 				switch ($state)  {
