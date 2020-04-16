@@ -96,6 +96,7 @@ Il existe actuellement plusieurs commandes qui sont décrites ci-dessous.
 -   **Mode Alarme** : permet de connaitre le mode d'activation de l'alarme
 	- **Mode total** : l'alarme est activée en mode total
 	- **Mode nuit** : l'alarme est activée en mode nuit
+	- **Mode jour** : l'alarme est activée en mode jour
 
 D'autres modes suivront dans les futures versions du plugin.
 
