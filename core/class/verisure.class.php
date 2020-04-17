@@ -193,6 +193,7 @@ class verisure extends eqLogic {
 			$cmdArmedNight->setDisplay('generic_type', 'ALARM_MODE');
 			$cmdArmedNight->save();
 		}
+		$this->setConfiguration('SetModeNuit',$cmdArmedNight->getId()."|"."Mode Nuit");
 		
 		$cmdArmedDay = $this->getCmd(null, 'armed_day');
 		if (!is_object($cmdArmedDay)) {
@@ -206,6 +207,7 @@ class verisure extends eqLogic {
 			$cmdArmedDay->setDisplay('generic_type', 'ALARM_MODE');
 			$cmdArmedDay->save();
 		}
+		$this->setConfiguration('SetModePresent',$cmdArmedDay->getId()."|"."Mode Jour");
 		
 		$cmdArmedExt = $this->getCmd(null, 'armed_ext');
 		if (!is_object($cmdArmedExt)) {
@@ -219,6 +221,7 @@ class verisure extends eqLogic {
 			$cmdArmedExt->setDisplay('generic_type', 'ALARM_MODE');
 			$cmdArmedExt->save();
 		}
+		$this->setConfiguration('SetModeAbsent',$cmdArmedExt->getId()."|"."Mode Extérieur");
 		
 		$cmdState = $this->getCmd(null, 'getstate');
 		if ( ! is_object($cmdState)) {
