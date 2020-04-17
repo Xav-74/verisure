@@ -98,6 +98,7 @@ class verisureAPI {
 			curl_setopt($curl, CURLOPT_URL,				$url);
 			curl_setopt($curl, CURLOPT_TIMEOUT,			5);
 			curl_setopt($curl, CURLOPT_CONNECTTIMEOUT,	5);
+			curl_setopt($curl, CURLOPT_SSL_CIPHER_LIST, "TLSv1");
 			curl_setopt($curl, CURLOPT_RETURNTRANSFER,	true);
 		}
 		
@@ -107,6 +108,7 @@ class verisureAPI {
 			curl_setopt($curl, CURLOPT_CONNECTTIMEOUT,	5);
 			curl_setopt($curl, CURLOPT_CUSTOMREQUEST,	$method);
 			curl_setopt($curl, CURLOPT_RETURNTRANSFER,	true);
+			curl_setopt($curl, CURLOPT_SSL_CIPHER_LIST, "TLSv1");
 			curl_setopt($curl, CURLOPT_POSTFIELDS,		$data);
 		}
 			
