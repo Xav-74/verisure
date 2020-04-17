@@ -363,7 +363,7 @@ class verisure extends eqLogic {
 	
 	public function ArmExtAlarm()	{
 		
-		log::add('verisure', 'info', ''.$jeedom_event_date.'Demande activation mode jour');
+		log::add('verisure', 'info', ''.$jeedom_event_date.'Demande activation mode extérieur');
 		$MyAlarm = new verisureAPI($this->getConfiguration('numinstall'),$this->getConfiguration('username'),$this->getConfiguration('password'),$this->getConfiguration('country'));
 		$result_login = $MyAlarm->Login();
       	log::add('verisure', 'debug', 'Login					' . var_export($result_login, true));
@@ -375,7 +375,7 @@ class verisure extends eqLogic {
 		if ( $result_armext[3] == 200)  {
 			if ( $result_armext[4] == "OK")  {
 				$result = $result_armext[6];
-				log::add('verisure', 'info', ''.$jeedom_event_date.'Activation mode jour OK');
+				log::add('verisure', 'info', ''.$jeedom_event_date.'Activation mode extérieur OK');
 			}
 			else  {
 				$result = "Erreur de commande Verisure";	
