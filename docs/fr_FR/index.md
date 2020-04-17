@@ -97,8 +97,7 @@ Il existe actuellement plusieurs commandes qui sont décrites ci-dessous.
 	- **Mode total** : l'alarme est activée en mode total
 	- **Mode nuit** : l'alarme est activée en mode nuit
 	- **Mode jour** : l'alarme est activée en mode jour
-
-D'autres modes suivront dans les futures versions du plugin.
+	- **Mode extérieur** : l'alarme est activée en mode extérieur
 
 **Attention** : dans cette première version, l'évènement lié au déclenchement de l'alarme n'est pas encore pris en compte !
 	
@@ -110,6 +109,8 @@ D'autres modes suivront dans les futures versions du plugin.
 -   **Mode Nuit** : active l'alarme en mode nuit
 
 -   **Mode Jour** : active l'alarme en mode jour
+
+-   **Mode Extérieur** : active l'alarme en mode extérieur
 
 -   **Désactivation** : désactive de l'alarme, quel que soit le mode
 
@@ -128,6 +129,7 @@ Le plugin inclus un dashboard qui permet de :
 -   Activer le mode total de l'alarme
 -   Activer le mode nuit de l'alarme
 -   Activer le mode jour de l'alarme
+-   Activer le mode extérieur de l'alarme
 -   Désactiver l'alarme
 -   Mettre à jour le statut de l'alarme
 
@@ -158,7 +160,6 @@ Les prochaines versions verront arriver les features suivantes :
 
 -   Gestion du déclenchement de l'alarme (sur utilisation de reception d'e-mail ?)
 -   Récupération des photos des détecteurs de mouvement image 
--   Ajout du mode Extérieur (si demandé) 
 -   Récupération du journal des évènements liés à votre alarme
 
 > **Tip**
