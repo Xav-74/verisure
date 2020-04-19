@@ -167,6 +167,7 @@ class verisure extends eqLogic {
 			$cmdArmed->setDisplay('generic_type', 'ALARM_ARMED');
 			$cmdArmed->save();
 		}
+		$this->setConfiguration('SetModeAbsent',$cmdArmed->getId()."|"."Mode Total");		//Compatibilité Homebridge  - Mode Absent / A distance
 				
 		$cmdReleased = $this->getCmd(null, 'released');
 		if (!is_object($cmdReleased)) {
@@ -190,10 +191,10 @@ class verisure extends eqLogic {
 			$cmdArmedNight->setLogicalId('armed_night');
 			$cmdArmedNight->setType('action');
 			$cmdArmedNight->setSubType('other');
-			$cmdArmedNight->setDisplay('generic_type', 'ALARM_MODE');
+			$cmdArmedNight->setDisplay('generic_type', 'ALARM_SET_MODE');
 			$cmdArmedNight->save();
 		}
-		$this->setConfiguration('SetModeNuit',$cmdArmedNight->getId()."|"."Mode Nuit");			//Compatibilité Homebridge
+		$this->setConfiguration('SetModeNuit',$cmdArmedNight->getId()."|"."Mode Nuit");			//Compatibilité Homebridge - Mode Nuit
 		
 		$cmdArmedDay = $this->getCmd(null, 'armed_day');
 		if (!is_object($cmdArmedDay)) {
@@ -204,10 +205,10 @@ class verisure extends eqLogic {
 			$cmdArmedDay->setLogicalId('armed_day');
 			$cmdArmedDay->setType('action');
 			$cmdArmedDay->setSubType('other');
-			$cmdArmedDay->setDisplay('generic_type', 'ALARM_MODE');
+			$cmdArmedDay->setDisplay('generic_type', 'ALARM_SET_MODE');
 			$cmdArmedDay->save();
 		}
-		$this->setConfiguration('SetModePresent',$cmdArmedDay->getId()."|"."Mode Jour");		//Compatibilité Homebridge
+		$this->setConfiguration('SetModePresent',$cmdArmedDay->getId()."|"."Mode Jour");		//Compatibilité Homebridge - Mode Présent / Domicile
 		
 		$cmdArmedExt = $this->getCmd(null, 'armed_ext');
 		if (!is_object($cmdArmedExt)) {
@@ -218,11 +219,9 @@ class verisure extends eqLogic {
 			$cmdArmedExt->setLogicalId('armed_ext');
 			$cmdArmedExt->setType('action');
 			$cmdArmedExt->setSubType('other');
-			$cmdArmedExt->setDisplay('generic_type', 'ALARM_MODE');
 			$cmdArmedExt->save();
 		}
-		$this->setConfiguration('SetModeAbsent',$cmdArmedExt->getId()."|"."Mode Extérieur");	//Compatibilité Homebridge
-		
+				
 		$cmdState = $this->getCmd(null, 'getstate');
 		if ( ! is_object($cmdState)) {
 			$cmdState = new verisureCmd();
@@ -234,6 +233,8 @@ class verisure extends eqLogic {
 			$cmdState->setSubType('other');
 			$cmdState->save();
 		}	
+		
+		$this->save(true);		//paramètre "true" -> ne lance pas le postsave()
 	}
 	 
 
