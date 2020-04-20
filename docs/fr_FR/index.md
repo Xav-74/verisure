@@ -79,9 +79,6 @@ Il vous suffit ensuite de cliquer sur le bouton **Synchroniser** pour récupére
 
 Il existe actuellement plusieurs commandes qui sont décrites ci-dessous.
 
-> **Tip**
->
-> Les commandes ont été créées de manière à être compatibles avec le plugin [Homebridge](https://www.jeedom.com/market/index.php?v=d&p=market&author=Nebz&&name=Homebridge) de Nebz !
 
 ## Info
 
@@ -120,9 +117,26 @@ Il existe actuellement plusieurs commandes qui sont décrites ci-dessous.
 ![Commandes](../assets/images/Command_verisure.png)
 
 
+## Compatibilité Homebridge
+
+Les commandes ont été créées de manière à être compatibles nativement avec le plugin [Homebridge](https://www.jeedom.com/market/index.php?v=d&p=market&author=Nebz&&name=Homebridge) de Nebz ! (Merci à lui pour son aide)
+Il n'y a donc aucune configuration spécifique à effectuer dans le plugin Homebridge.
+
+Dans HomeKit, la fonction alarme est gérée suivant 4 modes : “Désactivée”, “Nuit”, “A distance” et “Domicile”.
+
+![Homebridge](../assets/images/Homebridge.png)
+
+La correspondance des modes est la suivante :
+-   **HomeKit**		**Verisure**
+-   Domicile 	--> Mode Jour
+-   A distance	--> Mode Total
+-   Nuit 		--> Mode Nuit
+-   Désactivée	--> Désactivation
+
+
 # Dashboard
 
-Le plugin inclus un dashboard qui permet de :
+Le plugin inclut un dashboard qui permet de :
 -   Connaitre le statut de l'alarme
 -   Connaitre l'état de l'alarme
 -   Connaitre le mode e l'alarme
