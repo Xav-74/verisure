@@ -122,7 +122,6 @@ Il existe actuellement plusieurs commandes qui sont décrites ci-dessous.
 Les commandes ont été créées de manière à être compatibles nativement avec le plugin [Homebridge](https://www.jeedom.com/market/index.php?v=d&p=market&author=Nebz&&name=Homebridge) de Nebz ! (Merci à lui pour son aide)
 
 Il n'y a donc aucune configuration spécifique à effectuer dans le plugin Homebridge.
-
 Dans HomeKit, la fonction alarme est gérée suivant 4 modes : “Désactivée”, “Nuit”, “A distance” et “Domicile”.
 
 ![HomeKit](../assets/images/homekit.png)
