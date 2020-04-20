@@ -124,10 +124,10 @@ Il n'y a donc aucune configuration spécifique à effectuer dans le plugin Homeb
 
 Dans HomeKit, la fonction alarme est gérée suivant 4 modes : “Désactivée”, “Nuit”, “A distance” et “Domicile”.
 
-![Homebridge](../assets/images/Homebridge.png)
+![HomeKit](../assets/images/homekit.png)
 
 La correspondance des modes est la suivante :
--   **HomeKit**		**Verisure**
+    **HomeKit**     **Verisure**
 -   Domicile 	--> Mode Jour
 -   A distance	--> Mode Total
 -   Nuit 		--> Mode Nuit
