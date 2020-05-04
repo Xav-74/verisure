@@ -2,6 +2,13 @@
 
 __Vous trouverez ci-dessous les notes, les ajouts et les correctifs de chaque version du plugin__
 
+# 2020-05-04
+
+Ajout des fonctions suivantes :
+ - Accès au journal d'activité Verisure
+ - Onglet "Notifications Verisure" pour la mise en place des scénarios de notifications Mail et SMS
+  
+
 # 2020-04-15
 
 Première version du plugin Verisure
