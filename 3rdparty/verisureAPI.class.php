@@ -18,6 +18,18 @@
  */
 
 
+/*
+ *	SECURITAS_STATUS :
+ *		STATE_ALARM_DISARMED: ['0',("1","32")]
+ *		STATE_ALARM_ARMED_HOME: ['P',("311","202")]
+ *		STATE_ALARM_ARMED_NIGHT: [('Q','C'),("46")]
+ *		STATE_ALARM_ARMED_AWAY: [('1','A'),("2","31")]
+ *		STATE_ALARM_ARMED_CUSTOM_BYPASS: ['3',("204")]
+ *		STATE_ALARM_TRIGGERED: ['???',("13","24")]
+ *		STATE_ALARM_SOS: ['???',("29")]
+*/
+
+
 class verisureAPI {
 	
    /*Base URL for Securitas Direct / Versisure - @var string */
@@ -238,6 +250,43 @@ class verisureAPI {
 		}	
 		
 		return array ($httpRespCode, $result_rq, $result_msg, $tab_device);
+	}
+	
+	
+	public function GetReport()  {			// Get the information of last actions (2 days)
+		
+		$method = "GET";
+		$this->request = "ACT_V2";
+		$params = array(
+			'request' => $this->request,
+			'ID' => $this->id,
+			'Country' => $this->country,
+			'lang' => $this->language,
+			'user' => $this->username,
+			'pwd' => $this->password,
+			'hash' => $this->verisure_hash,
+			'panel' => $this->panel,
+			'numinst' => $this->numinstall,
+			'timefilter' => "3",
+			'activityfilter' => "0"
+		);
+		$params_string = http_build_query($params);
+		
+		$result = $this->doRequest($params_string, $method);
+		
+		$httpRespCode = $result[0];
+		$RespArray = $result[1];    
+      	$result_rq = $RespArray['RES'];
+		$result_list = $RespArray['LIST'];
+		
+		/*$i = 0;
+		$tab_device = array();
+		foreach ($RespArray['INSTALLATION']['DEVICES']['DEVICE'] as $device) {
+           	$tab_device["Devices"][$i] = $RespArray['INSTALLATION']['DEVICES']['DEVICE'][$i]['@attributes'];
+          	$i++;
+		}*/	
+		
+		return array ($httpRespCode, $result_rq, $result_list);
 	}
 	
 	

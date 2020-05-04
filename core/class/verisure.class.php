@@ -226,7 +226,7 @@ class verisure extends eqLogic {
 		if ( ! is_object($cmdState)) {
 			$cmdState = new verisureCmd();
 			$cmdState->setOrder(9);
-			$cmdState->setName('Statut Alarme');
+			$cmdState->setName('Rafraichir');
 			$cmdState->setEqLogic_id($this->getId());
 			$cmdState->setLogicalId('getstate');
 			$cmdState->setType('action');
@@ -414,6 +414,33 @@ class verisure extends eqLogic {
 		else  {
 			$result = "Erreur de connexion au cloud Verisure";
 		}
+		return $result;
+	}
+	
+	public function GetReportAlarm($numinstall,$username,$password,$country)	{
+		
+		log::add('verisure', 'info', ''.$jeedom_event_date.'Demande du journal d\'activité');
+		$MyAlarm = new verisureAPI($numinstall,$username,$password,$country);
+		$result_login = $MyAlarm->Login();
+      	log::add('verisure', 'debug', 'Login					' . var_export($result_login, true));
+		$result_getreport = $MyAlarm->GetReport();
+		log::add('verisure', 'debug', 'GetReport				' . var_export($result_getreport, true));
+		$result_logout = $MyAlarm->Logout();
+		log::add('verisure', 'debug', 'Logout				' . var_export($result_logout, true));
+		
+		if ( $result_getreport[0] == 200)  {
+			if ( $result_getreport[1] == "OK")  {
+				$result = $result_getreport[2];
+				log::add('verisure', 'info', ''.$jeedom_event_date.'Journal d\'activité OK');
+			}
+			else  {
+				$result = "Erreur de commande Verisure";	
+			}
+		}	
+		else  {
+			$result = "Erreur de connexion au cloud Verisure";
+		}
+		
 		return $result;
 	}
 }

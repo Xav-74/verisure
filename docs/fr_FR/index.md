@@ -75,6 +75,23 @@ Il vous suffit ensuite de cliquer sur le bouton **Synchroniser** pour récupére
 ![Equipement](../assets/images/Eqpt_verisure.png)
 
 
+# Journal d'activité
+
+Vous avez la possibilité de consulter le journal d'activité de votre alarme en cliquant sur le bouton **Journal d'activité**. Ce rapport reprend les derniers évènements survenus sur votre centrale (alertes intrusion, SOS, activation / désactivation, coupure d'électricité).
+
+
+![Journal](../assets/images/journal_verisure.png)
+
+
+# Notifications Verisure
+
+Les API Verisure ne permettent pas les remontées d'informations et notifications automatiques directes, telles que l'activation/désactivation depuis un badge ou une télécommande ou encore le déclenchement de l'alarme.
+
+Cet onglet décrit en détail comment paramétrer Jeedom (scénarios) pour palier à ce manque pour :
+-   les **notifications Mail** pour l'activation/désactivation de l'alarme au travers du plugin [Mail Listener](https://www.jeedom.com/market/index.php?v=d&p=market&author=Lunarok&&name=maillistener) de Lunarok !
+-   les **notifications SMS** pour la détection d'intrusion (dev en cours)
+
+
 # Commandes
 
 Il existe actuellement plusieurs commandes qui sont décrites ci-dessous.
@@ -111,7 +128,7 @@ Il existe actuellement plusieurs commandes qui sont décrites ci-dessous.
 
 -   **Désactivation** : désactive de l'alarme, quel que soit le mode
 
--   **Statut Alarme** : met à jour du statut de l'Alarme
+-   **Rafraichir** : met à jour du statut de l'Alarme
 
 
 ![Commandes](../assets/images/Command_verisure.png)
@@ -145,7 +162,7 @@ Le plugin inclut un dashboard qui permet de :
 -   Activer le mode jour de l'alarme
 -   Activer le mode extérieur de l'alarme
 -   Désactiver l'alarme
--   Mettre à jour le statut de l'alarme
+-   Rafraichir le statut de l'alarme
 
 **Attention** : les commandes peuvent parfois mettre plusieurs secondes à se réaliser (entre 15s et 25s). Cela est lié à la qualité de connexion 3G ou 4G de la base de votre alarme. Alors soyez patient !
 
@@ -163,7 +180,7 @@ Un CRON est automatiquement créé sur base de 30 min comme indiqué dans la con
 
 ## Manuel
 
-Vous pouvez à tout moment utiliser la commande **Statut Alarme** afin de rafraichir le statut de l'alarme.
+Vous pouvez à tout moment utiliser la commande **Rafraichir** afin de rafraichir le statut de l'alarme.
 
 
 # Roadmap
@@ -172,9 +189,8 @@ Ce plugin évoluera au fil du temps en fonction de vos demandes et des possibili
 
 Les prochaines versions verront arriver les features suivantes :
 
--   Gestion du déclenchement de l'alarme (sur utilisation de reception d'e-mail ?)
+-   Gestion du déclenchement de l'alarme (sur utilisation de reception d'un SMS ?)
 -   Récupération des photos des détecteurs de mouvement image 
--   Récupération du journal des évènements liés à votre alarme
 
 > **Tip**
 >

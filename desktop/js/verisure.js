@@ -120,50 +120,57 @@ function printEqLogic(_eqLogic) {
 
 $('#bt_SynchronizeMyInstallation').on('click',function() {
  
- $('#table_smartplug tbody').empty();
- $('#nbsp').empty();
+	$('#table_smartplug tbody').empty();
+	$('#nbsp').empty();
   
- $('#div_alert').showAlert({message: '{{Synchronisation en cours}}', level: 'warning'});	
- $.ajax({													// fonction permettant de faire de l'ajax
-    type: "POST", 											// methode de transmission des données au fichier php
-    url: "plugins/verisure/core/ajax/verisure.ajax.php", 	// url du fichier php
-    data: {
-        action: "SynchronizeMyInstallation",
-        numinstall: $('.eqLogicAttr[data-l2key=numinstall]').value(),
-		username: $('.eqLogicAttr[data-l2key=username]').value(),
-		pwd: $('.eqLogicAttr[data-l2key=password]').value(),
-		country: $('.eqLogicAttr[data-l2key=country]').value()
-		},
-    dataType: 'json',
-    	error: function (request, status, error) {
-        handleAjaxError(request, status, error);
-		},
-    success: function (data) { 															
-		
-      	if (data.state != 'ok') {
-			$('#div_alert').showAlert({message: '{{Erreur lors de la synchronisation}}', level: 'danger'});
-			return;
-		}
-		else  {
-			var nbsp = data.result['Devices'].length;
-			$('#nbsp').append(nbsp); 
-			for(j = 0; j < nbsp ; j++) {
-				var tr = '<tr>';
-				tr += '<td>';
-				tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="'+data.result['Devices'][j]['idDev']+'" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugID'+j+'">';
-				tr += '</td>';
-				tr += '<td>';
-				tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="'+data.result['Devices'][j]['alias']+'" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugName'+j+'">';
-				tr += '</td>';
-				tr += '<td>';
-				tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="'+data.result['Devices'][j]['aliasType']+'" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugModel'+j+'">';
-				tr += '</td>';
-              	tr += '</tr>';
-				$('#table_smartplug tbody').append(tr);
+	$('#div_alert').showAlert({message: '{{Synchronisation en cours}}', level: 'warning'});	
+	$.ajax({													// fonction permettant de faire de l'ajax
+		type: "POST", 											// methode de transmission des données au fichier php
+		url: "plugins/verisure/core/ajax/verisure.ajax.php", 	// url du fichier php
+		data: {
+			action: "SynchronizeMyInstallation",
+			numinstall: $('.eqLogicAttr[data-l2key=numinstall]').value(),
+			username: $('.eqLogicAttr[data-l2key=username]').value(),
+			pwd: $('.eqLogicAttr[data-l2key=password]').value(),
+			country: $('.eqLogicAttr[data-l2key=country]').value()
+			},
+		dataType: 'json',
+			error: function (request, status, error) {
+			handleAjaxError(request, status, error);
+			},
+		success: function (data) { 															
+			
+			if (data.state != 'ok') {
+				$('#div_alert').showAlert({message: '{{Erreur lors de la synchronisation}}', level: 'danger'});
+				return;
 			}
-			var tr = $('#table_smartplug tbody tr:last');
+			else  {
+				var nbsp = data.result['Devices'].length;
+				$('#nbsp').append(nbsp); 
+				for(j = 0; j < nbsp ; j++) {
+					var tr = '<tr>';
+					tr += '<td>';
+					tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="'+data.result['Devices'][j]['idDev']+'" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugID'+j+'">';
+					tr += '</td>';
+					tr += '<td>';
+					tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="'+data.result['Devices'][j]['alias']+'" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugName'+j+'">';
+					tr += '</td>';
+					tr += '<td>';
+					tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="'+data.result['Devices'][j]['aliasType']+'" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugModel'+j+'">';
+					tr += '</td>';
+					tr += '</tr>';
+					$('#table_smartplug tbody').append(tr);
+				}
+				var tr = $('#table_smartplug tbody tr:last');
+			}
+			$('#div_alert').showAlert({message: '{{Synchronisation terminée avec succès}}', level: 'success'});
 		}
-		$('#div_alert').showAlert({message: '{{Synchronisation terminée avec succès}}', level: 'success'});
-    }
-  });
+	});
+});
+
+
+$('#bt_Reporting').on('click',function() {
+	
+	$('#md_modal').dialog({title: "{{Journal d'activité}}"});
+	$('#md_modal').load('index.php?v=d&plugin=verisure&modal=report.verisure&numinstall=' + $('.eqLogicAttr[data-l2key=numinstall]').value() + '&username=' + $('.eqLogicAttr[data-l2key=username]').value()+ '&pwd=' + encodeURIComponent($('.eqLogicAttr[data-l2key=password]').value()) + '&country=' + $('.eqLogicAttr[data-l2key=country]').value()).dialog('open');
 });
