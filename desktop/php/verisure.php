@@ -18,13 +18,13 @@ $eqLogics = eqLogic::byType($plugin->getId());
 			
 			<div class="cursor eqLogicAction logoPrimary" style="color:#FB0230;" data-action="add">
 				<i class="fas fa-plus-circle"></i>
-				<br>
+				<br/>
 				<span>{{Ajouter}}</span>
 			</div>
 			
 			<div class="cursor eqLogicAction logoSecondary" style="color:#FB0230;" data-action="gotoPluginConf">
 				<i class="fas fa-wrench"></i>
-				<br>
+				<br/>
 				<span>{{Configuration}}</span>
 			</div>
 		
@@ -38,7 +38,7 @@ $eqLogics = eqLogic::byType($plugin->getId());
 				$opacity = ($eqLogic->getIsEnable()) ? '' : 'disableCard';
 				echo '<div class="eqLogicDisplayCard cursor '.$opacity.'" data-eqLogic_id="' . $eqLogic->getId() . '">';
 				echo '<img src="' . $plugin->getPathImgIcon() . '"/>';
-				echo '<br>';
+				echo '<br/>';
 				echo '<span class="name">' . $eqLogic->getHumanName(true, true) . '</span>';
 				echo '</div>';
 				}
@@ -112,7 +112,7 @@ $eqLogics = eqLogic::byType($plugin->getId());
 									</div>
 								</div>
 							
-								<br /><br />  
+								<br/><br/>  
                         
  							</fieldset>
 						</form>
@@ -174,18 +174,18 @@ $eqLogics = eqLogic::byType($plugin->getId());
 							</div>
 						</div>   
 									
-						<br /><br />
+						<br/><br/>
 										
 						<div class="form-group">		
 							<label class="col-sm-3 control-label">{{Informations}}</label>
 							<div class="col-sm-9">
-								Ce plugin est compatible avec le matériel Verisure affiché sur l'image ci-dessus.<br />
-                                Les informations de connexion demandées sont celles utilisées pour vous connecter sur "https://customers.securitasdirect.fr" ou via l'application mobile My Verisure.<br />
-								Le plugin ne vous demandera jamais les mots de passe utilisés pour vous identifier auprès du personnel Securitas Direct lors du déclenchement de votre alarme.<br />
+								Ce plugin est compatible avec le matériel Verisure affiché sur l'image ci-dessus.<br/>
+                                Les informations de connexion demandées sont celles utilisées pour vous connecter sur "https://customers.securitasdirect.fr" ou via l'application mobile My Verisure.<br/>
+								Le plugin ne vous demandera jamais les mots de passe utilisés pour vous identifier auprès du personnel Securitas Direct lors du déclenchement de votre alarme.<br/>
 							</div>
 						</div>
 										
-						<br /><br />
+						<br/><br/>
 								
 						<div class="form-group">
 							<label class="col-sm-3 control-label">{{Mon installation}}</label>
@@ -215,9 +215,9 @@ $eqLogics = eqLogic::byType($plugin->getId());
 			
 			<div role="tabpanel" class="tab-pane" id="notificationsVerisure">
 				<div class="container">
-					<br />
+					<br/>
                     <h4>Gestion des notifications</h4>
-					<br />
+					<br/>
 					<div class="form-group">
 						Les API Verisure ne permettent pas les remontées d'informations et notifications automatiques directes, telles que l'activation/désactivation depuis un badge ou une télécommande ou encore le déclenchement de l'alarme.
 						<br/><br/>
@@ -228,8 +228,8 @@ $eqLogics = eqLogic::byType($plugin->getId());
 						</ul>
 						<br/>
 						<label class="control-label">{{1. Notifications Mail}}</label>
-						<br /><br />
-						Actuellement seul le plugin suivant a été testé et est officiellement supporté pour recevoir de façon automatisée les alertes :<br />
+						<br/><br/>
+						Actuellement seul le plugin suivant a été testé et est officiellement supporté pour recevoir de façon automatisée les alertes :<br/>
 						<ul>
 							<li><a href="https://market.jeedom.com/index.php?v=d&p=market&type=plugin&&name=maillistener">Plugin  Mail Listener de Lunarok </a></li>
 						</ul>
@@ -254,9 +254,9 @@ $eqLogics = eqLogic::byType($plugin->getId());
 						Voilà, maintenant, chaque mail provenant de l'adresse "serviceclient@securitasdirect.fr" déclenchera automatiquement un refresh du statut de l'alarme.<br/>
 						<br/><br/>
 						<label class="control-label">{{2. Notifications SMS}}</label>
-						<br /><br />
-						Dévelopement en cours...<br />
-						<br />
+						<br/><br/>
+						Dévelopement en cours...<br/>
+						<br/>
 					</div>
 				</div>	
 			</div>

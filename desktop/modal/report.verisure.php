@@ -27,7 +27,7 @@
 <div class="container">
 	<h2>Journal d'activité - Verisure</h2>
 	<h6>(Les demandes de statut ne sont pas incluses dans ce rapport)</h6>
-	<br /><br /> 
+	<br/><br/> 
 	<form class="form-horizontal">
 		<fieldset>
 			<div class="form-group">
@@ -46,7 +46,7 @@
 						<?php
 							$i = 0;
 							$j = 1;
-							$filter = array('1',"2","13","24","29","31","32","46","202","204","311");
+							$filter = array("1","2","13","16","24","29","31","32","46","202","204","311");
 							foreach ($report['REG'] as $reg)  {
 								if (in_array($report['REG'][$i]['@attributes']['type'], $filter))  {
 									echo '<tr>';
@@ -78,6 +78,18 @@
 											echo $report['REG'][$i]['@attributes']['alias'];
 											echo '<br/>';
 											echo 'Smartplug : '. $report['REG'][$i]['@attributes']['device'];
+											echo '</td>';
+											break;
+										case 16:
+											echo '<td>';
+											echo '<img src="plugins/verisure/core/img/logo_photos.png" height="35" width="35"/>';
+											echo '</td>';
+											echo '<td>';
+											echo $report['REG'][$i]['@attributes']['alias'];
+											echo '<br/>';
+											echo 'Smartplug : '. $report['REG'][$i]['@attributes']['device'];
+											echo '<br/>';
+											echo 'Source : '. $report['REG'][$i]['@attributes']['source'].' - User : '. $report['REG'][$i]['@attributes']['myverisureUser'];
 											echo '</td>';
 											break;
 										case 29:

@@ -113,7 +113,7 @@ Il existe actuellement plusieurs commandes qui sont décrites ci-dessous.
 	- **Mode jour** : l'alarme est activée en mode jour
 	- **Mode extérieur** : l'alarme est activée en mode extérieur
 
-**Attention** : dans cette première version, l'évènement lié au déclenchement de l'alarme n'est pas encore pris en compte !
+**Attention** : dans cette version, l'évènement lié au déclenchement de l'alarme n'est pas encore pris en compte !
 	
 
 ## Action
@@ -129,6 +129,12 @@ Il existe actuellement plusieurs commandes qui sont décrites ci-dessous.
 -   **Désactivation** : désactive de l'alarme, quel que soit le mode
 
 -   **Rafraichir** : met à jour du statut de l'Alarme
+
+-   **Demande Images** : déclenche la prise d'une photo depuis un détecteur de mouvement compatible et l'affiche à l'écran.
+
+> **Tip**
+>
+> Lors d'une demande d'image, la photo est enregistrée et stockée dans le répertoire **/verisure/data/**. Pensez à vider le répertoire de temps à temps ! 
 
 
 ![Commandes](../assets/images/Command_verisure.png)
@@ -163,8 +169,9 @@ Le plugin inclut un dashboard qui permet de :
 -   Activer le mode extérieur de l'alarme
 -   Désactiver l'alarme
 -   Rafraichir le statut de l'alarme
+-   Demander la prise d'une photo depuis un capteur de mouvement compatible
 
-**Attention** : les commandes peuvent parfois mettre plusieurs secondes à se réaliser (entre 15s et 25s). Cela est lié à la qualité de connexion 3G ou 4G de la base de votre alarme. Alors soyez patient !
+**Attention** : les commandes peuvent parfois mettre plusieurs secondes à se réaliser (entre 15s et 25s, voire plus d'une minute pour les demandes de photos). Cela est lié à la qualité de connexion 3G ou 4G de la base de votre alarme. Alors soyez patient !
 
 
 ![Dashboard](../assets/images/Dashboard_verisure.png)
@@ -190,7 +197,6 @@ Ce plugin évoluera au fil du temps en fonction de vos demandes et des possibili
 Les prochaines versions verront arriver les features suivantes :
 
 -   Gestion du déclenchement de l'alarme (sur utilisation de reception d'un SMS ?)
--   Récupération des photos des détecteurs de mouvement image 
 
 > **Tip**
 >
