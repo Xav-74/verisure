@@ -16,10 +16,15 @@
 * along with Jeedom. If not, see <http://www.gnu.org/licenses/>.
 */
 
-if (!isConnect('admin')) {
-    throw new Exception('{{401 - Accès non autorisé}}');
-}
+	if (!isConnect('admin')) {
+        throw new Exception(__('401 - Accès non autorisé', __FILE__));
+    }
+    
+	$path = "plugins/verisure/data/".date("Ymd_His")."_smartplugID_".init('device').".jpg";	
+	$img = verisure::GetPhotosRequest(init('numinstall'),init('username'),init('pwd'),init('country'),init('device'));
+	$image = base64_decode($img);
+	file_put_contents($path,$image);
+			
 ?>
 
-Exemple de modale
-
+<img src="<?php echo $path?>" style="height:100%; width:100%"></img>

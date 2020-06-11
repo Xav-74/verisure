@@ -4,7 +4,7 @@
 	"description" : "Plugin Verisure pour Jeedom",
 	"licence" : "AGPL",
 	"author" : "Xav-74",
-	"require" : "4.0",
+	"require" : "3.2",
 	"category" : "security",
 	"hasDependency" : false,
 	"hasOwnDeamon" : false,

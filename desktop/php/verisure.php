@@ -18,13 +18,13 @@ $eqLogics = eqLogic::byType($plugin->getId());
 			
 			<div class="cursor eqLogicAction logoPrimary" style="color:#FB0230;" data-action="add">
 				<i class="fas fa-plus-circle"></i>
-				<br>
+				<br/>
 				<span>{{Ajouter}}</span>
 			</div>
 			
 			<div class="cursor eqLogicAction logoSecondary" style="color:#FB0230;" data-action="gotoPluginConf">
 				<i class="fas fa-wrench"></i>
-				<br>
+				<br/>
 				<span>{{Configuration}}</span>
 			</div>
 		
@@ -38,7 +38,7 @@ $eqLogics = eqLogic::byType($plugin->getId());
 				$opacity = ($eqLogic->getIsEnable()) ? '' : 'disableCard';
 				echo '<div class="eqLogicDisplayCard cursor '.$opacity.'" data-eqLogic_id="' . $eqLogic->getId() . '">';
 				echo '<img src="' . $plugin->getPathImgIcon() . '"/>';
-				echo '<br>';
+				echo '<br/>';
 				echo '<span class="name">' . $eqLogic->getHumanName(true, true) . '</span>';
 				echo '</div>';
 				}
@@ -56,6 +56,7 @@ $eqLogics = eqLogic::byType($plugin->getId());
 		<ul class="nav nav-tabs" role="tablist">
 			<li role="presentation"><a href="#" class="eqLogicAction" aria-controls="home" role="tab" data-toggle="tab" data-action="returnToThumbnailDisplay"><i class="fa fa-arrow-circle-left"></i></a></li>
 			<li role="presentation" class="active"><a href="#eqlogictab" aria-controls="home" role="tab" data-toggle="tab"><i class="fas fa-tachometer-alt"></i> {{Equipement}}</a></li>
+			<li role="presentation"><a href="#notificationsVerisure" aria-controls="notificationsVerisure" role="tab" data-toggle="tab"><i class="fas fa-envelope"></i></i> {{Notifications Verisure}}</a></li>
 			<li role="presentation"><a href="#commandtab" aria-controls="profile" role="tab" data-toggle="tab"><i class="fa fa-list-alt"></i> {{Commandes}}</a></li>
 		</ul>
 		<div class="tab-content" style="height:calc(100% - 50px);overflow:auto;overflow-x: hidden;">
@@ -111,7 +112,7 @@ $eqLogics = eqLogic::byType($plugin->getId());
 									</div>
 								</div>
 							
-								<br /><br />  
+								<br/><br/>  
                         
  							</fieldset>
 						</form>
@@ -173,30 +174,32 @@ $eqLogics = eqLogic::byType($plugin->getId());
 							</div>
 						</div>   
 									
-						<br /><br />
+						<br/><br/>
 										
 						<div class="form-group">		
 							<label class="col-sm-3 control-label">{{Informations}}</label>
 							<div class="col-sm-9">
-								Ce plugin est compatible avec le matériel Verisure affiché sur l'image ci-dessus.<br />
-                                Les informations de connexion demandées sont celles utilisées pour vous connecter sur "https://customers.securitasdirect.fr" ou via l'application mobile My Verisure.<br />
-								Le plugin ne vous demandera jamais les mots de passe utilisés pour vous identifier auprès du personnel Securitas Direct lors du déclenchement de votre alarme.<br />
+								Ce plugin est compatible avec le matériel Verisure affiché sur l'image ci-dessus.<br/>
+                                Les informations de connexion demandées sont celles utilisées pour vous connecter sur "https://customers.securitasdirect.fr" ou via l'application mobile My Verisure.<br/>
+								Le plugin ne vous demandera jamais les mots de passe utilisés pour vous identifier auprès du personnel Securitas Direct lors du déclenchement de votre alarme.<br/>
 							</div>
 						</div>
 										
-						<br /><br />
+						<br/><br/>
 								
 						<div class="form-group">
 							<label class="col-sm-3 control-label">{{Mon installation}}</label>
 							<div class="col-sm-6">
-								<a class="btn btn-danger btn-sm cmdAction" id="bt_SynchronizeMyInstallation"><i class="fas fa-sync"></i> {{Synchroniser}}</a><br/><br/>
+								<a class="btn btn-danger btn-sm cmdAction" id="bt_SynchronizeMyInstallation"><i class="fas fa-sync"></i> {{Synchroniser}}</a>
+								<a class="btn btn-info btn-sm cmdAction" id="bt_Reporting"><i class="fas fa-info"></i> {{Journal d'activité}}</a>
+								<br/><br/>
 								<span id="nbsp" type="text" class="eqLogicAttr" data-l1key="configuration" data-l2key="nb_smartplug" style="display : none;"></span>
 								<table id="table_smartplug" class="table table-bordered table-condensed">
 									<thead>
 										<tr>
-											<th style="width: 20px;">{{ID SmartPlug}}</th>
-											<th style="width: 100px;">{{Nom}}</th>
-											<th style="width: 200px;">{{Type}}</th>
+											<th style="width: 15%;">{{ID SmartPlug}}</th>
+											<th style="width: 42.5%;">{{Nom}}</th>
+											<th style="width: 42.5%;">{{Type}}</th>
 										</tr>
 									</thead>
 									<tbody>
@@ -209,7 +212,55 @@ $eqLogics = eqLogic::byType($plugin->getId());
 				</form>
 				
 			</div>
-				
+			
+			<div role="tabpanel" class="tab-pane" id="notificationsVerisure">
+				<div class="container">
+					<br/>
+                    <h4>Gestion des notifications</h4>
+					<br/>
+					<div class="form-group">
+						Les API Verisure ne permettent pas les remontées d'informations et notifications automatiques directes, telles que l'activation/désactivation depuis un badge ou une télécommande ou encore le déclenchement de l'alarme.
+						<br/><br/>
+						Pour palier à cela, il est nécessaire de récupérer les informations depuis :<br/>
+						<ul>
+							<li>les notifications Mail pour l'activation/désactivation de l'alarme</li>
+							<li>les notifications SMS pour la détection d'intrusion (dev en cours)</li>
+						</ul>
+						<br/>
+						<label class="control-label">{{1. Notifications Mail}}</label>
+						<br/><br/>
+						Actuellement seul le plugin suivant a été testé et est officiellement supporté pour recevoir de façon automatisée les alertes :<br/>
+						<ul>
+							<li><a href="https://market.jeedom.com/index.php?v=d&p=market&type=plugin&&name=maillistener">Plugin  Mail Listener de Lunarok </a></li>
+						</ul>
+						<i>Pour supporter d'autres plugins n'hésitez pas à contacter le développeur en ouvrant <a href="https://github.com/Xav-74/verisure/issues/new"> une "demande d'évolution" sur le Github du plugin</a></i>
+						<br/><br/>
+						Pour mettre en place cette fonctionnalité, assurez-vous que les notifications mails sont bien activées sur votre compte Verisure et que l'option "Contrôle d'accès" est bien validée pour l'ensemble de vos badges et télécommandes !<br/>
+						Installez ensuite le plugin Mail Listener, puis configurez le avec les paramètres de votre compte mail qui reçoit les notifications Verisure. Reportez-vous à la documentation du plugin pour de plus amples informations.<br/>
+						Dernière étape : la création du scénario qui déclenchera le refresh du statut de l'alarme lors de la réception d'un email provenant de Securitas Direct - Verisure.<br/>
+						Pour cela, renddez-vous dans le menu "Outils" de Jeedom puis "Scénarios" et enfin "Ajouter". Renseignez le premier onglet "Général" comme suit :<br/>
+						<br/><br/>
+						<img src="plugins/verisure/core/img/scenario_1.png" height="368" width="1100"/><br/>
+						<br/>
+						<i>Dans cet exemple, [Maison][Mail Domotique] représente l'équipement créé dans le plugin Mail Listener.</i><br/>
+						<br/>
+						Passez maintenant à l'onglet "Scénario" :<br/>
+						<br/><br/>
+						<img src="plugins/verisure/core/img/scenario_2.png" height="123" width="1100"/><br/>
+						<br/>
+						<i>Dans cet exemple, [Maison][Alarme Verisure] représente l'équipement créé dans le plugin Verisure.</i><br/>
+						<br/>
+						N'oubliez pas de sauvegarder !<br/>
+						Voilà, maintenant, chaque mail provenant de l'adresse "serviceclient@securitasdirect.fr" déclenchera automatiquement un refresh du statut de l'alarme.<br/>
+						<br/><br/>
+						<label class="control-label">{{2. Notifications SMS}}</label>
+						<br/><br/>
+						Dévelopement en cours...<br/>
+						<br/>
+					</div>
+				</div>	
+			</div>
+			
 			<div role="tabpanel" class="tab-pane" id="commandtab">
 				<!--<a class="btn btn-success btn-sm cmdAction pull-right" data-action="add" style="margin-top:5px;"><i class="fa fa-plus-circle"></i> {{Commandes}}</a><br/><br/>-->
 				<table id="table_cmd" class="table table-bordered table-condensed">
