@@ -114,7 +114,7 @@ Il existe actuellement plusieurs commandes qui sont décrites ci-dessous.
 	- **Mode extérieur** : l'alarme est activée en mode extérieur
 
 **Attention** : dans cette version, l'évènement lié au déclenchement de l'alarme n'est pas encore pris en compte !
-	
+
 
 ## Action
 
@@ -157,6 +157,7 @@ La correspondance des modes est la suivante :
 
 Les autres modes (Extérieur,...) ne sont pas pris en compte dans HomeKit.
 
+
 # Dashboard
 
 Le plugin inclut un dashboard qui permet de :
@@ -179,11 +180,13 @@ Le plugin inclut un dashboard qui permet de :
 
 # Rafraichissement
 
+
 ## Automatique
 
 Un CRON est automatiquement créé sur base de 30 min comme indiqué dans la configuration du plugin.
 
 **Attention** : cette valeur de 30 min pourra être amenée à évoluer en fonction du retour et des demandes des utilisateurs ainsi que du nombre de requêtes autorisées par heure par Verisure sur leurs serveurs !
+
 
 ## Manuel
 
