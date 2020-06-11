@@ -7,12 +7,12 @@
 
 # 2020-06-11
 
-Ajout des fonctions suivantes :
+Ajout des fonctions et corrections suivantes :
  - Demandes d'images
-Gestion de l’exception du cron tous les jours à 0h00 pour éviter un refresh pendant la maintenance des serveurs Versiure
-Mise en place d'un template pour le dashboard compatible v3 et v4 (Core2019 Light, Dark & Leagcy)
-Optimisation globale du code
-Refonte des logs du plugin
+ - Gestion de l’exception du cron tous les jours à 0h00 pour éviter un refresh pendant la maintenance des serveurs Versiure
+ - Mise en place d'un template pour le dashboard compatible v3 et v4 (Core2019 Light, Dark & Leagcy)
+ - Optimisation globale du code
+ - Refonte des logs du plugin
 
 
 # 2020-05-04
