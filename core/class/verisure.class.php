@@ -304,7 +304,7 @@ class verisure extends eqLogic {
 		}	
 		$device_array = $this->getConfiguration('devices');
 		for ($j = 0; $j < $this->getConfiguration('nb_smartplug'); $j++)  {
-			if ($device_array['smartplugType'.$j] == "YR")  {
+			if ($device_array['smartplugType'.$j] == "YR" || $device_array['smartplugType'.$j] == "XR")  {
 				if (isset($listValue))  { $listValue = $listValue .';'. $device_array['smartplugID'.$j].'|'.$device_array['smartplugName'.$j];  }
 				else  { $listValue = $device_array['smartplugID'.$j].'|'.$device_array['smartplugName'.$j];  }
            	}
