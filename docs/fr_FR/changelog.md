@@ -5,6 +5,12 @@
 **Remarque** : en cas de mise à jour non listée ici, c'est que celle-ci ne comporte que des changements mineurs du type documentation ou corrections de bugs mineurs.
 
 
+# 2020-06-14
+
+Ajout des fonctions suivantes :
+ - Template mobile
+ 
+
 # 2020-06-11
 
 Ajout des fonctions et corrections suivantes :
