@@ -8,7 +8,7 @@
 # 2020-06-14
 
 Ajout des fonctions suivantes :
- - Template mobile
+ - Mise en place d'un template pour le dashboard mobile compatible v3 et v4 (Core2019 Light, Dark & Leagcy)
  
 
 # 2020-06-11
