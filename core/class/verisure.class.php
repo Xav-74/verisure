@@ -509,7 +509,7 @@ class verisure extends eqLogic {
 		$result_login = $MyAlarm->Login();
       	log::add('verisure', 'debug', 'Request LOGIN - 0 => '.$result_login[0].' - 1 => '.$result_login[1].' - 2 => '.$result_login[2].' - 3 => '.$result_login[3]);
 		$result_getreport = $MyAlarm->GetReport();
-		log::add('verisure', 'debug', 'Request ACT_V2 - 0 => '.$result_getreport[0].' - 1 => '.$result_getreport[1]);
+		log::add('verisure', 'debug', 'Request ACT_V2 - 0 => '.$result_getreport[0].' - 1 => '.$result_getreport[1].' - 2 => '.var_export($result_getreport[2], true));
 		$result_logout = $MyAlarm->Logout();
 		log::add('verisure', 'debug', 'Request CLS - 0 => '.$result_logout[0].' - 1 => '.$result_logout[1].' - 2 => '.$result_logout[2]);
 		
@@ -595,21 +595,32 @@ class verisureCmd extends cmd {
 					case 'A':
 					case '1':
 						$eqlogic->checkAndUpdateCmd('enable', "1");
-						$eqlogic->checkAndUpdateCmd('mode', "Mode Total");
+						$eqlogic->checkAndUpdateCmd('mode', "Total");
 						break;
-					case 'C':
 					case 'Q':
 						$eqlogic->checkAndUpdateCmd('enable', "1");
-						$eqlogic->checkAndUpdateCmd('mode', "Mode Nuit");
+						$eqlogic->checkAndUpdateCmd('mode', "Nuit");
 						break;
 					case 'P':
 						$eqlogic->checkAndUpdateCmd('enable', "1");
-						$eqlogic->checkAndUpdateCmd('mode', "Mode Jour");
+						$eqlogic->checkAndUpdateCmd('mode', "Jour");
 						break;
 					case '3':
 						$eqlogic->checkAndUpdateCmd('enable', "1");
-						$eqlogic->checkAndUpdateCmd('mode', "Mode Extérieur");
-						break;		
+						$eqlogic->checkAndUpdateCmd('mode', "Extérieur");
+						break;
+					case '4':
+						$eqlogic->checkAndUpdateCmd('enable', "1");
+						$eqlogic->checkAndUpdateCmd('mode', "Total + Ext");
+						break;
+					case 'C':
+						$eqlogic->checkAndUpdateCmd('enable', "1");
+						$eqlogic->checkAndUpdateCmd('mode', "Nuit + Ext");
+						break;
+					case 'B':
+						$eqlogic->checkAndUpdateCmd('enable', "1");
+						$eqlogic->checkAndUpdateCmd('mode', "Jour + Ext");
+						break;
 					case 'Erreur de connexion au cloud Verisure':
 						//throw new Exception($state);
 						log::add('verisure', 'error', 'Erreur de connexion au cloud Verisure');
@@ -627,7 +638,11 @@ class verisureCmd extends cmd {
 					case 'A':
 					case '1':
 						$eqlogic->checkAndUpdateCmd('enable', "1");
-						$eqlogic->checkAndUpdateCmd('mode', "Mode Total");
+						$eqlogic->checkAndUpdateCmd('mode', "Total");
+						break;
+					case '4':
+						$eqlogic->checkAndUpdateCmd('enable', "1");
+						$eqlogic->checkAndUpdateCmd('mode', "Total + Ext");
 						break;
 					case 'Erreur de connexion au cloud Verisure':
 						log::add('verisure', 'error', 'Erreur de connexion au cloud Verisure');
@@ -641,10 +656,13 @@ class verisureCmd extends cmd {
 			case 'armed_night':
 				$state = $eqlogic->ArmNightAlarm();
 				switch ($state)  {
-					case 'C':
 					case 'Q':
 						$eqlogic->checkAndUpdateCmd('enable', "1");
-						$eqlogic->checkAndUpdateCmd('mode', "Mode Nuit");
+						$eqlogic->checkAndUpdateCmd('mode', "Nuit");
+						break;
+					case 'C':
+						$eqlogic->checkAndUpdateCmd('enable', "1");
+						$eqlogic->checkAndUpdateCmd('mode', "Nuit + Ext");
 						break;
 					case 'Erreur de connexion au cloud Verisure':
 						log::add('verisure', 'error', 'Erreur de connexion au cloud Verisure');
@@ -660,7 +678,11 @@ class verisureCmd extends cmd {
 				switch ($state)  {
 					case 'P':
 						$eqlogic->checkAndUpdateCmd('enable', "1");
-						$eqlogic->checkAndUpdateCmd('mode', "Mode Jour");
+						$eqlogic->checkAndUpdateCmd('mode', "Jour");
+						break;
+					case 'B':
+						$eqlogic->checkAndUpdateCmd('enable', "1");
+						$eqlogic->checkAndUpdateCmd('mode', "Jour + Ext");
 						break;
 					case 'Erreur de connexion au cloud Verisure':
 						log::add('verisure', 'error', 'Erreur de connexion au cloud Verisure');
@@ -676,7 +698,19 @@ class verisureCmd extends cmd {
 				switch ($state)  {
 					case '3':
 						$eqlogic->checkAndUpdateCmd('enable', "1");
-						$eqlogic->checkAndUpdateCmd('mode', "Mode Extérieur");
+						$eqlogic->checkAndUpdateCmd('mode', "Extérieur");
+						break;
+					case '4':
+						$eqlogic->checkAndUpdateCmd('enable', "1");
+						$eqlogic->checkAndUpdateCmd('mode', "Total + Ext");
+						break;
+					case 'C':
+						$eqlogic->checkAndUpdateCmd('enable', "1");
+						$eqlogic->checkAndUpdateCmd('mode', "Nuit + Ext");
+						break;
+					case 'B':
+						$eqlogic->checkAndUpdateCmd('enable', "1");
+						$eqlogic->checkAndUpdateCmd('mode', "Jour + Ext");
 						break;
 					case 'Erreur de connexion au cloud Verisure':
 						log::add('verisure', 'error', 'Erreur de connexion au cloud Verisure');
