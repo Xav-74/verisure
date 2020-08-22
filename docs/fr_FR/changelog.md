@@ -5,6 +5,13 @@
 **Remarque** : en cas de mise à jour non listée ici, c'est que celle-ci ne comporte que des changements mineurs du type documentation ou corrections de bugs mineurs.
 
 
+# 2020-08-22
+
+Corrections suivantes :
+ - Passage des logs "Error" en "Warning" pour éviter de surcharger le centre de message Jeedom
+ - Modifications et correctifs mineurs 
+
+
 # 2020-06-30
 
 Ajout des fonctions suivantes :

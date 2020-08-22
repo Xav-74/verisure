@@ -46,7 +46,7 @@
 						<?php
 							$i = 0;
 							$j = 1;
-							$filter = array("1","2","13","16","24","29","31","32","46","202","204","311");
+							$filter = array("1","2","13","16","24","29","31","32","40","46","202","204","311");
 							foreach ($report['REG'] as $reg)  {
 								if (in_array($report['REG'][$i]['@attributes']['type'], $filter))  {
 									echo '<tr>';
@@ -143,6 +143,7 @@
 											echo 'Source : '. $report['REG'][$i]['@attributes']['source'].' - User : '. $report['REG'][$i]['@attributes']['user']. $report['REG'][$i]['@attributes']['myverisureUser'];
 											echo '</td>';
 											break;
+										case 40:
 										case 204:
 											echo '<td>';
 											echo '<img src="plugins/verisure/core/img/logo_ext.png" height="35" width="35"/>';
