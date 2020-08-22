@@ -12,7 +12,7 @@
 	"changelog" : "https://xav-74.github.io/verisure/#language#/changelog",
 	"documentation" : "https://xav-74.github.io/verisure/#language#/",
 	"link" : {
-		"forum" : "",
+		"forum" : "https://community.jeedom.com/t/plugin-verisure-presentation-actualites/31921",
 		"video" : ""
 	},
 	"language" : ["fr_FR"],
