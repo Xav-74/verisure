@@ -321,18 +321,18 @@ class verisure extends eqLogic {
 
 	public function SynchronizeMyInstallation($numinstall,$username,$password,$country)	{
 		
-		log::add('verisure', 'info', 'Démarrage de la synchronisation');
+		log::add('verisure', 'debug', '┌───────── Démarrage de la synchronisation ─────────');
 		$MyAlarm = new verisureAPI($numinstall,$username,$password,$country);
 		$result_login = $MyAlarm->Login();
-      	log::add('verisure', 'debug', 'Request LOGIN - 0 => '.$result_login[0].' - 1 => '.$result_login[1].' - 2 => '.$result_login[2].' - 3 => '.$result_login[3]);
+      	log::add('verisure', 'debug', '│ Request LOGIN - 0 => '.$result_login[0].' - 1 => '.$result_login[1].' - 2 => '.$result_login[2].' - 3 => '.$result_login[3]);
       	$result_myinst = $MyAlarm->MyInstallation();
-		log::add('verisure', 'debug', 'Request MYINSTALLATION - 0 => '.$result_myinst[0].' - 1 => '.$result_myinst[1].' - 2 => '.$result_myinst[2].' - 3 => '.var_export($result_myinst[3], true));
+		log::add('verisure', 'debug', '│ Request MYINSTALLATION - 0 => '.$result_myinst[0].' - 1 => '.$result_myinst[1].' - 2 => '.$result_myinst[2].' - 3 => '.var_export($result_myinst[3], true));
 		$result_logout = $MyAlarm->Logout();
-		log::add('verisure', 'debug', 'Request CLS - 0 => '.$result_logout[0].' - 1 => '.$result_logout[1].' - 2 => '.$result_logout[2]);
+		log::add('verisure', 'debug', '│ Request CLS - 0 => '.$result_logout[0].' - 1 => '.$result_logout[1].' - 2 => '.$result_logout[2]);
 				
 		if ( $result_myinst[0] == 200 && $result_myinst[1] == "OK")  {
 			$result = $result_myinst[3];
-			log::add('verisure', 'info', 'Synchronisation terminée avec succès !');
+			log::add('verisure', 'debug', '└───────── Synchronisation terminée avec succès ─────────');
 		}
 		else  {
 			throw new Exception($result_myinst[2]);
@@ -342,20 +342,20 @@ class verisure extends eqLogic {
 		
 	public function GetStateAlarm()	{
 		
-		log::add('verisure', 'info', 'Demande de statut');
+		log::add('verisure', 'debug', '┌───────── Demande de statut ─────────');
 		$MyAlarm = new verisureAPI($this->getConfiguration('numinstall'),$this->getConfiguration('username'),$this->getConfiguration('password'),$this->getConfiguration('country'));
 		$result_login = $MyAlarm->Login();
-      	log::add('verisure', 'debug', 'Request LOGIN - 0 => '.$result_login[0].' - 1 => '.$result_login[1].' - 2 => '.$result_login[2].' - 3 => '.$result_login[3]);
+      	log::add('verisure', 'debug', '│ Request LOGIN - 0 => '.$result_login[0].' - 1 => '.$result_login[1].' - 2 => '.$result_login[2].' - 3 => '.$result_login[3]);
 		$result_getstate = $MyAlarm->GetState();
-		log::add('verisure', 'debug', 'Request EST1 - 0 => '.$result_getstate[0].' - 1 => '.$result_getstate[1].' - 2 => '.$result_getstate[2]);
-		log::add('verisure', 'debug', 'Request EST2 - 0 => '.$result_getstate[3].' - 1 => '.$result_getstate[4].' - 2 => '.$result_getstate[5].' - 3 => '.$result_getstate[6]);
+		log::add('verisure', 'debug', '│ Request EST1 - 0 => '.$result_getstate[0].' - 1 => '.$result_getstate[1].' - 2 => '.$result_getstate[2]);
+		log::add('verisure', 'debug', '│ Request EST2 - 0 => '.$result_getstate[3].' - 1 => '.$result_getstate[4].' - 2 => '.$result_getstate[5].' - 3 => '.$result_getstate[6]);
 		$result_logout = $MyAlarm->Logout();
-		log::add('verisure', 'debug', 'Request CLS - 0 => '.$result_logout[0].' - 1 => '.$result_logout[1].' - 2 => '.$result_logout[2]);
+		log::add('verisure', 'debug', '│ Request CLS - 0 => '.$result_logout[0].' - 1 => '.$result_logout[1].' - 2 => '.$result_logout[2]);
 								
 		if ( $result_getstate[3] == 200)  {
 			if ( $result_getstate[4] == "OK")  {
 				$result = $result_getstate[6];
-				log::add('verisure', 'info', 'Statut mis à jour');
+				log::add('verisure', 'debug', '└───────── Mise à jour statut OK ─────────');
 			}
 			else  {
 				$result = "Erreur de commande Verisure";	
@@ -369,20 +369,20 @@ class verisure extends eqLogic {
 	
 	public function ArmTotalAlarm()	{
 		
-		log::add('verisure', 'info', 'Demande activation mode total');
+		log::add('verisure', 'debug', '┌───────── Demande activation mode total ─────────');
 		$MyAlarm = new verisureAPI($this->getConfiguration('numinstall'),$this->getConfiguration('username'),$this->getConfiguration('password'),$this->getConfiguration('country'));
 		$result_login = $MyAlarm->Login();
-      	log::add('verisure', 'debug', 'Request LOGIN - 0 => '.$result_login[0].' - 1 => '.$result_login[1].' - 2 => '.$result_login[2].' - 3 => '.$result_login[3]);
+      	log::add('verisure', 'debug', '│ Request LOGIN - 0 => '.$result_login[0].' - 1 => '.$result_login[1].' - 2 => '.$result_login[2].' - 3 => '.$result_login[3]);
 		$result_armtotal = $MyAlarm->ArmTotal();
-		log::add('verisure', 'debug', 'Request ARM1 - 0 => '.$result_armtotal[0].' - 1 => '.$result_armtotal[1].' - 2 => '.$result_armtotal[2]);
-		log::add('verisure', 'debug', 'Request ARM2 - 0 => '.$result_armtotal[3].' - 1 => '.$result_armtotal[4].' - 2 => '.$result_armtotal[5].' - 3 => '.$result_armtotal[6]);
+		log::add('verisure', 'debug', '│ Request ARM1 - 0 => '.$result_armtotal[0].' - 1 => '.$result_armtotal[1].' - 2 => '.$result_armtotal[2]);
+		log::add('verisure', 'debug', '│ Request ARM2 - 0 => '.$result_armtotal[3].' - 1 => '.$result_armtotal[4].' - 2 => '.$result_armtotal[5].' - 3 => '.$result_armtotal[6]);
 		$result_logout = $MyAlarm->Logout();
-		log::add('verisure', 'debug', 'Request CLS - 0 => '.$result_logout[0].' - 1 => '.$result_logout[1].' - 2 => '.$result_logout[2]);
+		log::add('verisure', 'debug', '│ Request CLS - 0 => '.$result_logout[0].' - 1 => '.$result_logout[1].' - 2 => '.$result_logout[2]);
 				
 		if ( $result_armtotal[3] == 200)  {
 			if ( $result_armtotal[4] == "OK")  {
 				$result = $result_armtotal[6];
-				log::add('verisure', 'info', 'Activation mode total OK');
+				log::add('verisure', 'debug', '└───────── Activation mode total OK ─────────');
 			}
 			else  {
 				$result = "Erreur de commande Verisure";	
@@ -396,20 +396,20 @@ class verisure extends eqLogic {
 		
 	public function ArmNightAlarm()	{
 		
-		log::add('verisure', 'info', 'Demande activation mode nuit');
+		log::add('verisure', 'debug', '┌───────── Demande activation mode nuit ─────────');
 		$MyAlarm = new verisureAPI($this->getConfiguration('numinstall'),$this->getConfiguration('username'),$this->getConfiguration('password'),$this->getConfiguration('country'));
 		$result_login = $MyAlarm->Login();
-      	log::add('verisure', 'debug', 'Request LOGIN - 0 => '.$result_login[0].' - 1 => '.$result_login[1].' - 2 => '.$result_login[2].' - 3 => '.$result_login[3]);
+      	log::add('verisure', 'debug', '│ Request LOGIN - 0 => '.$result_login[0].' - 1 => '.$result_login[1].' - 2 => '.$result_login[2].' - 3 => '.$result_login[3]);
 		$result_armnight = $MyAlarm->ArmNight();
-		log::add('verisure', 'debug', 'Request ARMNIGHT1 - 0 => '.$result_armnight[0].' - 1 => '.$result_armnight[1].' - 2 => '.$result_armnight[2]);
-		log::add('verisure', 'debug', 'Request ARMNIGHT2 - 0 => '.$result_armnight[3].' - 1 => '.$result_armnight[4].' - 2 => '.$result_armnight[5].' - 3 => '.$result_armnight[6]);
+		log::add('verisure', 'debug', '│ Request ARMNIGHT1 - 0 => '.$result_armnight[0].' - 1 => '.$result_armnight[1].' - 2 => '.$result_armnight[2]);
+		log::add('verisure', 'debug', '│ Request ARMNIGHT2 - 0 => '.$result_armnight[3].' - 1 => '.$result_armnight[4].' - 2 => '.$result_armnight[5].' - 3 => '.$result_armnight[6]);
 		$result_logout = $MyAlarm->Logout();
-		log::add('verisure', 'debug', 'Request CLS - 0 => '.$result_logout[0].' - 1 => '.$result_logout[1].' - 2 => '.$result_logout[2]);
+		log::add('verisure', 'debug', '│ Request CLS - 0 => '.$result_logout[0].' - 1 => '.$result_logout[1].' - 2 => '.$result_logout[2]);
 				
 		if ( $result_armnight[3] == 200)  {
 			if ( $result_armnight[4] == "OK")  {
 				$result = $result_armnight[6];
-				log::add('verisure', 'info', 'Activation mode nuit OK');
+				log::add('verisure', 'debug', '└───────── Activation mode nuit OK ─────────');
 			}
 			else  {
 				$result = "Erreur de commande Verisure";	
@@ -423,20 +423,20 @@ class verisure extends eqLogic {
 	
 	public function ArmDayAlarm()	{
 		
-		log::add('verisure', 'info', 'Demande activation mode jour');
+		log::add('verisure', 'debug', '┌───────── Demande activation mode jour ─────────');
 		$MyAlarm = new verisureAPI($this->getConfiguration('numinstall'),$this->getConfiguration('username'),$this->getConfiguration('password'),$this->getConfiguration('country'));
 		$result_login = $MyAlarm->Login();
-      	log::add('verisure', 'debug', 'Request LOGIN - 0 => '.$result_login[0].' - 1 => '.$result_login[1].' - 2 => '.$result_login[2].' - 3 => '.$result_login[3]);
+      	log::add('verisure', 'debug', '│ Request LOGIN - 0 => '.$result_login[0].' - 1 => '.$result_login[1].' - 2 => '.$result_login[2].' - 3 => '.$result_login[3]);
 		$result_armday = $MyAlarm->ArmDay();
-		log::add('verisure', 'debug', 'Request ARMDAY1 - 0 => '.$result_armday[0].' - 1 => '.$result_armday[1].' - 2 => '.$result_armday[2]);
-		log::add('verisure', 'debug', 'Request ARMDAY2 - 0 => '.$result_armday[3].' - 1 => '.$result_armday[4].' - 2 => '.$result_armday[5].' - 3 => '.$result_armday[6]);
+		log::add('verisure', 'debug', '│ Request ARMDAY1 - 0 => '.$result_armday[0].' - 1 => '.$result_armday[1].' - 2 => '.$result_armday[2]);
+		log::add('verisure', 'debug', '│ Request ARMDAY2 - 0 => '.$result_armday[3].' - 1 => '.$result_armday[4].' - 2 => '.$result_armday[5].' - 3 => '.$result_armday[6]);
 		$result_logout = $MyAlarm->Logout();
-		log::add('verisure', 'debug', 'Request CLS - 0 => '.$result_logout[0].' - 1 => '.$result_logout[1].' - 2 => '.$result_logout[2]);
+		log::add('verisure', 'debug', '│ Request CLS - 0 => '.$result_logout[0].' - 1 => '.$result_logout[1].' - 2 => '.$result_logout[2]);
 				
 		if ( $result_armday[3] == 200)  {
 			if ( $result_armday[4] == "OK")  {
 				$result = $result_armday[6];
-				log::add('verisure', 'info', 'Activation mode jour OK');
+				log::add('verisure', 'debug', '└───────── Activation mode jour OK ─────────');
 			}
 			else  {
 				$result = "Erreur de commande Verisure";	
@@ -450,20 +450,20 @@ class verisure extends eqLogic {
 	
 	public function ArmExtAlarm()	{
 		
-		log::add('verisure', 'info', 'Demande activation mode extérieur');
+		log::add('verisure', 'debug', '┌───────── Demande activation mode extérieur ─────────');
 		$MyAlarm = new verisureAPI($this->getConfiguration('numinstall'),$this->getConfiguration('username'),$this->getConfiguration('password'),$this->getConfiguration('country'));
 		$result_login = $MyAlarm->Login();
-      	log::add('verisure', 'debug', 'Request LOGIN - 0 => '.$result_login[0].' - 1 => '.$result_login[1].' - 2 => '.$result_login[2].' - 3 => '.$result_login[3]);
+      	log::add('verisure', 'debug', '│ Request LOGIN - 0 => '.$result_login[0].' - 1 => '.$result_login[1].' - 2 => '.$result_login[2].' - 3 => '.$result_login[3]);
 		$result_armext = $MyAlarm->ArmExt();
-		log::add('verisure', 'debug', 'Request PERI1 - 0 => '.$result_armext[0].' - 1 => '.$result_armext[1].' - 2 => '.$result_armext[2]);
-		log::add('verisure', 'debug', 'Request PERI2 - 0 => '.$result_armext[3].' - 1 => '.$result_armext[4].' - 2 => '.$result_armext[5].' - 3 => '.$result_armext[6]);
+		log::add('verisure', 'debug', '│ Request PERI1 - 0 => '.$result_armext[0].' - 1 => '.$result_armext[1].' - 2 => '.$result_armext[2]);
+		log::add('verisure', 'debug', '│ Request PERI2 - 0 => '.$result_armext[3].' - 1 => '.$result_armext[4].' - 2 => '.$result_armext[5].' - 3 => '.$result_armext[6]);
 		$result_logout = $MyAlarm->Logout();
-		log::add('verisure', 'debug', 'Request CLS - 0 => '.$result_logout[0].' - 1 => '.$result_logout[1].' - 2 => '.$result_logout[2]);
+		log::add('verisure', 'debug', '│ Request CLS - 0 => '.$result_logout[0].' - 1 => '.$result_logout[1].' - 2 => '.$result_logout[2]);
 				
 		if ( $result_armext[3] == 200)  {
 			if ( $result_armext[4] == "OK")  {
 				$result = $result_armext[6];
-				log::add('verisure', 'info', 'Activation mode extérieur OK');
+				log::add('verisure', 'debug', '└───────── Activation mode extérieur OK ─────────');
 			}
 			else  {
 				$result = "Erreur de commande Verisure";	
@@ -477,20 +477,20 @@ class verisure extends eqLogic {
 	
 	public function DisarmAlarm()	{
 		
-		log::add('verisure', 'info', 'Demande désactivation');
+		log::add('verisure', 'debug', '┌───────── Demande désactivation ─────────');
 		$MyAlarm = new verisureAPI($this->getConfiguration('numinstall'),$this->getConfiguration('username'),$this->getConfiguration('password'),$this->getConfiguration('country'));
 		$result_login = $MyAlarm->Login();
-      	log::add('verisure', 'debug', 'Request LOGIN - 0 => '.$result_login[0].' - 1 => '.$result_login[1].' - 2 => '.$result_login[2].' - 3 => '.$result_login[3]);
+      	log::add('verisure', 'debug', '│ Request LOGIN - 0 => '.$result_login[0].' - 1 => '.$result_login[1].' - 2 => '.$result_login[2].' - 3 => '.$result_login[3]);
 		$result_disarm = $MyAlarm->Disarm();
-		log::add('verisure', 'debug', 'Request DARM1 - 0 => '.$result_disarm[0].' - 1 => '.$result_disarm[1].' - 2 => '.$result_disarm[2]);
-		log::add('verisure', 'debug', 'Request DARM2 - 0 => '.$result_disarm[3].' - 1 => '.$result_disarm[4].' - 2 => '.$result_disarm[5].' - 3 => '.$result_disarm[6]);
+		log::add('verisure', 'debug', '│ Request DARM1 - 0 => '.$result_disarm[0].' - 1 => '.$result_disarm[1].' - 2 => '.$result_disarm[2]);
+		log::add('verisure', 'debug', '│ Request DARM2 - 0 => '.$result_disarm[3].' - 1 => '.$result_disarm[4].' - 2 => '.$result_disarm[5].' - 3 => '.$result_disarm[6]);
 		$result_logout = $MyAlarm->Logout();
-		log::add('verisure', 'debug', 'Request CLS - 0 => '.$result_logout[0].' - 1 => '.$result_logout[1].' - 2 => '.$result_logout[2]);
+		log::add('verisure', 'debug', '│ Request CLS - 0 => '.$result_logout[0].' - 1 => '.$result_logout[1].' - 2 => '.$result_logout[2]);
 				
 		if ( $result_disarm[3] == 200)  {
 			if ( $result_disarm[4] == "OK")  {
 				$result = $result_disarm[6];
-				log::add('verisure', 'info', 'Désactivation OK');
+				log::add('verisure', 'debug', '└───────── Désactivation OK ─────────');
 			}
 			else  {
 				$result = "Erreur de commande Verisure";	
@@ -504,60 +504,64 @@ class verisure extends eqLogic {
 	
 	public function GetReportAlarm($numinstall,$username,$password,$country)	{
 		
-		log::add('verisure', 'info', 'Demande du journal d\'activité');
+		log::add('verisure', 'debug', '┌───────── Demande du journal d\'activité ─────────');
 		$MyAlarm = new verisureAPI($numinstall,$username,$password,$country);
 		$result_login = $MyAlarm->Login();
-      	log::add('verisure', 'debug', 'Request LOGIN - 0 => '.$result_login[0].' - 1 => '.$result_login[1].' - 2 => '.$result_login[2].' - 3 => '.$result_login[3]);
+      	log::add('verisure', 'debug', '│ Request LOGIN - 0 => '.$result_login[0].' - 1 => '.$result_login[1].' - 2 => '.$result_login[2].' - 3 => '.$result_login[3]);
 		$result_getreport = $MyAlarm->GetReport();
-		log::add('verisure', 'debug', 'Request ACT_V2 - 0 => '.$result_getreport[0].' - 1 => '.$result_getreport[1].' - 2 => '.var_export($result_getreport[2], true));
+		log::add('verisure', 'debug', '│ Request ACT_V2 - 0 => '.$result_getreport[0].' - 1 => '.$result_getreport[1].' - 2 => '.var_export($result_getreport[2], true));
 		$result_logout = $MyAlarm->Logout();
-		log::add('verisure', 'debug', 'Request CLS - 0 => '.$result_logout[0].' - 1 => '.$result_logout[1].' - 2 => '.$result_logout[2]);
+		log::add('verisure', 'debug', '│ Request CLS - 0 => '.$result_logout[0].' - 1 => '.$result_logout[1].' - 2 => '.$result_logout[2]);
 		
 		if ( $result_getreport[0] == 200)  {
 			if ( $result_getreport[1] == "OK")  {
 				$result = $result_getreport[2];
-				log::add('verisure', 'info', 'Journal d\'activité OK');
+				log::add('verisure', 'debug', '└───────── Journal d\'activité OK ─────────');
 			}
 			else  {
 				//throw new Exception("Erreur de commande Verisure");
-				log::add('verisure', 'error', 'Erreur de commande Verisure GetReport()');
+				log::add('verisure', 'warning', '/!\ Erreur de commande Verisure GetReport()');
+				log::add('verisure', 'debug', '└───────── Journal d\'activité NOK ─────────');
 			}
 		}	
 		else  {
 			//throw new Exception("Erreur de connexion au cloud Verisure");
-			log::add('verisure', 'error', 'Erreur de connexion au cloud Verisure');
+			log::add('verisure', 'warning', '/!\ Erreur de connexion au cloud Verisure');
+			log::add('verisure', 'debug', '└───────── Journal d\'activité NOK ─────────');
 		}
 		return $result;
 	}
 
 	public function GetPhotosRequest($numinstall,$username,$password,$country,$device)	{
 		
-		log::add('verisure', 'info', 'Demande de photos');
+		log::add('verisure', 'debug', '┌───────── Demande de photos ─────────');
 		$MyAlarm = new verisureAPI($numinstall,$username,$password,$country);
 		$result_login = $MyAlarm->Login();
-      	log::add('verisure', 'debug', 'Request LOGIN - 0 => '.$result_login[0].' - 1 => '.$result_login[1].' - 2 => '.$result_login[2].' - 3 => '.$result_login[3]);
+      	log::add('verisure', 'debug', '│ Request LOGIN - 0 => '.$result_login[0].' - 1 => '.$result_login[1].' - 2 => '.$result_login[2].' - 3 => '.$result_login[3]);
 		$result_getimg = $MyAlarm->PhotosRequest($device);
-		log::add('verisure', 'debug', 'Request SRV - 0 => '.$result_getimg[0].' - 1 => '.$result_getimg[1].' - 2 => '.$result_getimg[2].' - 3 => '.$result_getimg[3]);
-		log::add('verisure', 'debug', 'Request IMG1 - 0 => '.$result_getimg[4].' - 1 => '.$result_getimg[5].' - 2 => '.$result_getimg[6]);
-		log::add('verisure', 'debug', 'Request IMG2 - 0 => '.$result_getimg[7].' - 1 => '.$result_getimg[8].' - 2 => '.$result_getimg[9].' - 3 => '.$result_getimg[10]);
-		log::add('verisure', 'debug', 'Request ACT_V2 - 0 => '.$result_getimg[11].' - 1 => '.$result_getimg[12].' - 2 => '.$result_getimg[13]);
-		log::add('verisure', 'debug', 'Request INF - 0 => '.$result_getimg[14].' - 1 => '.$result_getimg[15]);
+		log::add('verisure', 'debug', '│ Request SRV - 0 => '.$result_getimg[0].' - 1 => '.$result_getimg[1].' - 2 => '.$result_getimg[2].' - 3 => '.$result_getimg[3]);
+		log::add('verisure', 'debug', '│ Request IMG1 - 0 => '.$result_getimg[4].' - 1 => '.$result_getimg[5].' - 2 => '.$result_getimg[6]);
+		log::add('verisure', 'debug', '│ Request IMG2 - 0 => '.$result_getimg[7].' - 1 => '.$result_getimg[8].' - 2 => '.$result_getimg[9].' - 3 => '.$result_getimg[10]);
+		log::add('verisure', 'debug', '│ Request ACT_V2 - 0 => '.$result_getimg[11].' - 1 => '.$result_getimg[12].' - 2 => '.$result_getimg[13]);
+		log::add('verisure', 'debug', '│ Request INF - 0 => '.$result_getimg[14].' - 1 => '.$result_getimg[15]);
 		$result_logout = $MyAlarm->Logout();
-		log::add('verisure', 'debug', 'Request CLS    - 0 => '.$result_logout[0].' - 1 => '.$result_logout[1].' - 2 => '.$result_logout[2]);
+		log::add('verisure', 'debug', '│ Request CLS    - 0 => '.$result_logout[0].' - 1 => '.$result_logout[1].' - 2 => '.$result_logout[2]);
 		
 		if ( $result_getimg[14] == 200)  {
 			if ( $result_getimg[15] == "OK")  {
 				$result = $result_getimg[16];
-				log::add('verisure', 'info', 'Demande de photos OK');
+				log::add('verisure', 'debug', '└───────── Demande de photos OK ─────────');
 			}
 			else  {
 				//throw new Exception("Erreur de commande Verisure");
-				log::add('verisure', 'error', 'Erreur de commande Verisure GetPhotosRequest()');				
+				log::add('verisure', 'warning', '/!\ Erreur de commande Verisure GetPhotosRequest()');
+				log::add('verisure', 'debug', '└───────── Demande de photos NOK ─────────');				
 			}
 		}	
 		else  {
 			//throw new Exception("Erreur de connexion au cloud Verisure");
-			log::add('verisure', 'error', 'Erreur de connexion au cloud Verisure');
+			log::add('verisure', 'warning', '/!\ Erreur de connexion au cloud Verisure');
+			log::add('verisure', 'debug', '└───────── Demande de photos NOK ─────────');
 		}
 		return $result;
 	}
@@ -623,11 +627,13 @@ class verisureCmd extends cmd {
 						break;
 					case 'Erreur de connexion au cloud Verisure':
 						//throw new Exception($state);
-						log::add('verisure', 'error', 'Erreur de connexion au cloud Verisure');
+						log::add('verisure', 'warning', '/!\ Erreur de connexion au cloud Verisure');
+						log::add('verisure', 'debug', '└───────── Mise à jour statut NOK ─────────');
 						break;
 					case 'Erreur de commande Verisure':
 						//throw new Exception($state);
-						log::add('verisure', 'error', 'Erreur de commande Verisure GetStateAlarm()');
+						log::add('verisure', 'warning', '/!\ Erreur de commande Verisure GetStateAlarm()');
+						log::add('verisure', 'debug', '└───────── Mise à jour statut NOK ─────────');
 						break;
 				}
 				break;
@@ -645,10 +651,12 @@ class verisureCmd extends cmd {
 						$eqlogic->checkAndUpdateCmd('mode', "Total + Ext");
 						break;
 					case 'Erreur de connexion au cloud Verisure':
-						log::add('verisure', 'error', 'Erreur de connexion au cloud Verisure');
+						log::add('verisure', 'warning', '/!\ Erreur de connexion au cloud Verisure');
+						log::add('verisure', 'debug', '└───────── Activation mode total NOK ─────────');
 						break;
 					case 'Erreur de commande Verisure':
-						log::add('verisure', 'error', 'Erreur de commande Verisure ArmTotalAlarm()');
+						log::add('verisure', 'warning', '/!\ Erreur de commande Verisure ArmTotalAlarm()');
+						log::add('verisure', 'debug', '└───────── Activation mode total NOK ─────────');
 						break;
 				}
 				break;
@@ -665,10 +673,12 @@ class verisureCmd extends cmd {
 						$eqlogic->checkAndUpdateCmd('mode', "Nuit + Ext");
 						break;
 					case 'Erreur de connexion au cloud Verisure':
-						log::add('verisure', 'error', 'Erreur de connexion au cloud Verisure');
+						log::add('verisure', 'warning', '/!\ Erreur de connexion au cloud Verisure');
+						log::add('verisure', 'debug', '└───────── Activation mode nuit NOK ─────────');
 						break;
 					case 'Erreur de commande Verisure':
-						log::add('verisure', 'error', 'Erreur de commande Verisure ArmNightAlarm()');
+						log::add('verisure', 'warning', '/!\ Erreur de commande Verisure ArmNightAlarm()');
+						log::add('verisure', 'debug', '└───────── Activation mode nuit NOK ─────────');
 						break;
 				}
 				break;
@@ -685,10 +695,12 @@ class verisureCmd extends cmd {
 						$eqlogic->checkAndUpdateCmd('mode', "Jour + Ext");
 						break;
 					case 'Erreur de connexion au cloud Verisure':
-						log::add('verisure', 'error', 'Erreur de connexion au cloud Verisure');
+						log::add('verisure', 'warning', '/!\ Erreur de connexion au cloud Verisure');
+						log::add('verisure', 'debug', '└───────── Activation mode jour NOK ─────────');
 						break;
 					case 'Erreur de commande Verisure':
-						log::add('verisure', 'error', 'Erreur de commande Verisure ArmDayAlarm()');
+						log::add('verisure', 'warning', '/!\ Erreur de commande Verisure ArmDayAlarm()');
+						log::add('verisure', 'debug', '└───────── Activation mode jour NOK ─────────');
 						break;
 				}
 				break;
@@ -713,10 +725,12 @@ class verisureCmd extends cmd {
 						$eqlogic->checkAndUpdateCmd('mode', "Jour + Ext");
 						break;
 					case 'Erreur de connexion au cloud Verisure':
-						log::add('verisure', 'error', 'Erreur de connexion au cloud Verisure');
+						log::add('verisure', 'warning', '/!\ Erreur de connexion au cloud Verisure');
+						log::add('verisure', 'debug', '└───────── Activation mode extérieur NOK ─────────');
 						break;
 					case 'Erreur de commande Verisure':
-						log::add('verisure', 'error', 'Erreur de commande Verisure ArmExtAlarm()');
+						log::add('verisure', 'warning', '/!\ Erreur de commande Verisure ArmExtAlarm()');
+						log::add('verisure', 'debug', '└───────── Activation mode extérieur NOK ─────────');
 						break;
 				}
 				break;	
@@ -730,10 +744,12 @@ class verisureCmd extends cmd {
 						$eqlogic->checkAndUpdateCmd('mode', "Désactivée");
 						break;
 					case 'Erreur de connexion au cloud Verisure':
-						log::add('verisure', 'error', 'Erreur de connexion au cloud Verisure');
+						log::add('verisure', 'warning', '/!\ Erreur de connexion au cloud Verisure');
+						log::add('verisure', 'debug', '└───────── Désactivation NOK ─────────');
 						break;
 					case 'Erreur de commande Verisure':
-						log::add('verisure', 'error', 'Erreur de commande Verisure DisarmAlarm())');
+						log::add('verisure', 'warning', '/!\ Erreur de commande Verisure DisarmAlarm())');
+						log::add('verisure', 'debug', '└───────── Désactivation NOK ─────────');
 						break;
 				}	
 				break;
