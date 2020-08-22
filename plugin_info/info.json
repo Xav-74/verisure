@@ -1,7 +1,7 @@
 {
 	"id" : "verisure",
 	"name" : "Alarme Verisure",
-	"description" : "Plugin Verisure pour Jeedom",
+	"description" : "Ce plugin vous permet d'interagir avec votre alarme Verisure au même titre que l’application officielle “My Verisure”. ATTENTION : Il est, pour le moment, compatible uniquement avec les alarmes Verisure de dernière génération. Voir la documentation ! Vous retrouverez les principales fonctionnalités de l'application : détail de votre installation / journal d'activité / activation de l'alarme (avec les différents modes : total, jour, nuit et extérieur) / désactivation de l'alarme / demande d'images. Ce plugin est également compatible avec le plugin Homebridge afin de piloter votre alarme depuis l'application Home d'Apple et/ou depuis Siri.",
 	"licence" : "AGPL",
 	"author" : "Xav-74",
 	"require" : "3.2",
