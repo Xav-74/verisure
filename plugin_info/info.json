@@ -9,8 +9,8 @@
 	"hasDependency" : false,
 	"hasOwnDeamon" : false,
 	"maxDependancyInstallTime" : 0,
-	"changelog" : "https://xav-74.github.io/verisure/#language#/changelog",
-	"documentation" : "https://xav-74.github.io/verisure/#language#/",
+	"changelog" : "https://xav-74.github.io/Documentation/verisure/#language#/changelog",
+	"documentation" : "https://xav-74.github.io/Documentation/verisure/#language#/",
 	"link" : {
 		"forum" : "https://community.jeedom.com/t/plugin-verisure-presentation-actualites/31921",
 		"video" : ""

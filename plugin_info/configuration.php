@@ -39,6 +39,7 @@ if (!isConnect()) {
 				<br />
 				Contributions :<br />
 				- Merci à Cebeerre pour les API Securitas Direct - Verisure     (https://github.com/Cebeerre/VerisureEUAPI)<br />
+				- Merci à Per Sandström pour les API Securitas Direct - Verisure     (https://github.com/persandstrom/python-verisure)<br />
 				- Merci à apages2 pour son aide     (https://github.com/apages2)<br />
 				- Merci à mguyard pour les exemples	    (https://github.com/mguyard)<br />
 				<br />

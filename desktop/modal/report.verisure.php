@@ -59,9 +59,18 @@
 									echo '</td>';
 									switch ($report['REG'][$i]['@attributes']['type'])  {
 										case 1:
-										case 2:
 											echo '<td>';
 											echo '<img src="plugins/verisure/core/img/logo_entree.png" height="35" width="35"/>';
+											echo '</td>';
+											echo '<td>';
+											echo $report['REG'][$i]['@attributes']['alias'];
+											echo '<br/>';
+											echo 'User : '. $report['REG'][$i]['@attributes']['user']. $report['REG'][$i]['@attributes']['myverisureUser'];
+											echo '</td>';
+											break;
+										case 2:
+											echo '<td>';
+											echo '<img src="plugins/verisure/core/img/logo_sortie.png" height="35" width="35"/>';
 											echo '</td>';
 											echo '<td>';
 											echo $report['REG'][$i]['@attributes']['alias'];

@@ -1,0 +1,97 @@
+<div id="versiure_widget_ID" class="eqLogic-widget eqLogic noResize verisure_widget verisure" style="text-align:center; border:#border#; border-radius:#border-radius#; background-color:#background-color#; color:#color#; #style#;" data-eqType="#eqType#" data-translate-category="#translate_category#" data-category="#category#" data-tags="#tags#" data-eqLogic_id="#id#" data-eqLogic_uid="#uid#" data-version="dashboard">
+	
+	<center class="widget-name" style="padding-right: 0px;">
+		<span class="object_name" style="font-size:1.1em ;display:none;">#object_name#</span>
+		<a href="#eqLink#" style="font-size:1.1em ;#hideEqLogicName#">#name_display#</a>
+	</center>
+	
+	<div class="container-fluid">
+		<div class="row" id ="etat">
+			<span class="cmd label cmdName">Etat Alarme :</span>
+			<span style="margin-left: 40px"><i class="iconCmd#state_id#"></i></span>
+		</div>
+		<div class="row" id="activation">
+			<span class="cmd label cmdName">Etat Activation :</span>
+			<span style="margin-left: 20px"><i class="iconCmd#enable_id#"></i></span>
+		</div>
+		<div class="row" id="mode">
+			<span class="cmd label cmdName">Mode Alarme :</span>
+            <span class="label" style="font-weight: bold; margin-left: 0px"><i class="iconCmd#mode_id#"></i></span>
+        </div>	
+		<hr class="cmdName">
+        <div class="row" id="actions">
+            <button class="btn cmd action" data-cmd_id="#armed_id#" title="Mode Total" onclick="jeedom.cmd.execute({id: #armed_id#});"><i class="fas fa-lock"></i></button>
+			<button class="btn cmd action" data-cmd_id="#released_id#" title="Désactivation" onclick="jeedom.cmd.execute({id: #released_id#});"><i class="fas fa-lock-open"></i></button>
+			<button class="btn cmd action" data-cmd_id="#getstate_id#" title="Rafraichir" onclick="jeedom.cmd.execute({id: #getstate_id#});"><i class="fas fa-sync"></i></button>
+			<button class="btn cmd action" data-cmd_id="#armed_night_id#" title="Mode Nuit" onclick="jeedom.cmd.execute({id: #armed_night_id#});"><i class="fas fa-moon"></i></button>
+			<button class="btn cmd action" data-cmd_id="#armed_day_id#" title="Mode Jour" onclick="jeedom.cmd.execute({id: #armed_day_id#});"><i class="fas fa-sun"></i></button>
+			<button class="btn cmd action" data-cmd_id="#armed_ext_id#" title="Mode Extérieur" onclick="jeedom.cmd.execute({id: #armed_ext_id#});"><i class="fas fa-home"></i></button>
+        </div>
+	</div>
+	
+	<script>
+        
+      	jeedom.cmd.update['#enable_id#'] = function(_options) {
+            if ( _options.display_value == 0)  {
+            	$('.iconCmd#enable_id#').empty().append('<i class="icon_red jeedomapp-lock-ouvert"></i>');
+            }
+          	if ( _options.display_value == 1)  {
+              	$('.iconCmd#enable_id#').empty().append('<i class="icon_green jeedomapp-lock-ferme"></i>');
+            }
+        }
+		jeedom.cmd.update['#enable_id#']({display_value:'#enable#'});
+      	
+      
+		jeedom.cmd.update['#state_id#'] = function(_options) {
+            if ( _options.display_value == 0)  {
+               $('.iconCmd#state_id#').empty().append('<i class="icon_green jeedomapp-done"></i>');
+            }
+			if ( _options.display_value == 1)  {
+               $('.iconCmd#state_id#').empty().append('<i class="icon_red jeedomapp-alerte2"></i>');
+			}
+		}
+		jeedom.cmd.update['#state_id#']({display_value:'#state#'});
+		
+      
+		jeedom.cmd.update['#mode_id#'] = function(_options) {
+           	$('.iconCmd#mode_id#').empty().append('<span>'+_options.display_value+'</span>');
+        }
+		jeedom.cmd.update['#mode_id#']({display_value:'#mode#'});
+      
+	</script>
+
+	<style>
+	
+	.verisure_widget .container-fluid {
+		margin-top: 10px;
+	}
+
+	.verisure_widget hr {
+		border-top: 1px solid;
+		margin : 20px 0px 20px 0px;
+	}
+
+	.verisure_widget #etat {
+		margin-top: 5px;
+	}
+
+	.verisure_widget #activation {
+		margin-top: 5px;
+	}
+
+	.verisure_widget #mode {
+		margin-top: 5px;
+	}
+
+	.verisure_widget #actions {
+		margin-top: 10px;
+		margin-bottom: 10px;
+    }
+	
+	.verisure_widget #actions button {
+		background-color: rgb(156, 132, 216);
+    }
+
+	</style>
+	
+</div>
