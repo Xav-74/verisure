@@ -1037,7 +1037,7 @@ class verisureCmd extends cmd {
 				case 'armed':
 					$state = $eqlogic->ArmTotalAlarm();
 					switch ($state)  {
-						case 'ARMED_AWY':
+						case 'ARMED_AWAY':
 							$eqlogic->checkAndUpdateCmd('enable', "1");	
 							$eqlogic->checkAndUpdateCmd('mode', "Total");
 							break;

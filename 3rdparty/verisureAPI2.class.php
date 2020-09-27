@@ -252,8 +252,8 @@ class verisureAPI2 {
         }
 		
 		$result2 = $this->getTransactionID();
-		$httpRespCode2 = $result[0];
-		$jsonResult2 = $result[1];
+		$httpRespCode2 = $result2[0];
+		$jsonResult2 = $result2[1];
 		
 		if ($httpRespCode2 == 200)  {
 			$chgange_state = json_decode($jsonResult2, false)->{'result'};
