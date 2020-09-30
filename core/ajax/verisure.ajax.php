@@ -27,7 +27,7 @@ try {
     ajax::init();
 
 	if (init('action') == 'SynchronizeMyInstallation') {
-		$result = verisure::SynchronizeMyInstallation(init('numinstall'),init('username'),init('pwd'),init('country'));
+		$result = verisure::SynchronizeMyInstallation(init('alarmtype'),init('numinstall'),init('username'),init('pwd'),init('code'),init('country'));
 		ajax::success($result);
 	}
 
