@@ -260,7 +260,6 @@ $eqLogics = eqLogic::byType($plugin->getId());
 					$('#div_pwd').show();
 					$('#div_code').hide();
 					$('#div_country').show();
-					$('#bt_Reporting').show();
 				}
 
 				if ($('.eqLogicAttr[data-l2key=alarmtype]').value() == "2") {
@@ -287,7 +286,6 @@ $eqLogics = eqLogic::byType($plugin->getId());
 					$('#div_pwd').show();
 					$('#div_code').show();
 					$('#div_country').hide();
-					$('#bt_Reporting').hide();
 				}
 				
 			});

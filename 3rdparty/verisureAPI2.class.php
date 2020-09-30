@@ -281,7 +281,7 @@ class verisureAPI2 {
 	public function getReport()  {				// Get the information of last actions
 	
 		$offset = 0;				//Skip pagesize * offset first events
-		$pagesize = 100;			//Number of events to display
+		$pagesize = 500;			//Number of events to display - Max 500
 		$filters = array();			//String set : 'ARM', 'DISARM', 'FIRE', 'INTRUSION', 'TECHNICAL', 'SOS', 'WARNING', 'LOCK', 'UNLOCK', 'PICTURE', 'CLIMATE'
 		
       	$method = "GET";
@@ -292,9 +292,9 @@ class verisureAPI2 {
       	$result = $this->doRequest($method, $url, $headers, null);
 		
 		$httpRespCode = $result[0];
-		$jsonResult = $result[1];
+		$jsonResult = json_decode($result[1], true);
 		
-		return array($httpRespCode, $jsonResult);
+		return array($httpRespCode, $result[1], $jsonResult);
 	}
 	
 }

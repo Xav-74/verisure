@@ -397,7 +397,7 @@ class verisure extends eqLogic {
 
     /*     * **********************Getteur Setteur*************************** */
 
-	public function SynchronizeMyInstallation($alarmtype,$numinstall,$username,$password,$code,$country)	{
+	public function SynchronizeMyInstallation($alarmtype,$numinstall,$username,$password,$code,$country)	{		//Type 1 & 2
 		
 		if ( $alarmtype == 1 )   {
 			log::add('verisure', 'debug', '┌───────── Démarrage de la synchronisation ─────────');
@@ -415,6 +415,8 @@ class verisure extends eqLogic {
 				log::add('verisure', 'debug', '└───────── Synchronisation terminée avec succès ─────────');
 			}
 			else  {
+				$result = null;
+				log::add('verisure', 'debug', '│ /!\ Erreur de connexion au cloud Verisure');
 				log::add('verisure', 'debug', '└───────── Erreur de synchronisation !! ─────────');
 			}
 			return $result;
@@ -438,6 +440,8 @@ class verisure extends eqLogic {
 				log::add('verisure', 'debug', '└───────── Synchronisation terminée avec succès ─────────');
 			}
 			else  {
+				$result = null;
+				log::add('verisure', 'debug', '│ /!\ Erreur de connexion au cloud Verisure');
 				log::add('verisure', 'debug', '└───────── Erreur de synchronisation !! ─────────');
 			}
 			return $result;
@@ -725,34 +729,64 @@ class verisure extends eqLogic {
 		}
 	}
 	
-	public function GetReportAlarm($numinstall,$username,$password,$country)	{
+	public function GetReportAlarm($alarmtype,$numinstall,$username,$password,$code,$country)	{		//Type 1 & 2
 		
-		log::add('verisure', 'debug', '┌───────── Demande du journal d\'activité ─────────');
-		$MyAlarm = new verisureAPI($numinstall,$username,$password,$country);
-		$result_login = $MyAlarm->Login();
-      	log::add('verisure', 'debug', '│ Request LOGIN - 0 => '.$result_login[0].' - 1 => '.$result_login[1].' - 2 => '.$result_login[2].' - 3 => '.$result_login[3]);
-		$result_getreport = $MyAlarm->GetReport();
-		log::add('verisure', 'debug', '│ Request ACT_V2 - 0 => '.$result_getreport[0].' - 1 => '.$result_getreport[1].' - 2 => '.var_export($result_getreport[2], true));
-		$result_logout = $MyAlarm->Logout();
-		log::add('verisure', 'debug', '│ Request CLS - 0 => '.$result_logout[0].' - 1 => '.$result_logout[1].' - 2 => '.$result_logout[2]);
+		if ( $alarmtype == 1 )   {
+			log::add('verisure', 'debug', '┌───────── Demande du journal d\'activité ─────────');
+			log::add('verisure', 'debug', '│ Alarm type = '.$alarmtype);
+			$MyAlarm = new verisureAPI($numinstall,$username,$password,$country);
+			$result_login = $MyAlarm->Login();
+			log::add('verisure', 'debug', '│ Request LOGIN - 0 => '.$result_login[0].' - 1 => '.$result_login[1].' - 2 => '.$result_login[2].' - 3 => '.$result_login[3]);
+			$result_getreport = $MyAlarm->GetReport();
+			log::add('verisure', 'debug', '│ Request ACT_V2 - 0 => '.$result_getreport[0].' - 1 => '.$result_getreport[1].' - 2 => '.var_export($result_getreport[2], true));
+			$result_logout = $MyAlarm->Logout();
+			log::add('verisure', 'debug', '│ Request CLS - 0 => '.$result_logout[0].' - 1 => '.$result_logout[1].' - 2 => '.$result_logout[2]);
+			
+			if ( $result_getreport[0] == 200)  {
+				if ( $result_getreport[1] == "OK")  {
+					$result = $result_getreport[2];
+					log::add('verisure', 'debug', '└───────── Journal d\'activité OK ─────────');
+				}
+				else  {
+					//throw new Exception("Erreur de commande Verisure");
+					$result = null;
+					log::add('verisure', 'debug', '│ /!\ Erreur de commande Verisure GetReport()');
+					log::add('verisure', 'debug', '└───────── Journal d\'activité NOK ─────────');
+				}
+			}	
+			else  {
+				//throw new Exception("Erreur de connexion au cloud Verisure");
+				$result = null;
+				log::add('verisure', 'debug', '│ /!\ Erreur de connexion au cloud Verisure');
+				log::add('verisure', 'debug', '└───────── Journal d\'activité NOK ─────────');
+			}
+			return $result;
+		}
 		
-		if ( $result_getreport[0] == 200)  {
-			if ( $result_getreport[1] == "OK")  {
+		if ( $alarmtype == 2 )   {
+			log::add('verisure', 'debug', '┌───────── Demande du journal d\'activité ─────────');
+			log::add('verisure', 'debug', '│ Alarm type = '.$alarmtype);
+			$MyAlarm = new verisureAPI2($username,$password,$code);
+			$result_login = $MyAlarm->Login();
+			log::add('verisure', 'debug', '│ Request LOGIN - 0 => '.$result_login[0].' - 1 => '.$result_login[1].' - 2 => '.$result_login[2]);
+			$result_giid = $MyAlarm->getGiid();
+			log::add('verisure', 'debug', '│ Request GIID - 0 => '.$result_giid[0].' - 1 => '.$result_giid[1]);
+			$result_getreport = $MyAlarm->getReport();
+			log::add('verisure', 'debug', '│ Request GETREPORT - 0 => '.$result_getreport[0].' - 1 => '.$result_getreport[1]);
+			$result_logout = $MyAlarm->Logout();
+			log::add('verisure', 'debug', '│ Request LOGOUT - 0 => '.$result_logout[0].' - 1 => '.$result_logout[1]);
+			
+			if ( $result_getreport[0] == 200 )  {
 				$result = $result_getreport[2];
 				log::add('verisure', 'debug', '└───────── Journal d\'activité OK ─────────');
 			}
 			else  {
-				//throw new Exception("Erreur de commande Verisure");
-				log::add('verisure', 'debug', '│ /!\ Erreur de commande Verisure GetReport()');
+				$result = null;
+				log::add('verisure', 'debug', '│ /!\ Erreur de connexion au cloud Verisure');
 				log::add('verisure', 'debug', '└───────── Journal d\'activité NOK ─────────');
 			}
-		}	
-		else  {
-			//throw new Exception("Erreur de connexion au cloud Verisure");
-			log::add('verisure', 'debug', '│ /!\ Erreur de connexion au cloud Verisure');
-			log::add('verisure', 'debug', '└───────── Journal d\'activité NOK ─────────');
+			return $result;
 		}
-		return $result;
 	}
 
 	public function GetPhotosRequest($numinstall,$username,$password,$country,$device)	{
@@ -777,12 +811,14 @@ class verisure extends eqLogic {
 			}
 			else  {
 				//throw new Exception("Erreur de commande Verisure");
+				$result = null;
 				log::add('verisure', 'debug', '│ /!\ Erreur de commande Verisure GetPhotosRequest()');
 				log::add('verisure', 'debug', '└───────── Demande de photos NOK ─────────');				
 			}
 		}	
 		else  {
 			//throw new Exception("Erreur de connexion au cloud Verisure");
+			$result = null;
 			log::add('verisure', 'debug', '│ /!\ Erreur de connexion au cloud Verisure');
 			log::add('verisure', 'debug', '└───────── Demande de photos NOK ─────────');
 		}

@@ -231,5 +231,10 @@ $('#bt_SynchronizeMyInstallation').on('click',function() {
 $('#bt_Reporting').on('click',function() {
 	
 	$('#md_modal').dialog({title: "{{Journal d'activité}}"});
-	$('#md_modal').load('index.php?v=d&plugin=verisure&modal=report.verisure&numinstall=' + $('.eqLogicAttr[data-l2key=numinstall]').value() + '&username=' + $('.eqLogicAttr[data-l2key=username]').value()+ '&pwd=' + encodeURIComponent($('.eqLogicAttr[data-l2key=password]').value()) + '&country=' + $('.eqLogicAttr[data-l2key=country]').value()).dialog('open');
+	$('#md_modal').load('index.php?v=d&plugin=verisure&modal=report.verisure&alarmtype=' + $('.eqLogicAttr[data-l2key=alarmtype]').value() 
+																			+ '&numinstall=' + $('.eqLogicAttr[data-l2key=numinstall]').value()
+																			+ '&username=' + $('.eqLogicAttr[data-l2key=username]').value()
+																			+ '&pwd=' + encodeURIComponent($('.eqLogicAttr[data-l2key=password]').value())
+																			+ '&code=' + $('.eqLogicAttr[data-l2key=code]').value()
+																			+ '&country=' + $('.eqLogicAttr[data-l2key=country]').value()).dialog('open');
 });
