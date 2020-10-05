@@ -182,6 +182,11 @@ $eqLogics = eqLogic::byType($plugin->getId());
 							<div class="col-sm-3">
 								<select id="sel_country" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="country">
 									<option value="" disabled selected hidden>{{Choisir dans la liste}}</option>
+									<option value="1">FR</option>';
+									<option value="2">ES</option>';
+									<option value="3">GB</option>';
+									<option value="4">IT</option>';
+									<option value="5">PT</option>';
 								</select>
 							</div>
 						</div>   
@@ -245,16 +250,15 @@ $eqLogics = eqLogic::byType($plugin->getId());
 					var img ='<img src="plugins/verisure/core/img/alarm_verisure.png" height="130" width="295" />';
 					$('#div_img').append(img);
 					
-					$('#sel_country').empty();
+					/*$('#sel_country').empty();
 					var country = '<option value="" disabled selected hidden>{{Choisir dans la liste}}</option>';
 					country += '<option value="1">FR</option>';
 					country += '<option value="2">ES</option>';
 					country += '<option value="3">GB</option>';
 					country += '<option value="4">IT</option>';
 					country += '<option value="5">PT</option>';
-					$('#sel_country').append(country);
-					
-					
+					$('#sel_country').append(country);*/
+										
 					$('#div_numinstall').show();
 					$('#div_user').show();
 					$('#div_pwd').show();
@@ -267,7 +271,7 @@ $eqLogics = eqLogic::byType($plugin->getId());
 					var img ='<img src="plugins/verisure/core/img/alarm_verisure_2.png" height="130" width="295" />';
 					$('#div_img').append(img);
 					
-					$('#sel_country').empty();
+					/*$('#sel_country').empty();
 					var country = '<option value="" disabled selected hidden>{{Choisir dans la liste}}</option>';
 					country += '<option value="1">FR</option>';
 					country += '<option value="2">BE (fr)</option>';
@@ -279,7 +283,7 @@ $eqLogics = eqLogic::byType($plugin->getId());
 					country += '<option value="8">NO</option>';
 					country += '<option value="9">SE</option>';
 					country += '<option value="10">DE</option>';
-					$('#sel_country').append(country);
+					$('#sel_country').append(country);*/
 					
 					$('#div_numinstall').hide();
 					$('#div_user').show();
