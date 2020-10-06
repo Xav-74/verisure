@@ -150,6 +150,7 @@ class verisure extends eqLogic {
 			$replace['#' . $cmd->getLogicalId() . '_id#'] = $cmd->getId();
 			$replace['#' . $cmd->getLogicalId() . '_name#'] = $cmd->getName();
 			$replace['#' . $cmd->getLogicalId() . '#'] = $cmd->execCmd();
+			$replace['#' . $cmd->getLogicalId() . '_visible#'] = $cmd->getIsVisible();
 		}
 
 		// Traitement des commandes actions
@@ -253,7 +254,7 @@ class verisure extends eqLogic {
 			$cmdArmed->save();
 			log::add('verisure', 'debug', 'Création de la commande '.$cmdArmed->getName().' (LogicalId : '.$cmdArmed->getLogicalId().')');
 		}
-		$this->setConfiguration('SetModeAbsent',$cmdArmed->getId()."|"."Mode Total");		//Compatibilité Homebridge  - Mode Absent / A distance
+		$this->setConfiguration('SetModeAbsent',$cmdArmed->getId()."|"."Total");		//Compatibilité Homebridge  - Mode Absent / A distance
 					
 		$cmdReleased = $this->getCmd(null, 'released');
 		if (!is_object($cmdReleased)) {
@@ -297,7 +298,7 @@ class verisure extends eqLogic {
 				$cmdArmedNight->save();
 				log::add('verisure', 'debug', 'Création de la commande '.$cmdArmedNight->getName().' (LogicalId : '.$cmdArmedNight->getLogicalId().')');
 			}
-			$this->setConfiguration('SetModeNuit',$cmdArmedNight->getId()."|"."Mode Nuit");			//Compatibilité Homebridge - Mode Nuit
+			$this->setConfiguration('SetModeNuit',$cmdArmedNight->getId()."|"."Nuit");			//Compatibilité Homebridge - Mode Nuit
 			
 			$cmdArmedDay = $this->getCmd(null, 'armed_day');
 			if (!is_object($cmdArmedDay)) {
@@ -312,7 +313,7 @@ class verisure extends eqLogic {
 				$cmdArmedDay->save();
 				log::add('verisure', 'debug', 'Création de la commande '.$cmdArmedDay->getName().' (LogicalId : '.$cmdArmedDay->getLogicalId().')');
 			}
-			$this->setConfiguration('SetModePresent',$cmdArmedDay->getId()."|"."Mode Jour");		//Compatibilité Homebridge - Mode Présent / Domicile
+			$this->setConfiguration('SetModePresent',$cmdArmedDay->getId()."|"."Jour");			//Compatibilité Homebridge - Mode Présent / Domicile
 			
 			$cmdArmedExt = $this->getCmd(null, 'armed_ext');
 			if (!is_object($cmdArmedExt)) {
@@ -365,7 +366,7 @@ class verisure extends eqLogic {
 				$cmdArmedHome->save();
 				log::add('verisure', 'debug', 'Création de la commande '.$cmdArmedHome->getName().' (LogicalId : '.$cmdArmedHome->getLogicalId().')');
 			}
-			$this->setConfiguration('SetModePresent',$cmdArmedHome->getId()."|"."Mode Présent");		//Compatibilité Homebridge - Mode Présent / Domicile
+			$this->setConfiguration('SetModePresent',$cmdArmedHome->getId()."|"."Partiel");			//Compatibilité Homebridge - Mode Présent / Domicile
 			
 			$cmdPictures = $this->getCmd(null, 'getpictures');
 			if ( ! is_object($cmdPictures)) {
@@ -1032,7 +1033,7 @@ class verisureCmd extends cmd {
 							break;
 						case 'ARMED_HOME':
 							$eqlogic->checkAndUpdateCmd('enable', "1");
-							$eqlogic->checkAndUpdateCmd('mode', "Présent");
+							$eqlogic->checkAndUpdateCmd('mode', "Partiel");
 							break;
 						case 'Erreur de connexion au cloud Verisure':
 							log::add('verisure', 'debug', '│ /!\ Erreur de connexion au cloud Verisure');
