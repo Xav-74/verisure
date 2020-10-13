@@ -2,7 +2,6 @@
 
 /* This file is part of the Jeedom Verisure plugin  (https://github.com/Xav-74/verisure)
  * Copyright (c) 2020 Xavier CHARLES  (https://github.com/Xav-74)
- * Version : 1.2
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,7 +21,7 @@
  *	SECURITAS_STATUS :
  *		STATE_ALARM_DISARMED: ['0',("1","32")]
  *		STATE_ALARM_ARMED_HOME: ['P',("311","202")]
- *		STATE_ALARM_ARMED_NIGHT: [('Q'),("46")]
+ *		STATE_ALARM_ARMED_NIGHT: [('Q'),("46", "203")]
  *		STATE_ALARM_ARMED_AWAY: [('1','A'),("2","31")]
  *		STATE_ALARM_ARMED_PERI: ['3',("204")]
  *		STATE_ALARM_ARMED_AWAY_PERI: ['4',("???")]
@@ -35,7 +34,7 @@
 
 class verisureAPI {
 	
-   /*Base URL for Securitas Direct / Versisure - @var string */
+    /*Base URL for Securitas Direct / Versisure - @var string */
 	private $baseUrl = "https://mob2217.securitasdirect.es:12010/WebService/ws.do?"; 
     
 	/* Versisure Installation number - @var int */
@@ -73,7 +72,7 @@ class verisureAPI {
 	private $signaltype;
 	
 	
-	public function __construct($numinstall,$username,$password,$country) {
+	public function __construct($numinstall, $username, $password, $country) {
 		
 		$this->numinstall = $numinstall;
 		$this->username = $username;

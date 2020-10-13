@@ -32,7 +32,7 @@ function verisure_update() {
         $eqLogic->save();
         log::add('verisure', 'debug', 'Mise à jour des commandes effectuée pour l\'équipement '. $eqLogic->getHumanName());
     }
-	message::add('verisure', 'Merci pour la mise à jour du plugin Verisure. Consultez les notes de version ( https://xav-74.github.io/verisure/fr_FR/changelog ) avant utilisation et n\'hésitez pas à laisser un avis sur le Market Jeedom !');
+	message::add('verisure', 'Merci pour la mise à jour du plugin Verisure. Il est IMPERATIF de synchroniser à nouveau votre installation suite à cette mise à jour ! Consultez les notes de version ( https://xav-74.github.io/verisure/fr_FR/changelog ) avant utilisation et n\'hésitez pas à laisser un avis sur le Market Jeedom !');
 	
  }
 

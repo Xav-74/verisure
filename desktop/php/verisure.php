@@ -125,8 +125,7 @@ $eqLogics = eqLogic::byType($plugin->getId());
                         
 								<div class="form-group">
 									<label class="col-sm-3 control-label">{{}}</label>
-									<div class="col-sm-3">
-										<img src="plugins/verisure/core/img/alarm_verisure.png" height="130" width="295" />
+									<div id="div_img" class="col-sm-3">
 									</div>
 								</div>
 							
@@ -138,38 +137,56 @@ $eqLogics = eqLogic::byType($plugin->getId());
                     
 				<form class="form-horizontal">
 					<fieldset>    
-   
-						<div class="form-group">
+						
+						<div class="form-group">		
+							<label class="col-sm-3 control-label">{{Type d'alarme}}</label>
+							<div class="col-sm-3">
+								<select id="sel_alarmtype" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="alarmtype">
+									<option value="" disabled selected hidden>{{Choisir dans la liste}}</option>
+									<option value="1">{{Alarme type 1}}</option>
+									<option value="2">{{Alarme type 2}}</option>
+								</select>
+							</div>
+						</div>   
+						
+						<div id="div_numinstall" class="form-group">
 							<label class="col-sm-3 control-label">{{Numéro d'installation}}</label>
 							<div class="col-sm-3">
 								<input type="number" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="numinstall" placeholder="12345678"/>
 							</div>
 						</div>
 							
-						<div class="form-group">						
+						<div id="div_user" class="form-group">						
 							<label class="col-sm-3 control-label">{{Identifiant}}</label>
 							<div class="col-sm-3">
 								<input type="text" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="username" placeholder="Identifiant utilisé pour vous connecter à votre compte Verisure"/>
 							</div>
 						</div>	
 							
-						<div class="form-group">		
+						<div id="div_pwd" class="form-group">		
 							<label class="col-sm-3 control-label">{{Mot de passe}}</label>
 							<div class="col-sm-3">
 								<input type="password" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="password" placeholder="Mot de passe utilisé pour vous connecter à votre compte Verisure"/>
 							</div>
 						</div>
 						
-						<div class="form-group">		
+						<div id="div_code" class="form-group">		
+							<label class="col-sm-3 control-label">{{Code Alarme}}</label>
+							<div class="col-sm-3">
+								<input type="password" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="code" placeholder="Code à 4 ou 6 digits de votre alarme"/>
+							</div>
+						</div>
+						
+						<div id="div_country" class="form-group">		
 							<label class="col-sm-3 control-label">{{Pays}}</label>
 							<div class="col-sm-3">
 								<select id="sel_country" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="country">
 									<option value="" disabled selected hidden>{{Choisir dans la liste}}</option>
-									<option value="1">{{FR}}</option>
-									<option value="2">{{ES}}</option>
-									<option value="3">{{GB}}</option>
-									<option value="4">{{IT}}</option>
-									<option value="5">{{PT}}</option>
+									<option value="1">FR</option>';
+									<option value="2">ES</option>';
+									<option value="3">GB</option>';
+									<option value="4">IT</option>';
+									<option value="5">PT</option>';
 								</select>
 							</div>
 						</div>   
@@ -179,8 +196,8 @@ $eqLogics = eqLogic::byType($plugin->getId());
 						<div class="form-group">		
 							<label class="col-sm-3 control-label">{{Informations}}</label>
 							<div class="col-sm-9">
-								Ce plugin est compatible avec le matériel Verisure affiché sur l'image ci-dessus.<br/>
-                                Les informations de connexion demandées sont celles utilisées pour vous connecter sur "https://customers.securitasdirect.fr" ou via l'application mobile My Verisure.<br/>
+								Ce plugin est compatible avec 2 générations de matériels Verisure. Sélectionnez le type d'alarme correspondant à vos matériels (voir image associée).<br/>
+                                Les informations de connexion demandées sont celles utilisées pour vous connecter sur le portail web Verisure ou via l'application mobile My Verisure.<br/>
 								Le plugin ne vous demandera jamais les mots de passe utilisés pour vous identifier auprès du personnel Securitas Direct lors du déclenchement de votre alarme.<br/>
 							</div>
 						</div>
@@ -194,6 +211,9 @@ $eqLogics = eqLogic::byType($plugin->getId());
 								<a class="btn btn-info btn-sm cmdAction" id="bt_Reporting"><i class="fas fa-info"></i> {{Journal d'activité}}</a>
 								<br/><br/>
 								<span id="nbsp" type="text" class="eqLogicAttr" data-l1key="configuration" data-l2key="nb_smartplug" style="display : none;"></span>
+								<span id="nbclimate" type="text" class="eqLogicAttr" data-l1key="configuration" data-l2key="nb_climate" style="display : none;"></span>
+								<span id="nbdoor" type="text" class="eqLogicAttr" data-l1key="configuration" data-l2key="nb_doorsensor" style="display : none;"></span>
+								<span id="nbcams" type="text" class="eqLogicAttr" data-l1key="configuration" data-l2key="nb_camera" style="display : none;"></span>
 								<table id="table_smartplug" class="table table-bordered table-condensed">
 									<thead>
 										<tr>
@@ -212,6 +232,70 @@ $eqLogics = eqLogic::byType($plugin->getId());
 				</form>
 				
 			</div>
+			
+			<script>
+			
+			if ($('.eqLogicAttr[data-l2key=alarmtype]').value() != "1" && $('.eqLogicAttr[data-l2key=alarmtype]').value() != "2") {
+				$('#div_numinstall').hide();
+				$('#div_user').hide();
+				$('#div_pwd').hide();
+				$('#div_code').hide();
+				$('#div_country').hide();
+			}
+			
+			$('#sel_alarmtype').on("change",function (){
+				
+				if ($('.eqLogicAttr[data-l2key=alarmtype]').value() == "1") {
+					$('#div_img').empty();
+					var img ='<img src="plugins/verisure/core/img/alarm_verisure.png" height="130" width="295" />';
+					$('#div_img').append(img);
+					
+					/*$('#sel_country').empty();
+					var country = '<option value="" disabled selected hidden>{{Choisir dans la liste}}</option>';
+					country += '<option value="1">FR</option>';
+					country += '<option value="2">ES</option>';
+					country += '<option value="3">GB</option>';
+					country += '<option value="4">IT</option>';
+					country += '<option value="5">PT</option>';
+					$('#sel_country').append(country);*/
+										
+					$('#div_numinstall').show();
+					$('#div_user').show();
+					$('#div_pwd').show();
+					$('#div_code').hide();
+					$('#div_country').show();
+				}
+
+				if ($('.eqLogicAttr[data-l2key=alarmtype]').value() == "2") {
+					$('#div_img').empty();
+					var img ='<img src="plugins/verisure/core/img/alarm_verisure_2.png" height="130" width="295" />';
+					$('#div_img').append(img);
+					
+					/*$('#sel_country').empty();
+					var country = '<option value="" disabled selected hidden>{{Choisir dans la liste}}</option>';
+					country += '<option value="1">FR</option>';
+					country += '<option value="2">BE (fr)</option>';
+					country += '<option value="3">BE (nl)</option>';
+					country += '<option value="4">NL</option>';
+					country += '<option value="5">UK</option>';
+					country += '<option value="6">DK</option>';
+					country += '<option value="7">FI</option>';
+					country += '<option value="8">NO</option>';
+					country += '<option value="9">SE</option>';
+					country += '<option value="10">DE</option>';
+					$('#sel_country').append(country);*/
+					
+					$('#div_numinstall').hide();
+					$('#div_user').show();
+					$('#div_pwd').show();
+					$('#div_code').show();
+					$('#div_country').hide();
+				}
+				
+			});
+			
+			</script>			
+			
 			
 			<div role="tabpanel" class="tab-pane" id="notificationsVerisure">
 				<div class="container">
@@ -278,6 +362,7 @@ $eqLogics = eqLogic::byType($plugin->getId());
 	</div>
 
 </div>
+
 
 <?php include_file('desktop', 'verisure', 'js', 'verisure');?>
 <?php include_file('core', 'plugin.template', 'js');?>
