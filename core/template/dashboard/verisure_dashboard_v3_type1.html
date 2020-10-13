@@ -1,4 +1,4 @@
-<div id="versiure_widget_ID" class="eqLogic-widget eqLogic noResize verisure_widget verisure" style="text-align:center; height:370px; width:250px; border:#border#; border-radius:#border-radius#; background-color:rgb(116, 92, 176); color:#color#; #style#;" data-eqType="#eqType#" data-translate-category="#translate_category#" data-category="#category#" data-tags="#tags#" data-eqLogic_id="#id#" data-eqLogic_uid="#uid#" data-version="dashboard">
+<div id="versiure_widget_ID" class="eqLogic-widget eqLogic noResize verisure_widget verisure" style="text-align:center; width:250px; border:#border#; border-radius:#border-radius#; background-color:rgb(116, 92, 176); color:#color#; #style#;" data-eqType="#eqType#" data-translate-category="#translate_category#" data-category="#category#" data-tags="#tags#" data-eqLogic_id="#id#" data-eqLogic_uid="#uid#" data-version="dashboard">
 	
 	<center class="widget-name" style="padding-right: 0px;">
 		<span class="object_name" style="font-size:1.1em ;display:none;">#object_name#</span>
@@ -25,30 +25,52 @@
 			<button class="btn cmd action" data-cmd_id="#released_id#" title="Désactivation" onclick="jeedom.cmd.execute({id: #released_id#});"><i class="fas fa-lock-open"></i></button>
             <button class="btn cmd action" data-cmd_id="#getstate_id#" title="Rafraichir" onclick="jeedom.cmd.execute({id: #getstate_id#});"><i class="fas fa-sync"></i></button>
 			<div></div>
-			<button class="btn cmd action" data-cmd_id="#armed_night_id#" title="Mode Nuit" onclick="jeedom.cmd.execute({id: #armed_night_id#});"><i class="fas fa-moon"></i></button>
-			<button class="btn cmd action" data-cmd_id="#armed_day_id#" title="Mode Jour" onclick="jeedom.cmd.execute({id: #armed_day_id#});"><i class="fas fa-sun"></i></button>
-			<button class="btn cmd action" data-cmd_id="#armed_ext_id#" title="Mode Extérieur" onclick="jeedom.cmd.execute({id: #armed_ext_id#});"><i class="fas fa-home"></i></button>
+			<button id="btn_night" class="btn cmd action" data-cmd_id="#armed_night_id#" title="Mode Nuit" onclick="jeedom.cmd.execute({id: #armed_night_id#});"><i class="fas fa-moon"></i></button>
+			<button id="btn_day" class="btn cmd action" data-cmd_id="#armed_day_id#" title="Mode Jour" onclick="jeedom.cmd.execute({id: #armed_day_id#});"><i class="fas fa-sun"></i></button>
+			<button id="btn_ext" class="btn cmd action" data-cmd_id="#armed_ext_id#" title="Mode Extérieur" onclick="jeedom.cmd.execute({id: #armed_ext_id#});"><i class="fas fa-home"></i></button>
         </div>
-		<hr class="cmdName">
-		<span class="label cmdName">Images</span>	
-		<div class="row" id="images">	
-			<div class="cmd cmd-widget col-12" data-type="action" data-subtype="select" data-cmd_id="#getpictures_id#">
-                <select class="selectCmd label action form-control form-control-sm" title="Demande Images">#getpictures_listValue#</select>
-                <script>
-                    $('.cmd[data-cmd_id=#getpictures_id#] .selectCmd').on('change', function () {
-						if ($(this).value() != "") {
-							$('#md_modal').dialog({title: "Demande Images"});
-							$('#md_modal').load('index.php?v=d&plugin=verisure&modal=pictures.verisure&numinstall='+'#numinstall#'+'&username='+'#username#'+'&pwd='+encodeURIComponent('#password#')+'&country='+'#country#'+'&device='+$(this).value()).dialog('open'); 
-						}
-					});
-                </script>
-            </div>
+		<div id="zone_image">
+			<hr class="cmdName">
+			<span class="label cmdName">Images</span>	
+			<div class="row" id="images">	
+				<div class="cmd cmd-widget col-12" data-type="action" data-subtype="select" data-cmd_id="#getpictures_id#">
+					<select class="selectCmd label action form-control form-control-sm" title="Demande Images">#getpictures_listValue#</select>
+					<script>
+						$('.cmd[data-cmd_id=#getpictures_id#] .selectCmd').on('change', function () {
+							if ($(this).value() != "") {
+								$('#md_modal').dialog({title: "Demande Images"});
+								$('#md_modal').load('index.php?v=d&plugin=verisure&modal=pictures.verisure&numinstall='+'#numinstall#'+'&username='+'#username#'+'&pwd='+encodeURIComponent('#password#')+'&country='+'#country#'+'&device='+$(this).value()).dialog('open'); 
+							}
+						});
+					</script>
+				</div>
+			</div>
 		</div>
 	</div>
 	
 	<script>
         
-      	jeedom.cmd.update['#enable_id#'] = function(_options) {
+      	$('.verisure_widget').css('height', 370);
+		if ( #getpictures_visible# == 0)  {
+			$('#zone_image').hide();
+			$('.verisure_widget').css('height', 280);
+		}
+		if ( #armed_night_visible# == 0)  {
+			$('#btn_night').hide();
+		}
+		if ( #armed_day_visible# == 0)  {
+			$('#btn_day').hide();
+		}
+		if ( #armed_ext_visible# == 0)  {
+			$('#btn_ext').hide();
+		}
+		if ( #armed_night_visible# == 0 && #armed_day_visible# == 0 && #armed_ext_visible# == 0)  {
+			if ( #getpictures_visible# == 0) { $('.verisure_widget').css('height', 250); }
+			if ( #getpictures_visible# == 1) { $('.verisure_widget').css('height', 340); }
+		}
+		
+		
+		jeedom.cmd.update['#enable_id#'] = function(_options) {
             if ( _options.display_value == 0)  {
             	$('.iconCmd#enable_id#').empty().append('<i class="fa-2x icon_red jeedomapp-lock-ouvert"></i>');
             }

@@ -47,7 +47,7 @@
 							if ( init('alarmtype') == 1 )  {
 								$i = 0;
 								$j = 1;
-								$filter = array("1","2","13","16","24","29","31","32","40","46","202","204","311");
+								$filter = array("1","2","13","16","24","29","31","32","40","46","202","203","204","311");
 								foreach ($report['REG'] as $reg)  {
 									if (in_array($report['REG'][$i]['@attributes']['type'], $filter))  {
 										echo '<tr>';
@@ -133,6 +133,7 @@
 												echo '</td>';
 												break;
 											case 46:
+											case 203:
 												echo '<td>';
 												echo '<img src="plugins/verisure/core/img/logo_nuit.png" height="35" width="35"/>';
 												echo '</td>';
