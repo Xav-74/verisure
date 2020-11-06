@@ -35,7 +35,10 @@
 class verisureAPI {
 	
     /*Base URL for Securitas Direct / Versisure - @var string */
-	private $baseUrl = "https://mob2217.securitasdirect.es:12010/WebService/ws.do?"; 
+	private $baseUrl = "https://mob2217.securitasdirect.es:12010/WebService/ws.do?";
+	
+	/* Verisure sessionID - @var string */
+	private $sessionID;
     
 	/* Versisure Installation number - @var int */
 	private $numinstall;
@@ -63,6 +66,9 @@ class verisureAPI {
 	
 	/* Verisure panel - @var string */
 	private $panel = "SDVFAST";
+	
+	/* Verisure callby - @var string */
+	private $callby = "IPH_61";
 	
 	/* Verisure photo request - @var int */
 	private $idservice = 1;
@@ -102,6 +108,7 @@ class verisureAPI {
 		$this->id = null;
 		$this->verisure_hash = null;
 		$this->request = null;
+		$this->sessionID = null;
 	}
 
 
@@ -110,7 +117,7 @@ class verisureAPI {
 	}
  
  
-	private function doRequest($data, $method) {		//Execute all https request to Verisure Cloud
+	private function doRequest($data, $method, $headers) {		//Execute all https request to Verisure Cloud
        
 		$curl = curl_init();
 		
@@ -121,6 +128,8 @@ class verisureAPI {
 			curl_setopt($curl, CURLOPT_CONNECTTIMEOUT,	5);
 			curl_setopt($curl, CURLOPT_SSL_CIPHER_LIST, "TLSv1");
 			curl_setopt($curl, CURLOPT_RETURNTRANSFER,	true);
+			curl_setopt($curl, CURLOPT_HEADER, 			1);
+			curl_setopt($curl, CURLOPT_HTTPHEADER, 		$headers);
 		}
 		
 		if ($method == "POST")  {
@@ -131,16 +140,38 @@ class verisureAPI {
 			curl_setopt($curl, CURLOPT_RETURNTRANSFER,	true);
 			curl_setopt($curl, CURLOPT_SSL_CIPHER_LIST, "TLSv1");
 			curl_setopt($curl, CURLOPT_POSTFIELDS,		$data);
+			curl_setopt($curl, CURLOPT_HEADER, 			1);
+			curl_setopt($curl, CURLOPT_HTTPHEADER, 		$headers);
 		}
 			
 		$resultXML = curl_exec($curl);
         $httpRespCode  = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-		curl_close($curl);
-        		
-		$xml = simplexml_load_string($resultXML);
+		$header_size = curl_getinfo($curl, CURLINFO_HEADER_SIZE);
+      	$header = substr($resultXML, 0, $header_size);
+		$body = substr($resultXML, $header_size);
+      	curl_close($curl);
+      
+      	$xml = simplexml_load_string($body);
 		$result = json_decode(json_encode((array) $xml), true);
+      
+		preg_match_all('/^Set-Cookie:\s*([^;]*)/mi', $header, $matches);
+		$cookies = array();
+		foreach($matches[1] as $item) {
+   			parse_str($item, $cookie);
+   		 	$cookies = array_merge($cookies, $cookie);
+		}
+		$this->sessionID = $cookies['JSESSIONID'];
+				
 		return array($httpRespCode, $result);
 	}
+
+
+	private function setHeaders()   {				//Define headers
+		
+		$headers = array();
+        $headers[] = sprintf('Cookie: JSESSIONID=%s', $this->sessionID);
+		return $headers;
+	}	
 
 
 	private function setParams($request) {			//Set params for https request to Verisure Cloud
@@ -153,15 +184,15 @@ class verisureAPI {
 				$params = array( 'request' => $this->request, 'ID' => $this->id, 'Country' => $this->country, 'lang' => $this->language, 'user' => $this->username, 'pwd' => $this->password );
 				break;
 			case "CLS":
-				$params = array( 'request' => $this->request, 'ID' => $this->id, 'Country' => $this->country, 'lang' => $this->language, 'user' => $this->username, 'pwd' => $this->password,
+				$params = array( 'request' => $this->request, 'ID' => $this->id, 'Country' => $this->country, 'lang' => $this->language, 'user' => $this->username, 'callby' => $this->callby,
 								 'hash' => $this->verisure_hash, 'numinst' => null	);
 				break;
 			case "MYINSTALLATION":
-				$params = array( 'request' => $this->request, 'ID' => $this->id, 'Country' => $this->country, 'lang' => $this->language, 'user' => $this->username, 'pwd' => $this->password,
+				$params = array( 'request' => $this->request, 'ID' => $this->id, 'Country' => $this->country, 'lang' => $this->language, 'user' => $this->username, 'callby' => $this->callby,
 								 'hash' => $this->verisure_hash, 'numinst' => $this->numinstall );
 				break;
 			case "ACT_V2":
-				$params = array( 'request' => $this->request, 'ID' => $this->id, 'Country' => $this->country, 'lang' => $this->language, 'user' => $this->username, 'pwd' => $this->password,
+				$params = array( 'request' => $this->request, 'ID' => $this->id, 'Country' => $this->country, 'lang' => $this->language, 'user' => $this->username, 'callby' => $this->callby,
 								 'hash' => $this->verisure_hash, 'panel' => $this->panel, 'numinst' => $this->numinstall, 'timefilter' => "3", 'activityfilter' => "0" );
 				break;
 			case "EST1":
@@ -177,16 +208,16 @@ class verisureAPI {
 			case "DARM1":
 			case "DARM2":
 			case "SRV":
-				$params = array( 'request' => $this->request, 'ID' => $this->id, 'Country' => $this->country, 'lang' => $this->language, 'user' => $this->username, 'pwd' => $this->password,
+				$params = array( 'request' => $this->request, 'ID' => $this->id, 'Country' => $this->country, 'lang' => $this->language, 'user' => $this->username, 'callby' => $this->callby,
 								 'hash' => $this->verisure_hash, 'panel' => $this->panel, 'numinst' => $this->numinstall );
 				break;
 			case "IMG1":
 			case "IMG2":
-				$params = array( 'request' => $this->request, 'ID' => $this->id, 'Country' => $this->country, 'lang' => $this->language, 'user' => $this->username, 'pwd' => $this->password,
+				$params = array( 'request' => $this->request, 'ID' => $this->id, 'Country' => $this->country, 'lang' => $this->language, 'user' => $this->username, 'callby' => $this->callby,
 								 'hash' => $this->verisure_hash, 'panel' => $this->panel, 'numinst' => $this->numinstall, 'idservice' => $this->idservice, 'instibs' => $this->instibs, 'device' => $this->device );
 				break;
 			case "INF":
-				$params = array( 'request' => $this->request, 'ID' => $this->id, 'Country' => $this->country, 'lang' => $this->language, 'user' => $this->username, 'pwd' => $this->password,
+				$params = array( 'request' => $this->request, 'ID' => $this->id, 'Country' => $this->country, 'lang' => $this->language, 'user' => $this->username, 'callby' => $this->callby,
 								 'hash' => $this->verisure_hash, 'panel' => $this->panel, 'numinst' => $this->numinstall, 'idsignal' => $this->idsignal, 'signaltype' => $this->signaltype );
 				break;
 		}
@@ -197,8 +228,9 @@ class verisureAPI {
 
 	private function CallServer()  {
 		$method = "GET";
+		$headers = $this->setHeaders();
 		$params = $this->setParams("SRV");
-		$result = $this->doRequest($params, $method);
+		$result = $this->doRequest($params, $method, $headers);
 		
 		$httpRespCode = $result[0];
 		$RespArray = $result[1];    
@@ -214,7 +246,7 @@ class verisureAPI {
 		
 		$method = "POST";
 		$params = $this->setParams("LOGIN");
-		$result = $this->doRequest($params, $method);
+		$result = $this->doRequest($params, $method, null);
 		
 		$httpRespCode = $result[0];
 		$RespArray = $result[1];    
@@ -222,7 +254,7 @@ class verisureAPI {
 		$result_msg = $RespArray['MSG'];
       	$this->verisure_hash = $RespArray['HASH'];
 		
-		return array($httpRespCode, $result_rq, $result_msg, $this->verisure_hash);
+		return array($httpRespCode, $result_rq, $result_msg, $this->verisure_hash, $this->sessionID);
 	}
 
 
@@ -230,22 +262,23 @@ class verisureAPI {
 		
 		$method = "GET";
 		$params = $this->setParams("CLS");
-		$result = $this->doRequest($params, $method);
+		$result = $this->doRequest($params, $method, null);
 		
 		$httpRespCode = $result[0];
 		$RespArray = $result[1];    
       	$result_rq = $RespArray['RES'];
 		$result_msg = $RespArray['MSG'];
 		
-		return array($httpRespCode, $result_rq, $result_msg);
+		return array($httpRespCode, $result_rq, $result_msg, $this->sessionID);
 	}
 
 
 	public function MyInstallation()  {			// Get the sensor IDs and other information related to the installation
 		
 		$method = "POST";
+		$headers = $this->setHeaders();
 		$params = $this->setParams("MYINSTALLATION");
-		$result = $this->doRequest($params, $method);
+		$result = $this->doRequest($params, $method, $headers);
 		
 		$httpRespCode = $result[0];
 		$RespArray = $result[1];    
@@ -259,49 +292,54 @@ class verisureAPI {
           	$i++;
 		}	
 		
-		return array ($httpRespCode, $result_rq, $result_msg, $tab_device);
+		return array ($httpRespCode, $result_rq, $result_msg, $this->sessionID, $tab_device);
 	}
 	
 	
 	public function GetReport()  {			// Get the information of last actions
 		
 		$method = "GET";
+		$headers = $this->setHeaders();
 		$params = $this->setParams("ACT_V2");
-		$result = $this->doRequest($params, $method);
+		$result = $this->doRequest($params, $method, $headers);
 		
 		$httpRespCode = $result[0];
 		$RespArray = $result[1];    
       	$result_rq = $RespArray['RES'];
 		$result_list = $RespArray['LIST'];
 		
-		return array ($httpRespCode, $result_rq, $result_list);
+		return array ($httpRespCode, $result_rq, $this->sessionID, $result_list);
 	}
 	
 	
 	public function GetState()  {			// Get the status of the alarm
 		
 		$method = "GET";
+		$headers = $this->setHeaders();
 		$params = $this->setParams("EST1");
-		$result = $this->doRequest($params, $method);
+		$result = $this->doRequest($params, $method, $headers);
 		
 		$httpRespCode = $result[0];
 		$RespArray = $result[1];    
       	$result_rq = $RespArray['RES'];
-		$result_msg = $RespArray['MSG'];	
+		$result_msg = $RespArray['MSG'];
+		$sID = $this->sessionID;
 		
 		if($result_rq == "OK")  {
+			$headers = $this->setHeaders();
 			$params = $this->setParams("EST2");
 			$result_rq2 = "WAIT";
 			While ($result_rq2 == "WAIT")  {
 				sleep(5);
-				$result2 = $this->doRequest($params, $method);
+				$result2 = $this->doRequest($params, $method, $headers);
 				$httpRespCode2 = $result2[0];
 				$RespArray2 = $result2[1];    
 				$result_rq2 = $RespArray2['RES'];
 				$result_msg2 = $RespArray2['MSG'];
 				$result_status = $RespArray2['STATUS'];
+				$sID2 = $this->sessionID;
 			}
-			return array ($httpRespCode, $result_rq, $result_msg, $httpRespCode2, $result_rq2, $result_msg2, $result_status); 
+			return array ($httpRespCode, $result_rq, $result_msg, $sID, $httpRespCode2, $result_rq2, $result_msg2, $result_status, $sID2); 
 		}
 	}
 	
@@ -309,27 +347,31 @@ class verisureAPI {
 	public function ArmTotal()  {			// Arm the alarm in "total" mode
 		
 		$method = "GET";
+		$headers = $this->setHeaders();
 		$params = $this->setParams("ARM1");
-		$result = $this->doRequest($params, $method);
+		$result = $this->doRequest($params, $method, $hearders);
 		
 		$httpRespCode = $result[0];
 		$RespArray = $result[1];    
       	$result_rq = $RespArray['RES'];
 		$result_msg = $RespArray['MSG'];	
+		$sID = $this->sessionID;
 		
 		if($result_rq == "OK")  {
+			$headers = $this->setHeaders();
 			$params = $this->setParams("ARM2");
 			$result_rq2 = "WAIT";
 			While ($result_rq2 == "WAIT")  {
 				sleep(5);
-				$result2 = $this->doRequest($params, $method);
+				$result2 = $this->doRequest($params, $method, $hearders);
 				$httpRespCode2 = $result2[0];
 				$RespArray2 = $result2[1];    
 				$result_rq2 = $RespArray2['RES'];
 				$result_msg2 = $RespArray2['MSG'];
 				$result_status = $RespArray2['STATUS'];
+				$sID2 = $this->sessionID;
 			}
-			return array ($httpRespCode, $result_rq, $result_msg, $httpRespCode2, $result_rq2, $result_msg2, $result_status); 
+			return array ($httpRespCode, $result_rq, $result_msg, $sID, $httpRespCode2, $result_rq2, $result_msg2, $result_status, $sID2); 
 		}
 	}
 
@@ -337,27 +379,31 @@ class verisureAPI {
 	public function ArmNight()  {			// Arm the alarm in "night" mode
 		
 		$method = "GET";
+		$headers = $this->setHeaders();
 		$params = $this->setParams("ARMNIGHT1");
-		$result = $this->doRequest($params, $method);
+		$result = $this->doRequest($params, $method, $headers);
 		
 		$httpRespCode = $result[0];
 		$RespArray = $result[1];    
       	$result_rq = $RespArray['RES'];
-		$result_msg = $RespArray['MSG'];	
+		$result_msg = $RespArray['MSG'];
+		$sID = $this->sessionID;		
 		
 		if($result_rq == "OK")  {
+			$headers = $this->setHeaders();
 			$params = $this->setParams("ARMNIGHT2");
 			$result_rq2 = "WAIT";
 			While ($result_rq2 == "WAIT")  {
 				sleep(5);
-				$result2 = $this->doRequest($params, $method);
+				$result2 = $this->doRequest($params, $method, $headers);
 				$httpRespCode2 = $result2[0];
 				$RespArray2 = $result2[1];    
 				$result_rq2 = $RespArray2['RES'];
 				$result_msg2 = $RespArray2['MSG'];
 				$result_status = $RespArray2['STATUS'];
+				$sID2 = $this->sessionID;
 			}
-			return array ($httpRespCode, $result_rq, $result_msg, $httpRespCode2, $result_rq2, $result_msg2, $result_status); 
+			return array ($httpRespCode, $result_rq, $result_msg, $sID, $httpRespCode2, $result_rq2, $result_msg2, $result_status, $sID2); 
 		}
 	}
 
@@ -365,27 +411,31 @@ class verisureAPI {
 	public function ArmDay()  {			// Arm the alarm in "day" mode
 		
 		$method = "GET";
+		$headers = $this->setHeaders();
 		$params = $this->setParams("ARMDAY1");
-		$result = $this->doRequest($params, $method);
+		$result = $this->doRequest($params, $method, $headers);
 		
 		$httpRespCode = $result[0];
 		$RespArray = $result[1];    
       	$result_rq = $RespArray['RES'];
-		$result_msg = $RespArray['MSG'];	
+		$result_msg = $RespArray['MSG'];
+		$sID = $this->sessionID;		
 		
 		if($result_rq == "OK")  {
+			$headers = $this->setHeaders();
 			$params = $this->setParams("ARMDAY2");
 			$result_rq2 = "WAIT";
 			While ($result_rq2 == "WAIT")  {
 				sleep(5);
-				$result2 = $this->doRequest($params, $method);
+				$result2 = $this->doRequest($params, $method, $headers);
 				$httpRespCode2 = $result2[0];
 				$RespArray2 = $result2[1];    
 				$result_rq2 = $RespArray2['RES'];
 				$result_msg2 = $RespArray2['MSG'];
 				$result_status = $RespArray2['STATUS'];
+				$sID2 = $this->sessionID;
 			}
-			return array ($httpRespCode, $result_rq, $result_msg, $httpRespCode2, $result_rq2, $result_msg2, $result_status); 
+			return array ($httpRespCode, $result_rq, $result_msg, $sID, $httpRespCode2, $result_rq2, $result_msg2, $result_status, $sID2);
 		}
 	}
 
@@ -393,27 +443,31 @@ class verisureAPI {
 	public function ArmExt()  {			// Arm the alarm in "outside" mode
 		
 		$method = "GET";
+		$headers = $this->setHeaders();
 		$params = $this->setParams("PERI1");
-		$result = $this->doRequest($params, $method);
+		$result = $this->doRequest($params, $method, $headers);
 		
 		$httpRespCode = $result[0];
 		$RespArray = $result[1];    
       	$result_rq = $RespArray['RES'];
-		$result_msg = $RespArray['MSG'];	
+		$result_msg = $RespArray['MSG'];
+		$sID = $this->sessionID;		
 		
 		if($result_rq == "OK")  {
+			$headers = $this->setHeaders();
 			$params = $this->setParams("PERI2");
 			$result_rq2 = "WAIT";
 			While ($result_rq2 == "WAIT")  {
 				sleep(5);
-				$result2 = $this->doRequest($params, $method);
+				$result2 = $this->doRequest($params, $method, $headers);
 				$httpRespCode2 = $result2[0];
 				$RespArray2 = $result2[1];    
 				$result_rq2 = $RespArray2['RES'];
 				$result_msg2 = $RespArray2['MSG'];
 				$result_status = $RespArray2['STATUS'];
+				$sID2 = $this->sessionID;
 			}
-			return array ($httpRespCode, $result_rq, $result_msg, $httpRespCode2, $result_rq2, $result_msg2, $result_status); 
+			return array ($httpRespCode, $result_rq, $result_msg, $sID, $httpRespCode2, $result_rq2, $result_msg2, $result_status, $sID2); 
 		}
 	}
 
@@ -421,27 +475,31 @@ class verisureAPI {
 	public function Disarm()  {			// Disarm the alarm (all mode)
 		
 		$method = "GET";
+		$headers = $this->setHeaders();
 		$params = $this->setParams("DARM1");
-		$result = $this->doRequest($params, $method);
+		$result = $this->doRequest($params, $method, $headers);
 		
 		$httpRespCode = $result[0];
 		$RespArray = $result[1];    
       	$result_rq = $RespArray['RES'];
-		$result_msg = $RespArray['MSG'];	
+		$result_msg = $RespArray['MSG'];
+		$sID = $this->sessionID;
 		
 		if($result_rq == "OK")  {
+			$headers = $this->setHeaders();
 			$params = $this->setParams("DARM2");
 			$result_rq2 = "WAIT";
 			While ($result_rq2 == "WAIT")  {
 				sleep(5);
-				$result2 = $this->doRequest($params, $method);
+				$result2 = $this->doRequest($params, $method, $headers);
 				$httpRespCode2 = $result2[0];
 				$RespArray2 = $result2[1];    
 				$result_rq2 = $RespArray2['RES'];
 				$result_msg2 = $RespArray2['MSG'];
 				$result_status = $RespArray2['STATUS'];
+				$sID2 = $this->sessionID;
 			}
-			return array ($httpRespCode, $result_rq, $result_msg, $httpRespCode2, $result_rq2, $result_msg2, $result_status); 
+			return array ($httpRespCode, $result_rq, $result_msg, $sID, $httpRespCode2, $result_rq2, $result_msg2, $result_status, $sID2); 
 		}
 	}
 	
@@ -453,27 +511,32 @@ class verisureAPI {
 		$result_rq = $srv[1];
 		$result_msg = $srv[2];
 		$this->instibs = $srv[3];
+		$sID = $this->sessionID;
 		
 		$method = "GET";
+		$headers = $this->setHeaders();
 		$params = $this->setParams("IMG1");
-		$result2 = $this->doRequest($params, $method);
+		$result2 = $this->doRequest($params, $method, $headers);
 		
 		$httpRespCode2 = $result2[0];
 		$RespArray2 = $result2[1];    
       	$result_rq2 = $RespArray2['RES'];
 		$result_msg2 = $RespArray2['MSG'];
+		$sID2 = $this->sessionID;
 				
 		if($result_rq2 == "OK")  {
+			$headers = $this->setHeaders();
 			$params = $this->setParams("IMG2");
 			$result_rq3 = "WAIT";
 			While ($result_rq3 == "WAIT")  {
 				sleep(5);
-				$result3 = $this->doRequest($params, $method);
+				$result3 = $this->doRequest($params, $method, $headers);
 				$httpRespCode3 = $result3[0];
 				$RespArray3 = $result3[1];    
 				$result_rq3 = $RespArray3['RES'];
 				$result_msg3 = $RespArray3['MSG'];
 				$result_status = $RespArray3['STATUS'];
+				$sID3 = $this->sessionID;
 			}
 			
 			if($result_rq3 == "OK")  {
@@ -485,7 +548,8 @@ class verisureAPI {
 					$result4 = $this->GetReport();
 					$httpRespCode4 = $result4[0];
 					$result_rq4 = $result4[1];
-					$RespArray4 = $result4[2];
+					$RespArray4 = $result4[3];
+					$sID4 = $this->sessionID;
 					if ($report_time < $RespArray4['REG'][0]['@attributes']['time'])  {
 						$report_check = true;
 						$report_type = $RespArray4['REG'][0]['@attributes']['type'];
@@ -495,14 +559,18 @@ class verisureAPI {
 				}
 				if($result_rq4 == "OK")  {
 					$method = "GET";
+					$headers = $this->setHeaders();
 					$params = $this->setParams("INF");
-					$result5 = $this->doRequest($params, $method);
+					$result5 = $this->doRequest($params, $method, $headers);
 					$httpRespCode5 = $result5[0];
 					$RespArray5 = $result5[1];    
 					$result_rq5 = $RespArray5['RES'];
 					$picture = $RespArray5['DEVICES']['DEVICE']['IMG'][2];		//Base64 encoded image
+					$sID5 = $this->sessionID;
 				}
-				return array ($httpRespCode, $result_rq, $result_msg, $this->instibs, $httpRespCode2, $result_rq2, $result_msg2, $httpRespCode3, $result_rq3, $result_msg3, $result_status, $httpRespCode4, $result_rq4, $this->idsignal, $httpRespCode5, $result_rq5, $picture); 
+				return array ($httpRespCode, $result_rq, $result_msg, $this->instibs, $sID, $httpRespCode2, $result_rq2, $result_msg2, $sID2,
+							  $httpRespCode3, $result_rq3, $result_msg3, $result_status, $sID3, $httpRespCode4, $result_rq4, $this->idsignal, $sID4,
+							  $httpRespCode5, $result_rq5, $sID5, $picture); 
 			}
 		}
 	}
