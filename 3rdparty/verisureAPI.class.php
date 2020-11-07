@@ -169,8 +169,10 @@ class verisureAPI {
 	private function setHeaders()   {				//Define headers
 		
 		$headers = array();
+        $headers[] = 'Accept: */*';  
+        $headers[] = 'User-Agent: Verisure/1 CFNetwork/1197 Darwin/20.0.0'; 
         $headers[] = sprintf('Cookie: JSESSIONID=%s', $this->sessionID);
-		return $headers;
+     	return $headers;
 	}	
 
 
