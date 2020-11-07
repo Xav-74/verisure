@@ -85,7 +85,7 @@
 		$.getJSON("/plugins/verisure/data/stateDevices.json", function(climate) {
             $.each(climate.climateDevice, function (key, val) {
                 var name = "Température "+val.deviceArea;
-                var temp = val.temperature+" °C";
+                var temp = val.temperature+" °C ("+val.humidity+" %)";
                 $('<tr class="row text-center">').append(
 					$('<td class="col-10 text-left" style="font-size: 12px !important">').text(name),
 					$('<td class="col-2">').text(temp),
