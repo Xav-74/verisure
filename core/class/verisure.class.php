@@ -408,6 +408,15 @@ class verisure extends eqLogic {
 			log::add('verisure', 'debug', '│ Request LOGIN - 0 => '.$result_login[0].' - 1 => '.$result_login[1].' - 2 => '.$result_login[2].' - 3 => '.$result_login[3].' - 4 => '.$result_login[4]);
 			$result_myinst = $MyAlarm->MyInstallation();
 			log::add('verisure', 'debug', '│ Request MYINSTALLATION - 0 => '.$result_myinst[0].' - 1 => '.$result_myinst[1].' - 2 => '.$result_myinst[2].' - 3 => '.$result_myinst[3].' - 4 => '.var_export($result_myinst[4], true));
+			
+			// Bugfix error 60067 - Test
+			if ( $result_myinst[1] == "ERROR")  {
+				$result_login = $MyAlarm->Login();
+				log::add('verisure', 'debug', '│ Request LOGIN - 0 => '.$result_login[0].' - 1 => '.$result_login[1].' - 2 => '.$result_login[2].' - 3 => '.$result_login[3].' - 4 => '.$result_login[4]);
+				$result_myinst = $MyAlarm->MyInstallation();
+				log::add('verisure', 'debug', '│ Request MYINSTALLATION - 0 => '.$result_myinst[0].' - 1 => '.$result_myinst[1].' - 2 => '.$result_myinst[2].' - 3 => '.$result_myinst[3].' - 4 => '.var_export($result_myinst[4], true));
+			}
+			
 			$result_logout = $MyAlarm->Logout();
 			log::add('verisure', 'debug', '│ Request CLS - 0 => '.$result_logout[0].' - 1 => '.$result_logout[1].' - 2 => '.$result_logout[2].' - 3 => '.$result_logout[3]);
 					
