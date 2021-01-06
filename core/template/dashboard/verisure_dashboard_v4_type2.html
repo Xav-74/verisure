@@ -1,4 +1,4 @@
-<div id="versiure_widget_ID" class="eqLogic-widget eqLogic noResize verisure_widget verisure" style="text-align:center; width:350px; border:#border#; border-radius:#border-radius#; background-color:#background-color#; color:#color#; #style#;" data-eqType="#eqType#" data-translate-category="#translate_category#" data-category="#category#" data-tags="#tags#" data-eqLogic_id="#id#" data-eqLogic_uid="#uid#" data-version="dashboard">
+<div id="versiure_widget_ID" class="eqLogic-widget eqLogic verisure_widget verisure" style="text-align:center; width:350px; border:#border#; border-radius:#border-radius#; background-color:#background-color#; color:#color#; #style#;" data-eqType="#eqType#" data-translate-category="#translate_category#" data-category="#category#" data-tags="#tags#" data-eqLogic_id="#id#" data-eqLogic_uid="#uid#" data-version="dashboard">
 	
 	<center class="widget-name" style="padding-right: 0px;">
 		<span class="object_name" style="font-size:1.1em ;display:none;">#object_name#</span>
@@ -86,6 +86,7 @@
             $.each(climate.climateDevice, function (key, val) {
                 var name = "Température "+val.deviceArea;
                 var temp = val.temperature+" °C";
+				if ( val.humidity != null ) { temp = temp+" ("+val.humidity+" %)"; }
                 $('<tr class="row text-center">').append(
 					$('<td class="col-10 text-left" style="font-size: 12px !important">').text(name),
 					$('<td class="col-2">').text(temp),

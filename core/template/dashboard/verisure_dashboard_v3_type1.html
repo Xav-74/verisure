@@ -1,8 +1,21 @@
 <div id="versiure_widget_ID" class="eqLogic-widget eqLogic noResize verisure_widget verisure" style="text-align:center; width:250px; border:#border#; border-radius:#border-radius#; background-color:rgb(116, 92, 176); color:#color#; #style#;" data-eqType="#eqType#" data-translate-category="#translate_category#" data-category="#category#" data-tags="#tags#" data-eqLogic_id="#id#" data-eqLogic_uid="#uid#" data-version="dashboard">
 	
-	<center class="widget-name" style="padding-right: 0px;">
+	<center class="widget-name" style="padding-right: 24px;">
 		<span class="object_name" style="font-size:1.1em ;display:none;">#object_name#</span>
 		<a href="#eqLink#" style="font-size:1.1em ;#hideEqLogicName#">#name_display#</a>
+		<span title="Qualité du réseau : #networkstate#" style="float: left; margin-left: -8px">
+			<div id="img_quality"></div>
+		</span>
+		<script>
+			$('#img_quality').empty();
+			if ( #networkstate# == 0 )  { var img ='<img src="plugins/verisure/core/img/signal_0.png" height="14"/>'; } 
+			if ( #networkstate# > 0 && #networkstate# < 0.30 )  { var img ='<img src="plugins/verisure/core/img/signal_1.png" height="14"/>'; }
+			if ( #networkstate# >= 0.30 && #networkstate# < 0.70 )  { var img ='<img src="plugins/verisure/core/img/signal_2.png" height="14"/>'; }
+			if ( #networkstate# >= 0.70 && #networkstate# < 0.90 )  { var img ='<img src="plugins/verisure/core/img/signal_3.png" height="14"/>'; }
+			if ( #networkstate# >= 0.90 && #networkstate# < 1 )  { var img ='<img src="plugins/verisure/core/img/signal_4.png" height="14"/>'; }
+			if ( #networkstate# == 1 )  { var img ='<img src="plugins/verisure/core/img/signal_5.png" height="14"/>'; } 
+			$('#img_quality').append(img);
+		</script>
 	</center>
 	
 	<div class="container-fluid">

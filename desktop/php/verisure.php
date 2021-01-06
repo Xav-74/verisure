@@ -13,7 +13,7 @@ $eqLogics = eqLogic::byType($plugin->getId());
 <div class="row row-overflow">
 
 	<div class="col-xs-12 eqLogicThumbnailDisplay">
-		<legend><i class="fas fa-cog"></i>  {{Gestion}}</legend>
+		<legend><i class="fas fa-cog"></i> {{Gestion}}</legend>
 		<div class="eqLogicThumbnailContainer">
 			
 			<div class="cursor eqLogicAction logoPrimary" style="color:#FB0230;" data-action="add">
@@ -85,8 +85,7 @@ $eqLogics = eqLogic::byType($plugin->getId());
 											<?php
 											$options = '';
 											foreach ((jeeObject::buildTree(null, false)) as $object) {
-												$decay = $object->getConfiguration('parentNumber');
-												$options .= '<option value="' . $object->getId() . '">' . str_repeat('&nbsp;&nbsp;', $decay) . $object->getName() . '</option>';
+												$options .= '<option value="' . $object->getId() . '">' . str_repeat('&nbsp;&nbsp;', $object->getConfiguration('parentNumber')) . $object->getName() . '</option>';
 											}
 											echo $options;
 											?>

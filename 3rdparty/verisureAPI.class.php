@@ -247,8 +247,9 @@ class verisureAPI {
 	public function Login()  {			// Login to Verisure Cloud
 		
 		$method = "POST";
+		$headers = $this->setHeaders();
 		$params = $this->setParams("LOGIN");
-		$result = $this->doRequest($params, $method, null);
+		$result = $this->doRequest($params, $method, $headers);
 		
 		$httpRespCode = $result[0];
 		$RespArray = $result[1];    
@@ -263,8 +264,9 @@ class verisureAPI {
 	public function Logout()  {			// Logout to verisure Cloud
 		
 		$method = "GET";
+		$headers = $this->setHeaders();
 		$params = $this->setParams("CLS");
-		$result = $this->doRequest($params, $method, null);
+		$result = $this->doRequest($params, $method, $headers);
 		
 		$httpRespCode = $result[0];
 		$RespArray = $result[1];    
