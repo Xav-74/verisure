@@ -32,7 +32,11 @@ class verisure extends eqLogic {
 	
     /*     * *************************Attributs****************************** */
 
-
+	public static $_widgetPossibility = array(
+		'custom' => true,
+		'custom::layout' => false,
+		'parameters' => array(),
+	);
 
     /*     * ***********************Methode static*************************** */
     
@@ -349,6 +353,19 @@ class verisure extends eqLogic {
 			log::add('verisure', 'debug', 'Mise à jour liste smartplugs compatibles images : '.var_export($listValue, true));
 			$cmdPictures->setConfiguration('listValue', $listValue);
 			$cmdPictures->save();
+			
+			$cmdNetworkState = $this->getCmd(null, 'networkstate');
+			if ( ! is_object($cmdNetworkState)) {
+				$cmdNetworkState = new verisureCmd();
+				$cmdNetworkState->setOrder(11);
+				$cmdNetworkState->setName('Qualité Réseau');
+				$cmdNetworkState->setEqLogic_id($this->getId());
+				$cmdNetworkState->setLogicalId('networkstate');
+				$cmdNetworkState->setType('info');
+				$cmdNetworkState->setSubType('numeric');
+				$cmdNetworkState->save();
+				log::add('verisure', 'debug', 'Création de la commande '.$cmdNetworkState->getName().' (LogicalId : '.$cmdNetworkState->getLogicalId().')');
+			}
 		}
 		
 		if ( $this->getConfiguration('alarmtype') == 2 )   { 
@@ -407,16 +424,7 @@ class verisure extends eqLogic {
 			$result_login = $MyAlarm->Login();
 			log::add('verisure', 'debug', '│ Request LOGIN - 0 => '.$result_login[0].' - 1 => '.$result_login[1].' - 2 => '.$result_login[2].' - 3 => '.$result_login[3].' - 4 => '.$result_login[4]);
 			$result_myinst = $MyAlarm->MyInstallation();
-			log::add('verisure', 'debug', '│ Request MYINSTALLATION - 0 => '.$result_myinst[0].' - 1 => '.$result_myinst[1].' - 2 => '.$result_myinst[2].' - 3 => '.$result_myinst[3].' - 4 => '.var_export($result_myinst[4], true));
-			
-			// Bugfix error 60067 - Test
-			if ( $result_myinst[1] == "ERROR")  {
-				$result_login = $MyAlarm->Login();
-				log::add('verisure', 'debug', '│ Request LOGIN - 0 => '.$result_login[0].' - 1 => '.$result_login[1].' - 2 => '.$result_login[2].' - 3 => '.$result_login[3].' - 4 => '.$result_login[4]);
-				$result_myinst = $MyAlarm->MyInstallation();
-				log::add('verisure', 'debug', '│ Request MYINSTALLATION - 0 => '.$result_myinst[0].' - 1 => '.$result_myinst[1].' - 2 => '.$result_myinst[2].' - 3 => '.$result_myinst[3].' - 4 => '.var_export($result_myinst[4], true));
-			}
-			
+			log::add('verisure', 'debug', '│ Request MYINSTALLATION - 0 => '.$result_myinst[0].' - 1 => '.$result_myinst[1].' - 2 => '.$result_myinst[2].' - 3 => '.$result_myinst[3].' - 4 => '.json_encode($result_myinst[4]));
 			$result_logout = $MyAlarm->Logout();
 			log::add('verisure', 'debug', '│ Request CLS - 0 => '.$result_logout[0].' - 1 => '.$result_logout[1].' - 2 => '.$result_logout[2].' - 3 => '.$result_logout[3]);
 					
@@ -742,13 +750,14 @@ class verisure extends eqLogic {
 	public function GetReportAlarm($alarmtype,$numinstall,$username,$password,$code,$country)	{		//Type 1 & 2
 		
 		if ( $alarmtype == 1 )   {
+			$eqLogic = self::SetEqLogic($numinstall);
 			log::add('verisure', 'debug', '┌───────── Demande du journal d\'activité ─────────');
 			log::add('verisure', 'debug', '│ Alarm type = '.$alarmtype);
 			$MyAlarm = new verisureAPI($numinstall,$username,$password,$country);
 			$result_login = $MyAlarm->Login();
 			log::add('verisure', 'debug', '│ Request LOGIN - 0 => '.$result_login[0].' - 1 => '.$result_login[1].' - 2 => '.$result_login[2].' - 3 => '.$result_login[3].' - 4 => '.$result_login[4]);
 			$result_getreport = $MyAlarm->GetReport();
-			log::add('verisure', 'debug', '│ Request ACT_V2 - 0 => '.$result_getreport[0].' - 1 => '.$result_getreport[1].' - 2 => '.$result_getreport[2].' - 3 => '.var_export($result_getreport[3], true));
+			log::add('verisure', 'debug', '│ Request ACT_V2 - 0 => '.$result_getreport[0].' - 1 => '.$result_getreport[1].' - 2 => '.$result_getreport[2].' - 3 => '.json_encode($result_getreport[3]));
 			$result_logout = $MyAlarm->Logout();
 			log::add('verisure', 'debug', '│ Request CLS - 0 => '.$result_logout[0].' - 1 => '.$result_logout[1].' - 2 => '.$result_logout[2].' - 3 => '.$result_logout[3]);
 			
@@ -756,12 +765,14 @@ class verisure extends eqLogic {
 				if ( $result_getreport[1] == "OK")  {
 					$result = $result_getreport[3];
 					log::add('verisure', 'debug', '└───────── Journal d\'activité OK ─────────');
+					$eqLogic->checkAndUpdateCmd('networkstate', $eqLogic->SetNetworkState(1));
 				}
 				else  {
 					//throw new Exception("Erreur de commande Verisure");
 					$result = null;
 					log::add('verisure', 'debug', '│ /!\ Erreur de commande Verisure GetReport()');
 					log::add('verisure', 'debug', '└───────── Journal d\'activité NOK ─────────');
+					$eqLogic->checkAndUpdateCmd('networkstate', $eqLogic->SetNetworkState(0));
 				}
 			}	
 			else  {
@@ -769,7 +780,9 @@ class verisure extends eqLogic {
 				$result = null;
 				log::add('verisure', 'debug', '│ /!\ Erreur de connexion au cloud Verisure');
 				log::add('verisure', 'debug', '└───────── Journal d\'activité NOK ─────────');
+				$eqLogic->checkAndUpdateCmd('networkstate', $eqLogic->SetNetworkState(0));
 			}
+			$eqLogic->refreshWidget();
 			return $result;
 		}
 		
@@ -789,18 +802,21 @@ class verisure extends eqLogic {
 			if ( $result_getreport[0] == 200 )  {
 				$result = $result_getreport[2];
 				log::add('verisure', 'debug', '└───────── Journal d\'activité OK ─────────');
+				$eqLogic->SetNetworkState(0);
 			}
 			else  {
 				$result = null;
 				log::add('verisure', 'debug', '│ /!\ Erreur de connexion au cloud Verisure');
 				log::add('verisure', 'debug', '└───────── Journal d\'activité NOK ─────────');
+				$eqLogic->SetNetworkState(0);
 			}
 			return $result;
 		}
 	}
 
-	public function GetPhotosRequest($numinstall,$username,$password,$country,$device)	{
+	public function GetPhotosRequest($numinstall,$username,$password,$country,$device)	{	//Type 1 pour le moment
 		
+		$eqLogic = self::SetEqLogic($numinstall);
 		log::add('verisure', 'debug', '┌───────── Demande de photos ─────────');
 		$MyAlarm = new verisureAPI($numinstall,$username,$password,$country);
 		$result_login = $MyAlarm->Login();
@@ -818,12 +834,14 @@ class verisure extends eqLogic {
 			if ( $result_getimg[19] == "OK")  {
 				$result = $result_getimg[21];
 				log::add('verisure', 'debug', '└───────── Demande de photos OK ─────────');
+				$eqLogic->checkAndUpdateCmd('networkstate', $eqLogic->SetNetworkState(1));
 			}
 			else  {
 				//throw new Exception("Erreur de commande Verisure");
 				$result = null;
 				log::add('verisure', 'debug', '│ /!\ Erreur de commande Verisure GetPhotosRequest()');
-				log::add('verisure', 'debug', '└───────── Demande de photos NOK ─────────');				
+				log::add('verisure', 'debug', '└───────── Demande de photos NOK ─────────');
+				$eqLogic->checkAndUpdateCmd('networkstate', $eqLogic->SetNetworkState(0));				
 			}
 		}	
 		else  {
@@ -831,8 +849,43 @@ class verisure extends eqLogic {
 			$result = null;
 			log::add('verisure', 'debug', '│ /!\ Erreur de connexion au cloud Verisure');
 			log::add('verisure', 'debug', '└───────── Demande de photos NOK ─────────');
+			$eqLogic->checkAndUpdateCmd('networkstate', $eqLogic->SetNetworkState(0));
 		}
+		$eqLogic->refreshWidget();
 		return $result;
+	}
+	
+	public function SetNetworkState($result)  {		//Type 1
+		
+		$quality = 0;
+		$networkstate = array();
+				
+		if ( $this->getConfiguration('networkstate') == "" )   {
+			$networkstate = array(1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1);
+		}
+		else   {
+			$networkstate = json_decode($this->getConfiguration('networkstate'),true);
+		}
+		
+		array_shift($networkstate); 				//dépile la première valeur du tableau
+		$networkstate[24] = $result;				//ajoute le résultat de la dernière requête en dernière position du tableau
+		$this->setConfiguration('networkstate', json_encode($networkstate));
+		$this->save(true);
+		
+		$quality = array_count_values($networkstate)[1] / count($networkstate);
+		log::add('verisure', 'debug', 'Etat du réseau : '.json_encode($networkstate));
+		log::add('verisure', 'debug', 'Qualité du réseau : '.$quality);
+		return $quality;
+	}
+	
+	public function SetEqLogic($numinstall)   {
+	
+		foreach (eqLogic::byTypeAndSearhConfiguration('verisure', 'numinstall') as $verisure) {
+			if ($verisure->getConfiguration('numinstall') == $numinstall)   {
+				$eqLogic = $verisure;
+			}
+		return $eqLogic;
+		} 
 	}
 }
 
@@ -865,45 +918,55 @@ class verisureCmd extends cmd {
 							$eqlogic->checkAndUpdateCmd('state', "0");			// On met à jour la commande avec le LogicalId 'state' de l'eqlogic
 							$eqlogic->checkAndUpdateCmd('enable', "0");
 							$eqlogic->checkAndUpdateCmd('mode', "Désactivée");
+							$eqlogic->checkAndUpdateCmd('networkstate', $eqlogic->SetNetworkState(1));
 							break;
 						case 'A':
 						case '1':
 							$eqlogic->checkAndUpdateCmd('enable', "1");
 							$eqlogic->checkAndUpdateCmd('mode', "Total");
+							$eqlogic->checkAndUpdateCmd('networkstate', $eqlogic->SetNetworkState(1));
 							break;
 						case 'Q':
 							$eqlogic->checkAndUpdateCmd('enable', "1");
 							$eqlogic->checkAndUpdateCmd('mode', "Nuit");
+							$eqlogic->checkAndUpdateCmd('networkstate', $eqlogic->SetNetworkState(1));
 							break;
 						case 'P':
 							$eqlogic->checkAndUpdateCmd('enable', "1");
 							$eqlogic->checkAndUpdateCmd('mode', "Jour");
+							$eqlogic->checkAndUpdateCmd('networkstate', $eqlogic->SetNetworkState(1));
 							break;
 						case '3':
 							$eqlogic->checkAndUpdateCmd('enable', "1");
 							$eqlogic->checkAndUpdateCmd('mode', "Extérieur");
+							$eqlogic->checkAndUpdateCmd('networkstate', $eqlogic->SetNetworkState(1));
 							break;
 						case '4':
 							$eqlogic->checkAndUpdateCmd('enable', "1");
 							$eqlogic->checkAndUpdateCmd('mode', "Total + Ext");
+							$eqlogic->checkAndUpdateCmd('networkstate', $eqlogic->SetNetworkState(1));
 							break;
 						case 'C':
 							$eqlogic->checkAndUpdateCmd('enable', "1");
 							$eqlogic->checkAndUpdateCmd('mode', "Nuit + Ext");
+							$eqlogic->checkAndUpdateCmd('networkstate', $eqlogic->SetNetworkState(1));
 							break;
 						case 'B':
 							$eqlogic->checkAndUpdateCmd('enable', "1");
 							$eqlogic->checkAndUpdateCmd('mode', "Jour + Ext");
+							$eqlogic->checkAndUpdateCmd('networkstate', $eqlogic->SetNetworkState(1));
 							break;
 						case 'Erreur de connexion au cloud Verisure':
 							//throw new Exception($state);
 							log::add('verisure', 'debug', '│ /!\ Erreur de connexion au cloud Verisure');
 							log::add('verisure', 'debug', '└───────── Mise à jour statut NOK ─────────');
+							$eqlogic->checkAndUpdateCmd('networkstate', $eqlogic->SetNetworkState(0));
 							break;
 						case 'Erreur de commande Verisure':
 							//throw new Exception($state);
 							log::add('verisure', 'debug', '│ /!\ Erreur de commande Verisure GetStateAlarm()');
 							log::add('verisure', 'debug', '└───────── Mise à jour statut NOK ─────────');
+							$eqlogic->checkAndUpdateCmd('networkstate', $eqlogic->SetNetworkState(0));
 							break;
 					}
 					break;
@@ -915,18 +978,22 @@ class verisureCmd extends cmd {
 						case '1':
 							$eqlogic->checkAndUpdateCmd('enable', "1");
 							$eqlogic->checkAndUpdateCmd('mode', "Total");
+							$eqlogic->checkAndUpdateCmd('networkstate', $eqlogic->SetNetworkState(1));
 							break;
 						case '4':
 							$eqlogic->checkAndUpdateCmd('enable', "1");
 							$eqlogic->checkAndUpdateCmd('mode', "Total + Ext");
+							$eqlogic->checkAndUpdateCmd('networkstate', $eqlogic->SetNetworkState(1));
 							break;
 						case 'Erreur de connexion au cloud Verisure':
 							log::add('verisure', 'debug', '│ /!\ Erreur de connexion au cloud Verisure');
 							log::add('verisure', 'debug', '└───────── Activation mode total NOK ─────────');
+							$eqlogic->checkAndUpdateCmd('networkstate', $eqlogic->SetNetworkState(0));
 							break;
 						case 'Erreur de commande Verisure':
 							log::add('verisure', 'debug', '│ /!\ Erreur de commande Verisure ArmTotalAlarm()');
 							log::add('verisure', 'debug', '└───────── Activation mode total NOK ─────────');
+							$eqlogic->checkAndUpdateCmd('networkstate', $eqlogic->SetNetworkState(0));
 							break;
 					}
 					break;
@@ -937,18 +1004,22 @@ class verisureCmd extends cmd {
 						case 'Q':
 							$eqlogic->checkAndUpdateCmd('enable', "1");
 							$eqlogic->checkAndUpdateCmd('mode', "Nuit");
+							$eqlogic->checkAndUpdateCmd('networkstate', $eqlogic->SetNetworkState(1));
 							break;
 						case 'C':
 							$eqlogic->checkAndUpdateCmd('enable', "1");
 							$eqlogic->checkAndUpdateCmd('mode', "Nuit + Ext");
+							$eqlogic->checkAndUpdateCmd('networkstate', $eqlogic->SetNetworkState(1));
 							break;
 						case 'Erreur de connexion au cloud Verisure':
 							log::add('verisure', 'debug', '│ /!\ Erreur de connexion au cloud Verisure');
 							log::add('verisure', 'debug', '└───────── Activation mode nuit NOK ─────────');
+							$eqlogic->checkAndUpdateCmd('networkstate', $eqlogic->SetNetworkState(0));
 							break;
 						case 'Erreur de commande Verisure':
 							log::add('verisure', 'debug', '│ /!\ Erreur de commande Verisure ArmNightAlarm()');
 							log::add('verisure', 'debug', '└───────── Activation mode nuit NOK ─────────');
+							$eqlogic->checkAndUpdateCmd('networkstate', $eqlogic->SetNetworkState(0));
 							break;
 					}
 					break;
@@ -959,18 +1030,22 @@ class verisureCmd extends cmd {
 						case 'P':
 							$eqlogic->checkAndUpdateCmd('enable', "1");
 							$eqlogic->checkAndUpdateCmd('mode', "Jour");
+							$eqlogic->checkAndUpdateCmd('networkstate', $eqlogic->SetNetworkState(1));
 							break;
 						case 'B':
 							$eqlogic->checkAndUpdateCmd('enable', "1");
 							$eqlogic->checkAndUpdateCmd('mode', "Jour + Ext");
+							$eqlogic->checkAndUpdateCmd('networkstate', $eqlogic->SetNetworkState(1));
 							break;
 						case 'Erreur de connexion au cloud Verisure':
 							log::add('verisure', 'debug', '│ /!\ Erreur de connexion au cloud Verisure');
 							log::add('verisure', 'debug', '└───────── Activation mode jour NOK ─────────');
+							$eqlogic->checkAndUpdateCmd('networkstate', $eqlogic->SetNetworkState(0));
 							break;
 						case 'Erreur de commande Verisure':
 							log::add('verisure', 'debug', '│ /!\ Erreur de commande Verisure ArmDayAlarm()');
 							log::add('verisure', 'debug', '└───────── Activation mode jour NOK ─────────');
+							$eqlogic->checkAndUpdateCmd('networkstate', $eqlogic->SetNetworkState(0));
 							break;
 					}
 					break;
@@ -981,26 +1056,32 @@ class verisureCmd extends cmd {
 						case '3':
 							$eqlogic->checkAndUpdateCmd('enable', "1");
 							$eqlogic->checkAndUpdateCmd('mode', "Extérieur");
+							$eqlogic->checkAndUpdateCmd('networkstate', $eqlogic->SetNetworkState(1));
 							break;
 						case '4':
 							$eqlogic->checkAndUpdateCmd('enable', "1");
 							$eqlogic->checkAndUpdateCmd('mode', "Total + Ext");
+							$eqlogic->checkAndUpdateCmd('networkstate', $eqlogic->SetNetworkState(1));
 							break;
 						case 'C':
 							$eqlogic->checkAndUpdateCmd('enable', "1");
 							$eqlogic->checkAndUpdateCmd('mode', "Nuit + Ext");
+							$eqlogic->checkAndUpdateCmd('networkstate', $eqlogic->SetNetworkState(1));
 							break;
 						case 'B':
 							$eqlogic->checkAndUpdateCmd('enable', "1");
 							$eqlogic->checkAndUpdateCmd('mode', "Jour + Ext");
+							$eqlogic->checkAndUpdateCmd('networkstate', $eqlogic->SetNetworkState(1));
 							break;
 						case 'Erreur de connexion au cloud Verisure':
 							log::add('verisure', 'debug', '│ /!\ Erreur de connexion au cloud Verisure');
 							log::add('verisure', 'debug', '└───────── Activation mode extérieur NOK ─────────');
+							$eqlogic->checkAndUpdateCmd('networkstate', $eqlogic->SetNetworkState(0));
 							break;
 						case 'Erreur de commande Verisure':
 							log::add('verisure', 'debug', '│ /!\ Erreur de commande Verisure ArmExtAlarm()');
 							log::add('verisure', 'debug', '└───────── Activation mode extérieur NOK ─────────');
+							$eqlogic->checkAndUpdateCmd('networkstate', $eqlogic->SetNetworkState(0));
 							break;
 					}
 					break;	
@@ -1012,14 +1093,17 @@ class verisureCmd extends cmd {
 							$eqlogic->checkAndUpdateCmd('state', "0");	
 							$eqlogic->checkAndUpdateCmd('enable', "0");	
 							$eqlogic->checkAndUpdateCmd('mode', "Désactivée");
+							$eqlogic->checkAndUpdateCmd('networkstate', $eqlogic->SetNetworkState(1));
 							break;
 						case 'Erreur de connexion au cloud Verisure':
 							log::add('verisure', 'debug', '│ /!\ Erreur de connexion au cloud Verisure');
 							log::add('verisure', 'debug', '└───────── Désactivation NOK ─────────');
+							$eqlogic->checkAndUpdateCmd('networkstate', $eqlogic->SetNetworkState(0));
 							break;
 						case 'Erreur de commande Verisure':
 							log::add('verisure', 'debug', '│ /!\ Erreur de commande Verisure DisarmAlarm())');
 							log::add('verisure', 'debug', '└───────── Désactivation NOK ─────────');
+							$eqlogic->checkAndUpdateCmd('networkstate', $eqlogic->SetNetworkState(0));
 							break;
 					}	
 					break;

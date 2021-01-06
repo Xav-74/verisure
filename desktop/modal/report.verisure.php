@@ -67,7 +67,8 @@
 												echo '<td>';
 												echo $report['REG'][$i]['@attributes']['alias'];
 												echo '<br/>';
-												echo 'User : '. $report['REG'][$i]['@attributes']['user']. $report['REG'][$i]['@attributes']['myverisureUser'];
+												if ( array_key_exists('user', $report['REG'][$i]['@attributes']) )  { echo 'User : '. $report['REG'][$i]['@attributes']['user']; }
+												if ( array_key_exists('myverisureUser', $report['REG'][$i]['@attributes']) )  { echo 'User : '. $report['REG'][$i]['@attributes']['myverisureUser']; }
 												echo '</td>';
 												break;
 											case 2:
@@ -77,7 +78,8 @@
 												echo '<td>';
 												echo $report['REG'][$i]['@attributes']['alias'];
 												echo '<br/>';
-												echo 'User : '. $report['REG'][$i]['@attributes']['user']. $report['REG'][$i]['@attributes']['myverisureUser'];
+												if ( array_key_exists('user', $report['REG'][$i]['@attributes']) )  { echo 'User : '. $report['REG'][$i]['@attributes']['user']; }
+												if ( array_key_exists('myverisureUser', $report['REG'][$i]['@attributes']) )  { echo 'User : '. $report['REG'][$i]['@attributes']['myverisureUser']; }
 												echo '</td>';
 												break;
 											case 13:
@@ -120,7 +122,8 @@
 												echo '<td>';
 												echo $report['REG'][$i]['@attributes']['alias'];
 												echo '<br/>';
-												echo 'Source : '. $report['REG'][$i]['@attributes']['source'].' - User : '. $report['REG'][$i]['@attributes']['user']. $report['REG'][$i]['@attributes']['myverisureUser'];
+												if ( array_key_exists('user', $report['REG'][$i]['@attributes']) )  { echo 'Source : '. $report['REG'][$i]['@attributes']['source'].' - User : '. $report['REG'][$i]['@attributes']['user']; }
+												if ( array_key_exists('myverisureUser', $report['REG'][$i]['@attributes']) )  { echo 'Source : '. $report['REG'][$i]['@attributes']['source'].' - User : '. $report['REG'][$i]['@attributes']['myverisureUser']; }
 												echo '</td>';
 												break;
 											case 32:
@@ -130,7 +133,8 @@
 												echo '<td>';
 												echo $report['REG'][$i]['@attributes']['alias'];
 												echo '<br/>';
-												echo 'Source : '. $report['REG'][$i]['@attributes']['source'].' - User : '. $report['REG'][$i]['@attributes']['user']. $report['REG'][$i]['@attributes']['myverisureUser'];
+												if ( array_key_exists('user', $report['REG'][$i]['@attributes']) )  { echo 'Source : '. $report['REG'][$i]['@attributes']['source'].' - User : '. $report['REG'][$i]['@attributes']['user']; }
+												if ( array_key_exists('myverisureUser', $report['REG'][$i]['@attributes']) )  { echo 'Source : '. $report['REG'][$i]['@attributes']['source'].' - User : '. $report['REG'][$i]['@attributes']['myverisureUser']; }
 												echo '</td>';
 												break;
 											case 46:
@@ -141,7 +145,8 @@
 												echo '<td>';
 												echo $report['REG'][$i]['@attributes']['alias'];
 												echo '<br/>';
-												echo 'Source : '. $report['REG'][$i]['@attributes']['source'].' - User : '. $report['REG'][$i]['@attributes']['user']. $report['REG'][$i]['@attributes']['myverisureUser'];
+												if ( array_key_exists('user', $report['REG'][$i]['@attributes']) )  { echo 'Source : '. $report['REG'][$i]['@attributes']['source'].' - User : '. $report['REG'][$i]['@attributes']['user']; }
+												if ( array_key_exists('myverisureUser', $report['REG'][$i]['@attributes']) )  { echo 'Source : '. $report['REG'][$i]['@attributes']['source'].' - User : '. $report['REG'][$i]['@attributes']['myverisureUser']; }
 												echo '</td>';
 												break;
 											case 202:
@@ -152,7 +157,8 @@
 												echo '<td>';
 												echo $report['REG'][$i]['@attributes']['alias'];
 												echo '<br/>';
-												echo 'Source : '. $report['REG'][$i]['@attributes']['source'].' - User : '. $report['REG'][$i]['@attributes']['user']. $report['REG'][$i]['@attributes']['myverisureUser'];
+												if ( array_key_exists('user', $report['REG'][$i]['@attributes']) )  { echo 'Source : '. $report['REG'][$i]['@attributes']['source'].' - User : '. $report['REG'][$i]['@attributes']['user']; }
+												if ( array_key_exists('myverisureUser', $report['REG'][$i]['@attributes']) )  { echo 'Source : '. $report['REG'][$i]['@attributes']['source'].' - User : '. $report['REG'][$i]['@attributes']['myverisureUser']; }
 												echo '</td>';
 												break;
 											case 40:
@@ -163,7 +169,8 @@
 												echo '<td>';
 												echo $report['REG'][$i]['@attributes']['alias'];
 												echo '<br/>';
-												echo 'Source : '. $report['REG'][$i]['@attributes']['source'].' - User : '. $report['REG'][$i]['@attributes']['user']. $report['REG'][$i]['@attributes']['myverisureUser'];
+												if ( array_key_exists('user', $report['REG'][$i]['@attributes']) )  { echo 'Source : '. $report['REG'][$i]['@attributes']['source'].' - User : '. $report['REG'][$i]['@attributes']['user']; }
+												if ( array_key_exists('myverisureUser', $report['REG'][$i]['@attributes']) )  { echo 'Source : '. $report['REG'][$i]['@attributes']['source'].' - User : '. $report['REG'][$i]['@attributes']['myverisureUser']; }
 												echo '</td>';
 												break;
 										}		
