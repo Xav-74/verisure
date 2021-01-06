@@ -34,7 +34,7 @@ class verisure extends eqLogic {
 
 	public static $_widgetPossibility = array(
 		'custom' => true,
-		'custom::layout' => false,
+		//'custom::layout' => false,
 		'parameters' => array(),
 	);
 
