@@ -216,6 +216,7 @@ $eqLogics = eqLogic::byType($plugin->getId());
 								<span id="nbclimate" type="text" class="eqLogicAttr" data-l1key="configuration" data-l2key="nb_climate" style="display : none;"></span>
 								<span id="nbdoor" type="text" class="eqLogicAttr" data-l1key="configuration" data-l2key="nb_doorsensor" style="display : none;"></span>
 								<span id="nbcams" type="text" class="eqLogicAttr" data-l1key="configuration" data-l2key="nb_camera" style="display : none;"></span>
+								<span id="nbdevice" type="text" class="eqLogicAttr" data-l1key="configuration" data-l2key="nb_device" style="display : none;"></span>
 								<table id="table_smartplug" class="table table-bordered table-condensed">
 									<thead>
 										<tr>

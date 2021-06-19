@@ -47,7 +47,7 @@
 							if ( init('alarmtype') == 1 )  {
 								$i = 0;
 								$j = 1;
-								$filter = array("1","2","13","16","24","29","31","32","40","46","202","203","204","311");
+								$filter = array("1","2","13","16","24","25","26","29","31","32","40","46","202","203","204","311");
 								
 								foreach ($report['REG'] as $reg)  {
 									if (in_array($report['REG'][$i]['@attributes']['type'], $filter))  {
@@ -103,6 +103,26 @@
 												echo 'Smartplug : '. $report['REG'][$i]['@attributes']['device'];
 												echo '<br/>';
 												echo 'Source : '. $report['REG'][$i]['@attributes']['source'].' - User : '. $report['REG'][$i]['@attributes']['myverisureUser'];
+												echo '</td>';
+												break;
+											case 25:
+												echo '<td>';
+												echo '<img src="plugins/verisure/core/img/logo_def_elec.png" height="35" width="35"/>';
+												echo '</td>';
+												echo '<td>';
+												echo $report['REG'][$i]['@attributes']['alias'];
+												echo '<br/>';
+												echo 'Source : Centrale';
+												echo '</td>';
+												break;
+											case 26:
+												echo '<td>';
+												echo '<img src="plugins/verisure/core/img/logo_ret_elec.png" height="35" width="35"/>';
+												echo '</td>';
+												echo '<td>';
+												echo $report['REG'][$i]['@attributes']['alias'];
+												echo '<br/>';
+												echo 'Source : Centrale';
 												echo '</td>';
 												break;
 											case 29:

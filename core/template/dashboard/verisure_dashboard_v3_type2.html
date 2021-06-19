@@ -55,7 +55,7 @@
 	
 	<script>
         
-		var nbsp = #nb_climate# + #nb_doorsensor#;
+      	var nbsp = #nb_climate# + #nb_doorsensor# + #nb_device#;
 		$('.verisure_widget').css('height', 395 + nbsp * 20);
 		
 		
@@ -93,9 +93,25 @@
 				).appendTo("#devices_table");                    
             });
         });
-		
-		
-      	jeedom.cmd.update['#enable_id#'] = function(_options) {
+		$.getJSON("/plugins/verisure/data/stateDevices.json", function(device) {
+            $.each(device.smartPlugDevice, function (key, val) {
+                var name = "Smartplug "+val.area;
+                var icon = "";
+				if (val.currentState == "OFF") {
+					icon = '<i class="icon_red jeedomapp-prise"></i>';
+				}
+				if (val.currentState == "ON") {
+					icon = '<i class="icon_green jeedomapp-prise"></i>';
+				}
+                $('<tr class="row text-center">').append(
+					$('<td class="col-10 text-left" style="font-size: 12px !important">').text(name),
+					$('<td class="col-2">').html(icon),
+				).appendTo("#devices_table");                       
+            });
+        });
+						
+				
+		jeedom.cmd.update['#enable_id#'] = function(_options) {
             if ( _options.display_value == 0)  {
             	$('.iconCmd#enable_id#').empty().append('<i class="fa-2x icon_red jeedomapp-lock-ouvert"></i>');
             }
@@ -107,7 +123,7 @@
       	
       
 		jeedom.cmd.update['#state_id#'] = function(_options) {
-           	if ( _options.display_value == 0)  {
+            if ( _options.display_value == 0)  {
                $('.iconCmd#state_id#').empty().append('<i class="fa-2x icon_green jeedomapp-done"></i>');
             }
 			if ( _options.display_value == 1)  {
