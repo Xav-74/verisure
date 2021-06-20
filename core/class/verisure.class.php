@@ -627,7 +627,8 @@ class verisure extends eqLogic {
 					log::add('verisure', 'debug', '└───────── Activation mode total OK ─────────');
 				}
 				else  {
-					$result = "Erreur de commande Verisure";	
+					$result = "Erreur de commande Verisure";
+					throw new Exception($result_armtotal[6]);					
 				}
 			}	
 			else  {
@@ -679,7 +680,8 @@ class verisure extends eqLogic {
 				log::add('verisure', 'debug', '└───────── Activation mode nuit OK ─────────');
 			}
 			else  {
-				$result = "Erreur de commande Verisure";	
+				$result = "Erreur de commande Verisure";
+				throw new Exception($result_armnight[6]);
 			}
 		}
 		else  {
@@ -707,7 +709,8 @@ class verisure extends eqLogic {
 				log::add('verisure', 'debug', '└───────── Activation mode jour OK ─────────');
 			}
 			else  {
-				$result = "Erreur de commande Verisure";	
+				$result = "Erreur de commande Verisure";
+				throw new Exception($result_armday[6]);				
 			}
 		}
 		else  {
@@ -735,7 +738,8 @@ class verisure extends eqLogic {
 				log::add('verisure', 'debug', '└───────── Activation mode extérieur OK ─────────');
 			}
 			else  {
-				$result = "Erreur de commande Verisure";	
+				$result = "Erreur de commande Verisure";
+				throw new Exception($result_armext[6]);				
 			}
 		}
 		else  {
