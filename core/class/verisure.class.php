@@ -456,10 +456,30 @@ class verisure extends eqLogic {
 						$cmdDeviceOff->save();
 						log::add('verisure', 'debug', 'Création de la commande '.$cmdDeviceOff->getName().' (LogicalId : '.$cmdDeviceOff->getLogicalId().')');
 					}
-					
 					$i++;	
 				}
 			}
+			
+			//Création de la commande des Climates
+			for ($j = 0; $j < $this->getConfiguration('nb_smartplug'); $j++)  {
+				$i = 0;
+				if ($device_array['smartplugType'.$j] == "climateDevice")  {
+					$cmdDeviceTemp = $this->getCmd(null, $device_array['smartplugID'.$j].'::Temp');
+					if ( ! is_object($cmdDeviceTemp)) {
+						$cmdDeviceTemp = new verisureCmd();
+						$cmdDeviceTemp->setName('Temperature '.$device_array['smartplugName'.$j]);
+						$cmdDeviceTemp->setEqLogic_id($this->getId());
+						$cmdDeviceTemp->setLogicalId($device_array['smartplugID'.$j].'::Temp');
+						$cmdDeviceTemp->setType('info');
+						$cmdDeviceTemp->setSubType('numeric');
+						$cmdDeviceTemp->setDisplay('generic_type', 'TEMPERATURE');
+						$cmdDeviceTemp->setIsVisible(0);
+						$cmdDeviceTemp->save();
+						log::add('verisure', 'debug', 'Création de la commande '.$cmdDeviceTemp->getName().' (LogicalId : '.$cmdDeviceTemp->getLogicalId().')');
+					}
+					$i++;					
+				}
+			}	
 		}
 		
 		$this->save(true);		//paramètre "true" -> ne lance pas le postsave()
@@ -577,6 +597,7 @@ class verisure extends eqLogic {
 			
 			if ( $result_getstatealarm[0] == 200 )  {
 				$result = $result_getstatealarm[1];
+				$this->SetClimateDeviceTemp();
 				log::add('verisure', 'debug', '└───────── Mise à jour statut OK ─────────');
 			}
 			else  {
@@ -855,13 +876,11 @@ class verisure extends eqLogic {
 			if ( $result_getreport[0] == 200 )  {
 				$result = $result_getreport[2];
 				log::add('verisure', 'debug', '└───────── Journal d\'activité OK ─────────');
-				$eqLogic->SetNetworkState(0);
 			}
 			else  {
 				$result = null;
 				log::add('verisure', 'debug', '│ /!\ Erreur de connexion au cloud Verisure');
 				log::add('verisure', 'debug', '└───────── Journal d\'activité NOK ─────────');
-				$eqLogic->SetNetworkState(0);
 			}
 			return $result;
 		}
@@ -963,6 +982,28 @@ class verisure extends eqLogic {
 			$result = "Erreur de connexion au cloud Verisure";
 		}
 		return $result;
+	}
+	
+	public function SetClimateDeviceTemp()	{	//Type 2
+		
+		$filename = __PLGBASE__.'/data/'.'stateDevices.json';
+		if ( file_exists($filename) === false ) {
+			log::add('verisure', 'debug', '│ Impossible de trouver le fichier stateDevices.json');
+		}
+		
+		$content = file_get_contents($filename);
+        if (!is_json($content)) {
+            log::add('verisure', 'debug', '│ Le fichier JSON est corrompu');
+        }
+
+        $data = json_decode($content, true);
+        
+		foreach ($data['climateDevice'] as $climateDevice)  {
+			$device_label = $climateDevice['deviceLabel'];
+			$temp = $climateDevice['temperature'];
+			$this->checkAndUpdateCmd($device_label.'::Temp', $temp);
+			log::add('verisure', 'debug',  '│ Mise à jour température '.$device_label.' : '.$temp);
+		}
 	}
 }
 
