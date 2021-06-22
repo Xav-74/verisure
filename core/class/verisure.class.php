@@ -1316,7 +1316,7 @@ class verisureCmd extends cmd {
 						break;
 					case 'Erreur de connexion au cloud Verisure':
 						log::add('verisure', 'debug', '│ /!\ Erreur de connexion au cloud Verisure');
-						log::add('verisure', 'debug', '└───────── Désactivation NOK ─────────');
+						log::add('verisure', 'debug', '└───────── Activation mode home NOK ─────────');
 						break;
 				}	
 			}
@@ -1330,7 +1330,7 @@ class verisureCmd extends cmd {
 						break;
 					case 'Erreur de connexion au cloud Verisure':
 						log::add('verisure', 'debug', '│ /!\ Erreur de connexion au cloud Verisure');
-						log::add('verisure', 'debug', '└───────── Désactivation NOK ─────────');
+						log::add('verisure', 'debug', '└───────── Activation mode total NOK ─────────');
 						break;
 				}	
 			}

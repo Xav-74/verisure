@@ -260,7 +260,7 @@ class verisureAPI2 {
 			$chgange_state = json_decode($jsonResult2, false)->{'result'};
 		}
 		
-		return array($httpRespCode, $this->transactionID, $jsonResult2, $chgange_state);
+		return array($httpRespCode, $this->transactionID, $jsonResult, $jsonResult2);
 	}
 	
 	
