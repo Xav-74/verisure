@@ -646,7 +646,7 @@ class verisure extends eqLogic {
 			$result_giid = $MyAlarm->getGiid();
 			log::add('verisure', 'debug', '│ Request GIID - 0 => '.$result_giid[0].' - 1 => '.$result_giid[1]);
 			$result_setstate = $MyAlarm->setStateAlarm('ARMED_AWAY');
-			log::add('verisure', 'debug', '│ Request SETSTATEALARM : ARMED_AWAY - 0 => '.$result_setstate[0].' - 1 => '.$result_setstate[1].' - 2 => '.$result_setstate[2].' - 3 => '.$result_setstate[3]);
+			log::add('verisure', 'debug', '│ Request SETSTATEALARM : ARMED_AWAY - 0 => '.$result_setstate[0].' - 1 => '.$result_setstate[1].' - 2 => '.$result_setstate[2]);
 			$result_logout = $MyAlarm->Logout();
 			log::add('verisure', 'debug', '│ Request LOGOUT - 0 => '.$result_logout[0].' - 1 => '.$result_logout[1]);
 			
@@ -758,7 +758,7 @@ class verisure extends eqLogic {
 		$result_giid = $MyAlarm->getGiid();
 		log::add('verisure', 'debug', '│ Request GIID - 0 => '.$result_giid[0].' - 1 => '.$result_giid[1]);
 		$result_setstate = $MyAlarm->setStateAlarm('ARMED_HOME');
-		log::add('verisure', 'debug', '│ Request SETSTATEALARM : ARMED_HOME - 0 => '.$result_setstate[0].' - 1 => '.$result_setstate[1].' - 2 => '.$result_setstate[2].' - 3 => '.$result_setstate[3]);
+		log::add('verisure', 'debug', '│ Request SETSTATEALARM : ARMED_HOME - 0 => '.$result_setstate[0].' - 1 => '.$result_setstate[1].' - 2 => '.$result_setstate[2]);
 		$result_logout = $MyAlarm->Logout();
 		log::add('verisure', 'debug', '│ Request LOGOUT - 0 => '.$result_logout[0].' - 1 => '.$result_logout[1]);
 		
@@ -810,7 +810,7 @@ class verisure extends eqLogic {
 			$result_giid = $MyAlarm->getGiid();
 			log::add('verisure', 'debug', '│ Request GIID - 0 => '.$result_giid[0].' - 1 => '.$result_giid[1]);
 			$result_setstate = $MyAlarm->setStateAlarm('DISARMED');
-			log::add('verisure', 'debug', '│ Request SETSTATEALARM : DISARMED - 0 => '.$result_setstate[0].' - 1 => '.$result_setstate[1].' - 2 => '.$result_setstate[2].' - 3 => '.$result_setstate[3]);
+			log::add('verisure', 'debug', '│ Request SETSTATEALARM : DISARMED - 0 => '.$result_setstate[0].' - 1 => '.$result_setstate[1].' - 2 => '.$result_setstate[2]);
 			$result_logout = $MyAlarm->Logout();
 			log::add('verisure', 'debug', '│ Request LOGOUT - 0 => '.$result_logout[0].' - 1 => '.$result_logout[1]);
 			
