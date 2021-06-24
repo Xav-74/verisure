@@ -597,7 +597,7 @@ class verisure extends eqLogic {
 			
 			if ( $result_getstatealarm[0] == 200 )  {
 				$result = $result_getstatealarm[1];
-				$this->SetClimateDeviceTemp();
+				$this->SetDeviceAttribute();
 				log::add('verisure', 'debug', '└───────── Mise à jour statut OK ─────────');
 			}
 			else  {
@@ -988,7 +988,7 @@ class verisure extends eqLogic {
 		return $result;
 	}
 	
-	public function SetClimateDeviceTemp()	{	//Type 2
+	public function SetDeviceAttribute()	{	//Type 2
 		
 		$filename = __PLGBASE__.'/data/'.'stateDevices.json';
 		if ( file_exists($filename) === false ) {
@@ -1007,6 +1007,18 @@ class verisure extends eqLogic {
 			$temp = $climateDevice['temperature'];
 			$this->checkAndUpdateCmd($device_label.'::Temp', $temp);
 			log::add('verisure', 'debug',  '│ Mise à jour température '.$device_label.' : '.$temp);
+		}
+		
+		foreach ($data['smartPlugDevice'] as $smartPlugDevice)  {
+			$device_label = $smartPlugDevice['deviceLabel'];
+			if ( $smartPlugDevice['currentState'] == "ON" )   {
+				$this->checkAndUpdateCmd($device_label.'::State', "1");
+				log::add('verisure', 'debug',  '│ Mise à jour état '.$device_label.' : '."ON");
+			}
+			elseif ( $smartPlugDevice['currentState'] == "OFF" )   {
+				$this->checkAndUpdateCmd($device_label.'::State', "0");
+				log::add('verisure', 'debug',  '│ Mise à jour état '.$device_label.' : '."OFF");
+			}
 		}
 	}
 }
