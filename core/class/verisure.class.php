@@ -477,7 +477,23 @@ class verisure extends eqLogic {
 						$cmdDeviceTemp->save();
 						log::add('verisure', 'debug', 'Création de la commande '.$cmdDeviceTemp->getName().' (LogicalId : '.$cmdDeviceTemp->getLogicalId().')');
 					}
-					$i++;					
+				
+					if ($device_array['smartplugModel'.$j] == "SMOKE3")   {
+						$cmdDeviceHumidity = $this->getCmd(null, $device_array['smartplugID'.$j].'::Humidity');
+						if ( ! is_object($cmdDeviceHumidity)) {
+							$cmdDeviceHumidity = new verisureCmd();
+							$cmdDeviceHumidity->setName('Humidite '.$device_array['smartplugName'.$j]);
+							$cmdDeviceHumidity->setEqLogic_id($this->getId());
+							$cmdDeviceHumidity->setLogicalId($device_array['smartplugID'.$j].'::Humidity');
+							$cmdDeviceHumidity->setType('info');
+							$cmdDeviceHumidity->setSubType('numeric');
+							$cmdDeviceHumidity->setDisplay('generic_type', 'HUMIDITY');
+							$cmdDeviceHumidity->setIsVisible(0);
+							$cmdDeviceHumidity->save();
+							log::add('verisure', 'debug', 'Création de la commande '.$cmdDeviceHumidity->getName().' (LogicalId : '.$cmdDeviceHumidity->getLogicalId().')');
+						}
+					}
+					$i++;
 				}
 			}
 
@@ -1028,6 +1044,12 @@ class verisure extends eqLogic {
 			$temp = $climateDevice['temperature'];
 			$this->checkAndUpdateCmd($device_label.'::Temp', $temp);
 			log::add('verisure', 'debug',  '│ Mise à jour température '.$device_label.' : '.$temp);
+			
+			if ( $climateDevice['deviceType'] == "SMOKE3" )   {
+				$humidity = $climateDevice['humidity'];
+				$this->checkAndUpdateCmd($device_label.'::Humidity', $humidity);
+				log::add('verisure', 'debug',  '│ Mise à jour humidité '.$device_label.' : '.$humidity);
+			}
 		}
 		
 		foreach ($data['smartPlugDevice'] as $smartPlugDevice)  {
@@ -1050,7 +1072,7 @@ class verisure extends eqLogic {
 			}
 			elseif ( $doorWindowDevice['state'] == "CLOSE" )   {
 				$this->checkAndUpdateCmd($device_label.'::State', "0");
-				log::add('verisure', 'debug',  '│ Mise à jour état SmartPlug '.$device_label.' : '."CLOSE");
+				log::add('verisure', 'debug',  '│ Mise à jour état ouverture '.$device_label.' : '."CLOSE");
 			}
 		}
 	}
