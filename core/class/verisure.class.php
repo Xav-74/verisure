@@ -479,7 +479,28 @@ class verisure extends eqLogic {
 					}
 					$i++;					
 				}
-			}	
+			}
+
+			//Création de la commande des DoorWindow
+			for ($j = 0; $j < $this->getConfiguration('nb_smartplug'); $j++)  {
+				$i = 0;
+				if ($device_array['smartplugType'.$j] == "doorWindowDevice")  {
+					$cmdDeviceDoor = $this->getCmd(null, $device_array['smartplugID'.$j].'::State');
+					if ( ! is_object($cmdDeviceDoor)) {
+						$cmdDeviceDoor = new verisureCmd();
+						$cmdDeviceDoor->setName('Etat ouverture '.$device_array['smartplugName'.$j]);
+						$cmdDeviceDoor->setEqLogic_id($this->getId());
+						$cmdDeviceDoor->setLogicalId($device_array['smartplugID'.$j].'::State');
+						$cmdDeviceDoor->setType('info');
+						$cmdDeviceDoor->setSubType('binary');
+						$cmdDeviceDoor->setDisplay('generic_type', 'OPENING');
+						$cmdDeviceDoor->setIsVisible(0);
+						$cmdDeviceDoor->save();
+						log::add('verisure', 'debug', 'Création de la commande '.$cmdDeviceDoor->getName().' (LogicalId : '.$cmdDeviceDoor->getLogicalId().')');
+					}
+					$i++;					
+				}
+			}
 		}
 		
 		$this->save(true);		//paramètre "true" -> ne lance pas le postsave()
@@ -1013,11 +1034,23 @@ class verisure extends eqLogic {
 			$device_label = $smartPlugDevice['deviceLabel'];
 			if ( $smartPlugDevice['currentState'] == "ON" )   {
 				$this->checkAndUpdateCmd($device_label.'::State', "1");
-				log::add('verisure', 'debug',  '│ Mise à jour état '.$device_label.' : '."ON");
+				log::add('verisure', 'debug',  '│ Mise à jour état SmartPlug '.$device_label.' : '."ON");
 			}
 			elseif ( $smartPlugDevice['currentState'] == "OFF" )   {
 				$this->checkAndUpdateCmd($device_label.'::State', "0");
-				log::add('verisure', 'debug',  '│ Mise à jour état '.$device_label.' : '."OFF");
+				log::add('verisure', 'debug',  '│ Mise à jour état SmartPlug '.$device_label.' : '."OFF");
+			}
+		}
+		
+		foreach ($data['doorWindowDevice'] as $doorWindowDevice)  {
+			$device_label = $doorWindowDevice['deviceLabel'];
+			if ( $doorWindowDevice['state'] == "OPEN" )   {
+				$this->checkAndUpdateCmd($device_label.'::State', "1");
+				log::add('verisure', 'debug',  '│ Mise à jour état ouverture '.$device_label.' : '."OPEN");
+			}
+			elseif ( $doorWindowDevice['state'] == "CLOSE" )   {
+				$this->checkAndUpdateCmd($device_label.'::State', "0");
+				log::add('verisure', 'debug',  '│ Mise à jour état SmartPlug '.$device_label.' : '."CLOSE");
 			}
 		}
 	}
