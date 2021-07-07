@@ -191,7 +191,7 @@ class verisureAPI2 {
 		$tab_device['climateDevice'] = $jsonResult['climateValues'];
         $tab_device['doorWindowDevice'] = $jsonResult['doorWindow']['doorWindowDevice'];
 		$tab_device['cameraDevice'] = $jsonResult['customerImageCameras'];
-		
+		$tab_device['smartPlugDevice'] = $jsonResult['smartPlugs'];
 		return array($httpRespCode, $result[1], $tab_device);
 	}
   
@@ -231,6 +231,7 @@ class verisureAPI2 {
 		$tab_device['climateDevice'] = $jsonResult['climateValues'];
         $tab_device['doorWindowDevice'] = $jsonResult['doorWindow']['doorWindowDevice'];
 		$tab_device['cameraDevice'] = $jsonResult['customerImageCameras'];
+		$tab_device['smartPlugDevice'] = $jsonResult['smartPlugs'];
 		
 		return array($httpRespCode, json_encode($tab_device));
 	}
@@ -297,6 +298,20 @@ class verisureAPI2 {
 		return array($httpRespCode, $result[1], $jsonResult);
 	}
 	
+	
+	public function setStateSmartplug($device_label, $state)  {				// Set the status of smartplugs - ON (True) / OFF (False)
+		
+		$method = "POST";
+		$url = sprintf($this->workingDomain.$this->baseUrl.'installation/%s/smartplug/state/', $this->giid);
+		$headers = $this->setHeaders();
+		$data = json_encode(array(array('deviceLabel' => $device_label, 'state' => $state)));
+		$result = $this->doRequest($method, $url, $headers, $data);
+		
+		$httpRespCode = $result[0];
+		$jsonResult = $result[1];
+		
+		return array($httpRespCode, $data, $jsonResult);
+	}
 }
 
 ?>

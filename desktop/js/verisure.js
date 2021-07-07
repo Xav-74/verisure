@@ -43,7 +43,9 @@ function addCmdToTable(_cmd) {
 	if (init(_cmd.type) == 'info') {
 		//tr += '<span><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="isHistorized"/>{{Historiser}}<br/></span>';
 		tr += '<span><input type="checkbox" class="cmdAttr" data-l1key="isVisible"/>{{Affichage}}<br/></span>';
-		tr += '<span><input type="checkbox" class="cmdAttr" data-l1key="display" data-l2key="invertBinary"/>{{Inverser}}</br></span> ';
+		if (init(_cmd.subType) == 'binary') {
+			tr += '<span><input type="checkbox" class="cmdAttr" data-l1key="display" data-l2key="invertBinary"/>{{Inverser}}</br></span> ';
+		}
 	}
 	if (init(_cmd.type) == 'action') {
 		tr += '<span><input type="checkbox" class="cmdAttr" data-l1key="isVisible"/>{{Affichage}}<br/></span>';
@@ -97,6 +99,7 @@ $('#bt_SynchronizeMyInstallation').on('click',function() {
 	$('#nbclimate').empty();
 	$('#nbdoor').empty();
 	$('#nbcams').empty();
+	$('#nbdevice').empty();
   
 	$('#div_alert').showAlert({message: '{{Synchronisation en cours}}', level: 'warning'});	
 	$.ajax({													// fonction permettant de faire de l'ajax
@@ -218,6 +221,30 @@ $('#bt_SynchronizeMyInstallation').on('click',function() {
 						$('#table_smartplug tbody').append(tr);
 					}
 					nbsp += nbcams;
+										
+					var nbdevice = data.result['smartPlugDevice'].length;
+					$('#div_alert').showAlert({message: data.result['smartPlugDevice'].length, level: 'danger'});
+					$('#nbdevice').append(nbdevice);
+					for(j = 0; j < nbdevice ; j++) {
+						var i = j + nbsp;
+						var tr = '<tr>';
+						tr += '<td>';
+						tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="'+data.result['smartPlugDevice'][j]['deviceLabel']+'" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugID'+i+'">';
+						tr += '</td>';
+						tr += '<td>';
+						tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="'+data.result['smartPlugDevice'][j]['area']+'" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugName'+i+'">';
+						tr += '</td>';
+						tr += '<td>';
+						tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="SMARTPLUG1" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugModel'+i+'">';
+						tr += '</td>';
+						tr += '<td>';					
+						tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="smartPlugDevice" style="display : none;" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugType'+i+'">';
+						tr += '</td>';
+						tr += '</tr>';
+						$('#table_smartplug tbody').append(tr);
+					}
+					nbsp += nbdevice;
+					
 					$('#nbsp').append(nbsp);
 					var tr = $('#table_smartplug tbody tr:last');
 				}
