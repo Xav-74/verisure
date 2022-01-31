@@ -66,7 +66,7 @@
 		
 		
 		$('#devices_table').empty();
-		$.getJSON("/plugins/verisure/data/stateDevices.json", function(doorsensor) {
+		$.getJSON("/core/php/downloadFile.php?pathfile=plugins/verisure/data/stateDevices.json", function(doorsensor) {
             $.each(doorsensor.doorWindowDevice, function (key, val) {
                 var name = "Capteur "+val.area;
                 var icon = "";
@@ -82,7 +82,7 @@
 				).appendTo("#devices_table");                    
             });
         });
-		$.getJSON("/plugins/verisure/data/stateDevices.json", function(climate) {
+		$.getJSON("/core/php/downloadFile.php?pathfile=plugins/verisure/data/stateDevices.json", function(climate) {
             $.each(climate.climateDevice, function (key, val) {
                 var name = "Température "+val.deviceArea;
                 var temp = val.temperature+" °C";
@@ -93,7 +93,7 @@
 				).appendTo("#devices_table");                    
             });
         });
-		$.getJSON("/plugins/verisure/data/stateDevices.json", function(device) {
+		$.getJSON("/core/php/downloadFile.php?pathfile=plugins/verisure/data/stateDevices.json", function(device) {
             $.each(device.smartPlugDevice, function (key, val) {
                 var name = "Smartplug "+val.area;
                 var icon = "";
