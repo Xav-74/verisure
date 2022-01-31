@@ -37,6 +37,14 @@ class verisure extends eqLogic {
 		//'custom::layout' => false,
 		'parameters' => array(),
 	);
+	
+	public function decrypt() {
+		$this->setConfiguration('password', utils::decrypt($this->getConfiguration('password')));
+	}
+
+	public function encrypt() {
+		$this->setConfiguration('password', utils::encrypt($this->getConfiguration('password')));
+	}
 
     /*     * ***********************Methode static*************************** */
     

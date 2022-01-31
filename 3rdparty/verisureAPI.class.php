@@ -160,7 +160,10 @@ class verisureAPI {
    			parse_str($item, $cookie);
    		 	$cookies = array_merge($cookies, $cookie);
 		}
-		$this->sessionID = $cookies['JSESSIONID'];
+		
+		if (!empty($cookies['JSESSIONID']))	{
+			$this->sessionID = $cookies['JSESSIONID'];
+        }
 				
 		return array($httpRespCode, $result);
 	}
