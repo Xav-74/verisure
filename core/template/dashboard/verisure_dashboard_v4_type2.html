@@ -64,53 +64,64 @@
 			$('.verisure_widget').css('height', 395 + nbsp * 20 - 90);
 		}
 		
-		
-		$('#devices_table').empty();
-		$.getJSON("/core/php/downloadFile.php?pathfile=plugins/verisure/data/stateDevices.json", function(doorsensor) {
-            $.each(doorsensor.doorWindowDevice, function (key, val) {
-                var name = "Capteur "+val.area;
-                var icon = "";
-				if (val.state == "OPEN") {
-					icon = '<i class="icon_red jeedomapp-lock-ouvert"></i>';
-				}
-				if (val.state == "CLOSE") {
-					icon = '<i class="icon_green jeedomapp-lock-ferme"></i>';
-				}
-                $('<tr class="row text-center">').append(
-					$('<td class="col-10 text-left" style="font-size: 12px !important">').text(name),
-					$('<td class="col-2">').html(icon),
-				).appendTo("#devices_table");                    
-            });
-        });
-		$.getJSON("/core/php/downloadFile.php?pathfile=plugins/verisure/data/stateDevices.json", function(climate) {
-            $.each(climate.climateDevice, function (key, val) {
-                var name = "Température "+val.deviceArea;
-                var temp = val.temperature+" °C";
-				if ( val.humidity != null ) { temp = temp+" ("+val.humidity+" %)"; }
-                $('<tr class="row text-center">').append(
-					$('<td class="col-10 text-left" style="font-size: 12px !important">').text(name),
-					$('<td class="col-2">').text(temp),
-				).appendTo("#devices_table");                    
-            });
-        });
-		$.getJSON("/core/php/downloadFile.php?pathfile=plugins/verisure/data/stateDevices.json", function(device) {
-            $.each(device.smartPlugDevice, function (key, val) {
-                var name = "Smartplug "+val.area;
-                var icon = "";
-				if (val.currentState == "OFF") {
-					icon = '<i class="icon_red jeedomapp-prise"></i>';
-				}
-				if (val.currentState == "ON") {
-					icon = '<i class="icon_green jeedomapp-prise"></i>';
-				}
-                $('<tr class="row text-center">').append(
-					$('<td class="col-10 text-left" style="font-size: 12px !important">').text(name),
-					$('<td class="col-2">').html(icon),
-				).appendTo("#devices_table");                       
-            });
-        });
-						
+		$.ajax({
+			type: "POST",
+			url: "plugins/verisure/core/ajax/verisure.ajax.php",
+			data: {
+				action: "getJSON",
+			},
+			dataType: 'json',
+				error: function (request, status, error) {
+				handleAjaxError(request, status, error);
+			},
+			success: function (data) { 		
 				
+				var json = JSON.parse(data.result);
+				$('#devices_table').empty();
+				
+				$.each(json.doorWindowDevice, function (key, val) {
+					var name = "Capteur "+val.area;
+					var icon = "";
+					if (val.state == "OPEN") {
+						icon = '<i class="icon_red jeedomapp-lock-ouvert"></i>';
+					}
+					if (val.state == "CLOSE") {
+						icon = '<i class="icon_green jeedomapp-lock-ferme"></i>';
+					}
+					$('<tr class="row text-center">').append(
+						$('<td class="col-10 text-left" style="font-size: 12px !important">').text(name),
+						$('<td class="col-2">').html(icon),
+					).appendTo("#devices_table");                    
+				});
+				
+				$.each(json.climateDevice, function (key, val) {
+					var name = "Température "+val.deviceArea;
+					var temp = val.temperature+" °C";
+					if ( val.humidity != null ) { temp = temp+" ("+val.humidity+" %)"; }
+					$('<tr class="row text-center">').append(
+						$('<td class="col-10 text-left" style="font-size: 12px !important">').text(name),
+						$('<td class="col-2">').text(temp),
+					).appendTo("#devices_table");                    
+				});
+				
+				$.each(json.smartPlugDevice, function (key, val) {
+					var name = "Smartplug "+val.area;
+					var icon = "";
+					if (val.currentState == "OFF") {
+						icon = '<i class="icon_red jeedomapp-prise"></i>';
+					}
+					if (val.currentState == "ON") {
+						icon = '<i class="icon_green jeedomapp-prise"></i>';
+					}
+					$('<tr class="row text-center">').append(
+						$('<td class="col-10 text-left" style="font-size: 12px !important">').text(name),
+						$('<td class="col-2">').html(icon),
+					).appendTo("#devices_table");                       
+				});
+			}
+		});
+		
+		
 		jeedom.cmd.update['#enable_id#'] = function(_options) {
             if ( _options.display_value == 0)  {
             	$('.iconCmd#enable_id#').empty().append('<i class="fa-2x icon_red jeedomapp-lock-ouvert"></i>');
