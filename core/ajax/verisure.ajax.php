@@ -20,11 +20,20 @@ try {
     require_once dirname(__FILE__) . '/../../../../core/php/core.inc.php';
     include_file('core', 'authentification', 'php');
 
-    if (!isConnect('admin')) {
+    if (!isConnect()) {
         throw new Exception(__('401 - Accès non autorisé', __FILE__));
     }
     
     ajax::init();
+
+	if (init('action') == 'getJSON') {
+		$result = file_get_contents( dirname(__FILE__).'/../../data/stateDevices.json');
+		ajax::success($result);
+	} 
+
+	if (!isConnect('admin')) {
+        throw new Exception(__('401 - Accès non autorisé', __FILE__));
+    }
 
 	if (init('action') == 'SynchronizeMyInstallation') {
 		$result = verisure::SynchronizeMyInstallation(init('alarmtype'),init('numinstall'),init('username'),init('pwd'),init('code'),init('country'));
