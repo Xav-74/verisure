@@ -138,12 +138,12 @@ class verisure extends eqLogic {
 		$version = jeedom::versionAlias($_version);
 		$replace['#version#'] = $_version;
 			
-		if ( $this->getConfiguration('alarmtype') == 1 )   { 
+		/*if ( $this->getConfiguration('alarmtype') == 1 )   { 
 			$replace['#numinstall#'] = $this->getConfiguration('numinstall');
 			$replace['#username#'] = $this->getConfiguration('username');
 			$replace['#password#'] = $this->getConfiguration('password');
 			$replace['#country#'] = $this->getConfiguration('country');
-		}
+		}*/
 			
 		if ( $this->getConfiguration('alarmtype') == 2 )   { 
 			$replace['#nb_smartplug#'] = $this->getConfiguration('nb_smartplug');
@@ -151,9 +151,9 @@ class verisure extends eqLogic {
 			$replace['#nb_doorsensor#'] = $this->getConfiguration('nb_doorsensor');
 			$replace['#nb_camera#'] = $this->getConfiguration('nb_camera');
 			$replace['#nb_device#'] = $this->getConfiguration('nb_device');
-			$replace['#username#'] = $this->getConfiguration('username');
+			/*$replace['#username#'] = $this->getConfiguration('username');
 			$replace['#password#'] = $this->getConfiguration('password');
-			$replace['#code#'] = $this->getConfiguration('code');
+			$replace['#code#'] = $this->getConfiguration('code');*/
 		}
 			
 		$this->emptyCacheWidget(); 		//vide le cache. Pratique pour le développement
@@ -408,8 +408,9 @@ class verisure extends eqLogic {
 			$device_array = $this->getConfiguration('devices');
 			for ($j = 0; $j < $this->getConfiguration('nb_smartplug'); $j++)  {
 				if ($device_array['smartplugType'.$j] == "cameraDevice")  {
-					if (isset($listValue))  { $listValue = $listValue .';'. $device_array['smartplugID'.$j].'|'.$device_array['smartplugName'.$j];  }
-					else  { $listValue = $device_array['smartplugID'.$j].'|'.$device_array['smartplugName'.$j];  }
+					$smartplugID = str_replace(" ","%20", $device_array['smartplugID'.$j]);
+					if (isset($listValue))  { $listValue = $listValue .';'.$smartplugID.'|'.$device_array['smartplugName'.$j];  }
+					else  { $listValue = $smartplugID.'|'.$device_array['smartplugName'.$j];  }
 				}
 			}
 			log::add('verisure', 'debug', $this->getHumanName().' - Mise à jour liste smartplugs compatibles images : '.var_export($listValue, true));
@@ -935,45 +936,100 @@ class verisure extends eqLogic {
 		}
 	}
 
-	public function GetPhotosRequest($numinstall,$username,$password,$country,$device)	{	//Type 1 pour le moment
+	public function GetPhotosRequest($device)	{		//Type 1 & 2
 		
-		$eqLogic = self::SetEqLogic($numinstall);
-		log::add('verisure', 'debug', '┌───────── Demande de photos ─────────');
-		$MyAlarm = new verisureAPI($numinstall,$username,$password,$country);
-		$result_login = $MyAlarm->Login();
-      	log::add('verisure', 'debug', '│ Request LOGIN - 0 => '.$result_login[0].' - 1 => '.$result_login[1].' - 2 => '.$result_login[2].' - 3 => '.$result_login[3].' - 4 => '.$result_login[4]);
-		$result_getimg = $MyAlarm->PhotosRequest($device);
-		log::add('verisure', 'debug', '│ Request SRV - 0 => '.$result_getimg[0].' - 1 => '.$result_getimg[1].' - 2 => '.$result_getimg[2].' - 3 => '.$result_getimg[3].' - 4 => '.$result_getimg[4]);
-		log::add('verisure', 'debug', '│ Request IMG1 - 0 => '.$result_getimg[5].' - 1 => '.$result_getimg[6].' - 2 => '.$result_getimg[7].' - 3 => '.$result_getimg[8]);
-		log::add('verisure', 'debug', '│ Request IMG2 - 0 => '.$result_getimg[9].' - 1 => '.$result_getimg[10].' - 2 => '.$result_getimg[11].' - 3 => '.$result_getimg[12].' - 4 => '.$result_getimg[13]);
-		log::add('verisure', 'debug', '│ Request ACT_V2 - 0 => '.$result_getimg[14].' - 1 => '.$result_getimg[15].' - 2 => '.$result_getimg[16].' - 3 => '.$result_getimg[17]);
-		log::add('verisure', 'debug', '│ Request INF - 0 => '.$result_getimg[18].' - 1 => '.$result_getimg[19].' - 2 => '.$result_getimg[20]);
-		$result_logout = $MyAlarm->Logout();
-		log::add('verisure', 'debug', '│ Request CLS - 0 => '.$result_logout[0].' - 1 => '.$result_logout[1].' - 2 => '.$result_logout[2].' - 3 => '.$result_logout[3]);
+		if ( $this->getConfiguration('alarmtype') == 1 )   { 
+			log::add('verisure', 'debug', '┌───────── Demande de photos ─────────');
+			log::add('verisure', 'debug', '│ Equipement '.$this->getHumanName().' - Alarme type '.$this->getConfiguration('alarmtype'));
+			$MyAlarm = new verisureAPI($this->getConfiguration('numinstall'),$this->getConfiguration('username'),$this->getConfiguration('password'),$this->getConfiguration('country'));
+			$result_login = $MyAlarm->Login();
+			log::add('verisure', 'debug', '│ Request LOGIN - 0 => '.$result_login[0].' - 1 => '.$result_login[1].' - 2 => '.$result_login[2].' - 3 => '.$result_login[3].' - 4 => '.$result_login[4]);
+			$result_getimg = $MyAlarm->PhotosRequest($device);
+			log::add('verisure', 'debug', '│ Request SRV - 0 => '.$result_getimg[0].' - 1 => '.$result_getimg[1].' - 2 => '.$result_getimg[2].' - 3 => '.$result_getimg[3].' - 4 => '.$result_getimg[4]);
+			log::add('verisure', 'debug', '│ Request IMG1 - 0 => '.$result_getimg[5].' - 1 => '.$result_getimg[6].' - 2 => '.$result_getimg[7].' - 3 => '.$result_getimg[8]);
+			log::add('verisure', 'debug', '│ Request IMG2 - 0 => '.$result_getimg[9].' - 1 => '.$result_getimg[10].' - 2 => '.$result_getimg[11].' - 3 => '.$result_getimg[12].' - 4 => '.$result_getimg[13]);
+			log::add('verisure', 'debug', '│ Request ACT_V2 - 0 => '.$result_getimg[14].' - 1 => '.$result_getimg[15].' - 2 => '.$result_getimg[16].' - 3 => '.$result_getimg[17]);
+			log::add('verisure', 'debug', '│ Request INF - 0 => '.$result_getimg[18].' - 1 => '.$result_getimg[19].' - 2 => '.$result_getimg[20]);
+			$result_logout = $MyAlarm->Logout();
+			log::add('verisure', 'debug', '│ Request CLS - 0 => '.$result_logout[0].' - 1 => '.$result_logout[1].' - 2 => '.$result_logout[2].' - 3 => '.$result_logout[3]);
+			
+			if ( $result_getimg[18] == 200)  {
+				if ( $result_getimg[19] == "OK")  {
+					$result = $result_getimg[21];
+					log::add('verisure', 'debug', '└───────── Demande de photos OK ─────────');
+					$this->checkAndUpdateCmd('networkstate', $this->SetNetworkState(1));
+				}
+				else  {
+					//throw new Exception("Erreur de commande Verisure");
+					$result = null;
+					log::add('verisure', 'debug', '│ /!\ Erreur de commande Verisure GetPhotosRequest()');
+					log::add('verisure', 'debug', '└───────── Demande de photos NOK ─────────');
+					$this->checkAndUpdateCmd('networkstate', $this->SetNetworkState(0));				
+				}
+			}	
+			else  {
+				//throw new Exception("Erreur de connexion au cloud Verisure");
+				$result = null;
+				log::add('verisure', 'debug', '│ /!\ Erreur de connexion au cloud Verisure');
+				log::add('verisure', 'debug', '└───────── Demande de photos NOK ─────────');
+				$this->checkAndUpdateCmd('networkstate', $this->SetNetworkState(0));
+			}
+			$this->refreshWidget();
+			return $result;
+		}
 		
-		if ( $result_getimg[18] == 200)  {
-			if ( $result_getimg[19] == "OK")  {
-				$result = $result_getimg[21];
-				log::add('verisure', 'debug', '└───────── Demande de photos OK ─────────');
-				$eqLogic->checkAndUpdateCmd('networkstate', $eqLogic->SetNetworkState(1));
+		if ( $this->getConfiguration('alarmtype') == 2 )   { 
+			$device_str = str_replace(' ','%20', $device);
+			log::add('verisure', 'debug', '┌───────── Demande de photos ─────────');
+			log::add('verisure', 'debug', '│ Equipement '.$this->getHumanName().' - Alarme type '.$this->getConfiguration('alarmtype'));
+			$MyAlarm = new verisureAPI2($this->getConfiguration('username'),$this->getConfiguration('password'),$this->getConfiguration('code'));
+			$result_login = $MyAlarm->Login();
+			log::add('verisure', 'debug', '│ Request LOGIN - 0 => '.$result_login[0].' - 1 => '.$result_login[1].' - 2 => '.$result_login[2]);
+			$result_giid = $MyAlarm->getGiid();
+			log::add('verisure', 'debug', '│ Request GIID - 0 => '.$result_giid[0].' - 1 => '.$result_giid[1]);
+			log::add('verisure', 'debug', '│ Device ID => '.$device);
+			$result_captureImage = $MyAlarm->captureImage($device_str);
+			log::add('verisure', 'debug', '│ Request CAPTUREIMAGE - 0 => '.$result_captureImage[0].' - 1 => '.$result_captureImage[1]);			
+			if ( $result_captureImage[0] == 200 )  {
+				sleep(10);
+				$eventStatus = 'UPLOADING';
+				log::add('verisure', 'debug', '| Status => ' .$eventStatus);
+				$retry = 12;
+				while ($retry > 0 && $eventStatus != 'COMPLETED')  {
+					$result_getImageSeries = $MyAlarm->getImageSeries();
+					$data = json_decode($result_getImageSeries[1], true);
+					if ( $data['imageSeries'][0]['deviceLabel'] == $device )  {
+						$eventStatus = $data['imageSeries'][0]['image'][0]['imageStatus'];
+						log::add('verisure', 'debug', '| Status => ' .$eventStatus);
+						$retry--;
+						sleep(5);
+					}
+				}
+				log::add('verisure', 'debug', '│ Request GETIMAGESERIES - 0 => '.$result_getImageSeries[0].' - 1 => '.$result_getImageSeries[1]);
+				$image_id =  $data['imageSeries'][0]['image'][0]['imageId'];
+				log::add('verisure', 'debug',  '│ Image ID => '.$image_id);
+				$result_downloadImage = $MyAlarm->downloadImage($device_str, $image_id);
+				log::add('verisure', 'debug', '│ Request DOWNLOADIMAGE - 0 => '.$result_downloadImage[0]);
+				$result_logout = $MyAlarm->Logout();
+				log::add('verisure', 'debug', '│ Request LOGOUT - 0 => '.$result_logout[0].' - 1 => '.$result_logout[1]);
+			
+				if ( $result_downloadImage[0] == 200 )  {
+					$result = $result_downloadImage[1];
+					log::add('verisure', 'debug', '└───────── Demande de photos OK ─────────');
+				}
+				else  {
+					$result = null;
+					log::add('verisure', 'debug', '│ /!\ Erreur de connexion au cloud Verisure');
+					log::add('verisure', 'debug', '└───────── Demande de photos NOK ─────────');
+				}
+				return $result;
 			}
 			else  {
-				//throw new Exception("Erreur de commande Verisure");
 				$result = null;
-				log::add('verisure', 'debug', '│ /!\ Erreur de commande Verisure GetPhotosRequest()');
+				log::add('verisure', 'debug', '│ /!\ Erreur de connexion au cloud Verisure');
 				log::add('verisure', 'debug', '└───────── Demande de photos NOK ─────────');
-				$eqLogic->checkAndUpdateCmd('networkstate', $eqLogic->SetNetworkState(0));				
-			}
-		}	
-		else  {
-			//throw new Exception("Erreur de connexion au cloud Verisure");
-			$result = null;
-			log::add('verisure', 'debug', '│ /!\ Erreur de connexion au cloud Verisure');
-			log::add('verisure', 'debug', '└───────── Demande de photos NOK ─────────');
-			$eqLogic->checkAndUpdateCmd('networkstate', $eqLogic->SetNetworkState(0));
+			}			
 		}
-		$eqLogic->refreshWidget();
-		return $result;
 	}
 	
 	public function SetNetworkState($result)  {		//Type 1
@@ -1005,8 +1061,8 @@ class verisure extends eqLogic {
 			if ($verisure->getConfiguration('numinstall') == $numinstall)   {
 				$eqLogic = $verisure;
 			}
-		return $eqLogic;
-		} 
+		}
+		return $eqLogic;		
 	}
 	
 	public function SetSmartplugState($device_label, $state)	{	//Type 2

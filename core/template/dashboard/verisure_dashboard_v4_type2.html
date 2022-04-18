@@ -1,4 +1,4 @@
-<div id="versiure_widget_ID" class="eqLogic-widget eqLogic verisure_widget verisure" style="text-align:center; width:350px; border:#border#; border-radius:#border-radius#; background-color:#background-color#; color:#color#; #style#;" data-eqType="#eqType#" data-translate-category="#translate_category#" data-category="#category#" data-tags="#tags#" data-eqLogic_id="#id#" data-eqLogic_uid="#uid#" data-version="dashboard">
+<div id="versiure_widget_ID" class="eqLogic-widget eqLogic verisure_widget_#id# verisure" style="text-align:center; width:350px; border:#border#; border-radius:#border-radius#; background-color:#background-color#; color:#color#; #style#;" data-eqType="#eqType#" data-translate-category="#translate_category#" data-category="#category#" data-tags="#tags#" data-eqLogic_id="#id#" data-eqLogic_uid="#uid#" data-version="dashboard">
 	
 	<center class="widget-name" style="padding-right: 0px;">
 		<span class="object_name" style="font-size:1.1em ;display:none;">#object_name#</span>
@@ -43,8 +43,8 @@
 					<script>
 						$('.cmd[data-cmd_id=#getpictures_id#] .selectCmd').on('change', function () {
 							if ($(this).value() != "") {
-								//$('#md_modal3').dialog({title: "Demande Images"});
-								//$('#md_modal3').load('index.php?v=d&plugin=verisure&modal=pictures.verisure&numinstall='+'#numinstall#'+'&username='+'#username#'+'&pwd='+encodeURIComponent('#password#')+'&country='+'#country#'+'&device='+$(this).value()).dialog('open');
+								$('#md_modal').dialog({title: "Demande Images"});
+								$('#md_modal').load('index.php?v=d&plugin=verisure&modal=pictures.verisure&eqLogic_id='+'#id#'+'&device='+$(this).value()).dialog('open');
 							}  
 						});
 					</script>
@@ -56,12 +56,12 @@
 	<script>
         
       	var nbsp = #nb_climate# + #nb_doorsensor# + #nb_device#;
-		$('.verisure_widget').css('height', 395 + nbsp * 20);
+		$('.verisure_widget_#id#').css('height', 395 + nbsp * 20);
 		
 		
 		if ( #getpictures_visible# == 0)  {
 			$('#zone_image').hide();
-			$('.verisure_widget').css('height', 395 + nbsp * 20 - 90);
+			$('.verisure_widget_#id#').css('height', 395 + nbsp * 20 - 90);
 		}
 		
 		$.ajax({
@@ -153,34 +153,34 @@
 
 	<style>
 	
-	.verisure_widget .container-fluid {
+	.verisure_widget_#id# .container-fluid {
 		margin-top: 10px;
 	}
 
-	.verisure_widget hr {
+	.verisure_widget_#id# hr {
 		border-top: 1px solid;
 		margin : 10px 0px 10px 0px;
 	}
 
-	.verisure_widget #infos {
+	.verisure_widget_#id# #infos {
 		margin-top: 5px;
 		margin-bottom: 10px;
 	}
 
-	.verisure_widget #mode {
+	.verisure_widget_#id# #mode {
 		margin-top: 0px;
 	}
 	
-	.verisure_widget #devices {
+	.verisure_widge_#id# #devices {t
 		margin-top: 10px;
 	}
 
-	.verisure_widget #actions {
+	.verisure_widget_#id# #actions {
 		margin-top: 10px;
 		margin-bottom: 20px;
 	}
 	
-	.verisure_widget #images {
+	.verisure_widget_#id# #images {
 		margin-top: 10px;
 		margin-bottom: 20px;
 	}
