@@ -312,6 +312,61 @@ class verisureAPI2 {
 		
 		return array($httpRespCode, $data, $jsonResult);
 	}
+	
+	
+	public function captureImage($device_label)  {				// Capture image from compatible smartplug
+		
+		$method = "POST";
+		$url = sprintf($this->workingDomain.$this->baseUrl.'installation/%s/device/%s/customerimagecamera/imagecapture', $this->giid, $device_label);
+		$headers = $this->setHeaders();
+		$result = $this->doRequest($method, $url, $headers, null);
+		
+		$httpRespCode = $result[0];
+		$jsonResult = $result[1];
+		//$requestId = json_decode($jsonResult, false)->{'requestId'};
+		
+		return array($httpRespCode, $jsonResult);
+	}
+	
+	
+	public function getImageSeries()  {				// Get series of image from all compatible smartplug
+		
+		$method = "GET";
+		$url = sprintf($this->workingDomain.$this->baseUrl.'installation/%s/device/customerimagecamera/imageseries/search?', $this->giid);
+		$headers = $this->setHeaders();
+		$params = [
+            'numberOfImageSeries' => 1,
+			'offset' => 0,
+			'fromDate' => "",
+			'toDate' => "",
+			'onlyNotViewed' => "",
+			'_' => $this->giid
+		];
+		$data = http_build_query($params);
+		$result = $this->doRequest($method, $url.$data, $headers, null);
+						
+		$httpRespCode = $result[0];
+		$jsonResult = $result[1];
+				
+		return array($httpRespCode, $jsonResult);
+	}
+	
+	
+	public function downloadImage($device_label, $image_id)  {				// Downlaod image after cpature
+		
+		$method = "GET";
+		$url = sprintf($this->workingDomain.$this->baseUrl.'installation/%s/device/%s/customerimagecamera/image/%s/', $this->giid, $device_label, $image_id);
+		$headers = $this->setHeaders();
+		$headers[] = 'APPLICATION_ID: PS_PYTHON';
+		$headers[] = 'Accept: image/jpeg';
+		$result = $this->doRequest($method, $url, $headers, null);
+		
+		$httpRespCode = $result[0];
+		$jsonResult = $result[1];
+		
+		return array($httpRespCode, $jsonResult);
+	}
+	
 }
 
 ?>

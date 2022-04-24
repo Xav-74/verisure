@@ -1,4 +1,4 @@
-<div id="versiure_widget_ID" class="eqLogic-widget eqLogic noResize verisure_widget verisure" style="text-align:center; width:250px; border:#border#; border-radius:#border-radius#; background-color:#background-color#; color:#color#; #style#;" data-eqType="#eqType#" data-translate-category="#translate_category#" data-category="#category#" data-tags="#tags#" data-eqLogic_id="#id#" data-eqLogic_uid="#uid#" data-version="dashboard">
+<div id="versiure_widget_ID" class="eqLogic-widget eqLogic noResize verisure_widget_#id# verisure" style="text-align:center; width:250px; border:#border#; border-radius:#border-radius#; background-color:#background-color#; color:#color#; #style#;" data-eqType="#eqType#" data-translate-category="#translate_category#" data-category="#category#" data-tags="#tags#" data-eqLogic_id="#id#" data-eqLogic_uid="#uid#" data-version="dashboard">
 	
 	<center class="widget-name" style="padding-right: 24px;">
 		<span class="object_name" style="font-size:1.1em ;display:none;">#object_name#</span>
@@ -38,11 +38,11 @@
 			<button class="btn cmd action" data-cmd_id="#released_id#" title="Désactivation" onclick="jeedom.cmd.execute({id: #released_id#});"><i class="fas fa-lock-open"></i></button>
             <button class="btn cmd action" data-cmd_id="#getstate_id#" title="Rafraichir" onclick="jeedom.cmd.execute({id: #getstate_id#});"><i class="fas fa-sync"></i></button>
 			<div></div>
-			<button id="btn_night" class="btn cmd action" data-cmd_id="#armed_night_id#" title="Mode Nuit" onclick="jeedom.cmd.execute({id: #armed_night_id#});"><i class="fas fa-moon"></i></button>
-			<button id="btn_day"  class="btn cmd action" data-cmd_id="#armed_day_id#" title="Mode Jour" onclick="jeedom.cmd.execute({id: #armed_day_id#});"><i class="fas fa-sun"></i></button>
-			<button id="btn_ext" class="btn cmd action" data-cmd_id="#armed_ext_id#" title="Mode Extérieur" onclick="jeedom.cmd.execute({id: #armed_ext_id#});"><i class="fas fa-home"></i></button>
+			<button id="btn_night_#id#" class="btn cmd action" data-cmd_id="#armed_night_id#" title="Mode Nuit" onclick="jeedom.cmd.execute({id: #armed_night_id#});"><i class="fas fa-moon"></i></button>
+			<button id="btn_day_#id#"  class="btn cmd action" data-cmd_id="#armed_day_id#" title="Mode Jour" onclick="jeedom.cmd.execute({id: #armed_day_id#});"><i class="fas fa-sun"></i></button>
+			<button id="btn_ext_#id#" class="btn cmd action" data-cmd_id="#armed_ext_id#" title="Mode Extérieur" onclick="jeedom.cmd.execute({id: #armed_ext_id#});"><i class="fas fa-home"></i></button>
         </div>
-		<div id="zone_image">
+		<div id="zone_image_#id#">
 			<hr class="cmdName">
 			<span class="label cmdName">Images</span>	
 			<div class="row" id="images">	
@@ -51,8 +51,8 @@
 					<script>
 						$('.cmd[data-cmd_id=#getpictures_id#] .selectCmd').on('change', function () {
 							if ($(this).value() != "") {
-								$('#md_modal3').dialog({title: "Demande Images"});
-								$('#md_modal3').load('index.php?v=d&plugin=verisure&modal=pictures.verisure&numinstall='+'#numinstall#'+'&username='+'#username#'+'&pwd='+encodeURIComponent('#password#')+'&country='+'#country#'+'&device='+$(this).value()).dialog('open');
+								$('#md_modal').dialog({title: "Demande Images"});
+								$('#md_modal').load('index.php?v=d&plugin=verisure&modal=pictures.verisure&eqLogic_id='+'#id#'+'&device='+$(this).value()).dialog('open');
 							}  
 						});
 					</script>
@@ -63,23 +63,23 @@
 	
 	<script>
         
-      	$('.verisure_widget').css('height', 370);
+      	$('.verisure_widget_#id#').css('height', 370);
 		if ( #getpictures_visible# == 0)  {
-			$('#zone_image').hide();
-			$('.verisure_widget').css('height', 280);
+			$('#zone_image_#id#').hide();
+			$('.verisure_widget_#id#').css('height', 280);
 		}
 		if ( #armed_night_visible# == 0)  {
-			$('#btn_night').hide();
+			$('#btn_night_#id#').hide();
 		}
 		if ( #armed_day_visible# == 0)  {
-			$('#btn_day').hide();
+			$('#btn_day_#id#').hide();
 		}
 		if ( #armed_ext_visible# == 0)  {
-			$('#btn_ext').hide();
+			$('#btn_ext_#id#').hide();
 		}
 		if ( #armed_night_visible# == 0 && #armed_day_visible# == 0 && #armed_ext_visible# == 0)  {
-			if ( #getpictures_visible# == 0) { $('.verisure_widget').css('height', 250); }
-			if ( #getpictures_visible# == 1) { $('.verisure_widget').css('height', 340); }
+			if ( #getpictures_visible# == 0) { $('.verisure_widget_#id#').css('height', 250); }
+			if ( #getpictures_visible# == 1) { $('.verisure_widget_#id#').css('height', 340); }
 		}
 				
 		
@@ -114,30 +114,30 @@
 
 	<style>
 	
-	.verisure_widget .container-fluid {
+	.verisure_widget_#id# .container-fluid {
 		margin-top: 10px;
 	}
 
-	.verisure_widget hr {
+	.verisure_widget_#id# hr {
 		border-top: 1px solid;
 		margin : 10px 0px 10px 0px;
 	}
 
-	.verisure_widget #infos {
+	.verisure_widget_#id# #infos {
 		margin-top: 5px;
 		margin-bottom: 10px;
 	}
 
-	.verisure_widget #mode {
+	.verisure_widget_#id# #mode {
 		margin-top: 0px;
 	}
 
-	.verisure_widget #actions {
+	.verisure_widget_#id# #actions {
 		margin-top: 10px;
 		margin-bottom: 20px;
 	}
 	
-	.verisure_widget #images {
+	.verisure_widget_#id# #images {
 		margin-top: 10px;
 	}
 	

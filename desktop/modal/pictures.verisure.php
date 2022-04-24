@@ -16,14 +16,26 @@
 * along with Jeedom. If not, see <http://www.gnu.org/licenses/>.
 */
 
-	if (!isConnect('admin')) {
+	if (!isConnect()) {
         throw new Exception(__('401 - Accès non autorisé', __FILE__));
     }
     
-	$path = "plugins/verisure/data/".date("Ymd_His")."_smartplugID_".init('device').".jpg";	
-	$img = verisure::GetPhotosRequest(init('numinstall'),init('username'),init('pwd'),init('country'),init('device'));
-	$image = base64_decode($img);
-	file_put_contents($path,$image);
+	$eqLogic = eqLogic::byId(init('eqLogic_id'));
+		
+	if ($eqLogic->getConfiguration('alarmtype') == 1 )   {
+		
+		$path = "plugins/verisure/data/".date("Ymd_His")."_smartplugID_".init('device').".jpg";	
+		$img = $eqLogic->GetPhotosRequest(init('device'));
+		$image = base64_decode($img);
+		file_put_contents($path,$image);
+	}
+	
+	if ($eqLogic->getConfiguration('alarmtype') == 2 )   {
+		
+		$path = "plugins/verisure/data/".date("Ymd_His")."_smartplugID_".init('device').".jpg";	
+		$img = $eqLogic->GetPhotosRequest(init('device'));
+		file_put_contents($path,$img);
+	}
 			
 ?>
 

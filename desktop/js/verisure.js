@@ -223,7 +223,6 @@ $('#bt_SynchronizeMyInstallation').on('click',function() {
 					nbsp += nbcams;
 										
 					var nbdevice = data.result['smartPlugDevice'].length;
-					$('#div_alert').showAlert({message: data.result['smartPlugDevice'].length, level: 'danger'});
 					$('#nbdevice').append(nbdevice);
 					for(j = 0; j < nbdevice ; j++) {
 						var i = j + nbsp;

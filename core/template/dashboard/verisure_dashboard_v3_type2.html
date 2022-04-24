@@ -1,4 +1,4 @@
-<div id="versiure_widget_ID" class="eqLogic-widget eqLogic verisure_widget verisure" style="text-align:center; width:350px; border:#border#; border-radius:#border-radius#; background-color:rgb(116, 92, 176); color:#color#; #style#;" data-eqType="#eqType#" data-translate-category="#translate_category#" data-category="#category#" data-tags="#tags#" data-eqLogic_id="#id#" data-eqLogic_uid="#uid#" data-version="dashboard">
+<div id="versiure_widget_ID" class="eqLogic-widget eqLogic verisure_widget_#id# verisure" style="text-align:center; width:350px; border:#border#; border-radius:#border-radius#; background-color:rgb(116, 92, 176); color:#color#; #style#;" data-eqType="#eqType#" data-translate-category="#translate_category#" data-category="#category#" data-tags="#tags#" data-eqLogic_id="#id#" data-eqLogic_uid="#uid#" data-version="dashboard">
 	
 	<center class="widget-name" style="padding-right: 0px;">
 		<span class="object_name" style="font-size:1.1em ;display:none;">#object_name#</span>
@@ -56,12 +56,12 @@
 	<script>
         
       	var nbsp = #nb_climate# + #nb_doorsensor# + #nb_device#;
-		$('.verisure_widget').css('height', 395 + nbsp * 20);
+		$('.verisure_widget_#id#').css('height', 395 + nbsp * 20);
 		
 		
 		if ( #getpictures_visible# == 0)  {
 			$('#zone_image').hide();
-			$('.verisure_widget').css('height', 395 + nbsp * 20 - 90);
+			$('.verisure_widget_#id#').css('height', 395 + nbsp * 20 - 90);
 		}
 		
 		
@@ -142,34 +142,34 @@
   
   	<style>
       
-      	.verisure_widget .container-fluid {
+      	.verisure_widget_#id# .container-fluid {
             margin-top: 10px;
         }
 
-        .verisure_widget hr {
+        .verisure_widget_#id# hr {
             border-top: 1px solid;
             margin : 10px 0px 10px 0px;
         }
 
-        .verisure_widget #infos {
+        .verisure_widget_#id# #infos {
             margin-top: 5px;
             margin-bottom: 10px;
         }
 
-        .verisure_widget #mode {
+        .verisure_widget_#id# #mode {
             margin-bottom: 10px;
         }
 
-		.verisure_widget #devices {
+		.verisure_widget_#id# #devices {
 			margin-top: 10px;
 		}
 
-        .verisure_widget #actions {
+        .verisure_widget_#id# #actions {
             margin-top: 10px;
             margin-bottom: 20px;
         }
 
-        .verisure_widget #actions button {
+        .verisure_widget_#id# #actions button {
 
             width: 32px;
             height: 30px;
@@ -178,11 +178,11 @@
             background-color: rgb(156, 132, 216);
         }
 
-        .verisure_widget #images {
+        .verisure_widget_#id# #images {
             margin-top: 10px;
         }
 
-        .verisure_widget #images select {
+        .verisure_widget_#id# #images select {
 
             width: 240px;
             height: 24px;
