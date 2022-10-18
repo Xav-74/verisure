@@ -119,129 +119,149 @@ $eqLogics = eqLogic::byType($plugin->getId());
 										<label class="checkbox-inline"><input type="checkbox" class="eqLogicAttr" data-l1key="isVisible" checked/>{{Visible}}</label>
 									</div>
 								</div>
-							
-								<br/><br/>  
-                        
+							                       
  							</fieldset>
 						</form>
 					</div>
-
-					
-					<div class="col-sm-3">
+				</div>
+				
+				<br/><br/> 
+				
+				<div class="row">
+					<div class="col-sm-6">      
 						<form class="form-horizontal">
-							<fieldset>	
-                        
+							<fieldset>    
+								
+								<div class="form-group">		
+									<label class="col-sm-6 control-label">{{Type d'alarme}}</label>
+									<div class="col-sm-6">
+										<select id="sel_alarmtype" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="alarmtype">
+											<option value="" disabled selected hidden>{{Choisir dans la liste}}</option>
+											<option value="1">{{Alarme type 1}}</option>
+											<option value="2">{{Alarme type 2}}</option>
+										</select>
+									</div>
+								</div>   
+								
+								<div id="div_numinstall" class="form-group">
+									<label class="col-sm-6 control-label help" data-help="{{Attention ! Ce numéro doit être rigoureusement identique à celui affiché sur votre application My Verisure. Si votre numéro d'installation commence par un 0 mais que celui-ci n'est pas présent dans l'application, supprimez-le !}}">{{Numéro d'installation}}</label>
+									<div class="col-sm-6">
+										<input type="number" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="numinstall" placeholder="12345678"/>
+									</div>
+								</div>
+									
+								<div id="div_user" class="form-group">						
+									<label class="col-sm-6 control-label">{{Identifiant}}</label>
+									<div class="col-sm-6">
+										<input type="text" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="username" placeholder="Identifiant utilisé pour vous connecter à votre compte Verisure" style="margin-bottom:0px !important"/>
+									</div>
+								</div>	
+									
+								<div id="div_pwd" class="form-group">		
+									<label class="col-sm-6 control-label">{{Mot de passe}}</label>
+									<div class="col-sm-6">
+										<input type="password" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="password" placeholder="Mot de passe utilisé pour vous connecter à votre compte Verisure"/>
+									</div>
+								</div>
+								
+								<div id="div_code" class="form-group">		
+									<label class="col-sm-6 control-label">{{Code Alarme}}</label>
+									<div class="col-sm-6">
+										<input type="password" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="code" placeholder="Code à 4 ou 6 digits de votre alarme"/>
+									</div>
+								</div>
+								
+								<div id="div_country" class="form-group">		
+									<label class="col-sm-6 control-label">{{Pays}}</label>
+									<div class="col-sm-6">
+										<select id="sel_country" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="country">
+											<option value="" disabled selected hidden>{{Choisir dans la liste}}</option>
+											<option value="1">FR</option>';
+											<option value="2">ES</option>';
+											<option value="3">GB</option>';
+											<option value="4">IT</option>';
+											<option value="5">PT</option>';
+										</select>
+									</div>
+								</div>
+							</fieldset>
+						</form>  
+                    </div>								
+									
+					<div class="col-sm-6">      
+						<form class="form-horizontal">
+							<fieldset> 
+                      
 								<div class="form-group">
-									<label class="col-sm-3 control-label">{{}}</label>
-									<div id="div_img" class="col-sm-3">
+									<div id="div_img" class="col-sm-9" style="text-align: center;">
 									</div>
 								</div>
 							
 							</fieldset>
 						</form>  
                     </div>
-				</div>	
-					 
-                    
-				<form class="form-horizontal">
-					<fieldset>    
-						
-						<div class="form-group">		
-							<label class="col-sm-3 control-label">{{Type d'alarme}}</label>
-							<div class="col-sm-3">
-								<select id="sel_alarmtype" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="alarmtype">
-									<option value="" disabled selected hidden>{{Choisir dans la liste}}</option>
-									<option value="1">{{Alarme type 1}}</option>
-									<option value="2">{{Alarme type 2}}</option>
-								</select>
-							</div>
-						</div>   
-						
-						<div id="div_numinstall" class="form-group">
-							<label class="col-sm-3 control-label help" data-help="{{Attention ! Ce numéro doit être rigoureusement identique à celui affiché sur votre application My Verisure. Si votre numéro d'installation commence par un 0 mais que celui-ci n'est pas présent dans l'application, supprimez-le !}}">{{Numéro d'installation}}</label>
-							<div class="col-sm-3">
-								<input type="number" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="numinstall" placeholder="12345678"/>
-							</div>
-						</div>
-							
-						<div id="div_user" class="form-group">						
-							<label class="col-sm-3 control-label">{{Identifiant}}</label>
-							<div class="col-sm-3">
-								<input type="text" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="username" placeholder="Identifiant utilisé pour vous connecter à votre compte Verisure"/>
-							</div>
-						</div>	
-							
-						<div id="div_pwd" class="form-group">		
-							<label class="col-sm-3 control-label">{{Mot de passe}}</label>
-							<div class="col-sm-3">
-								<input type="password" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="password" placeholder="Mot de passe utilisé pour vous connecter à votre compte Verisure"/>
-							</div>
-						</div>
-						
-						<div id="div_code" class="form-group">		
-							<label class="col-sm-3 control-label">{{Code Alarme}}</label>
-							<div class="col-sm-3">
-								<input type="password" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="code" placeholder="Code à 4 ou 6 digits de votre alarme"/>
-							</div>
-						</div>
-						
-						<div id="div_country" class="form-group">		
-							<label class="col-sm-3 control-label">{{Pays}}</label>
-							<div class="col-sm-3">
-								<select id="sel_country" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="country">
-									<option value="" disabled selected hidden>{{Choisir dans la liste}}</option>
-									<option value="1">FR</option>';
-									<option value="2">ES</option>';
-									<option value="3">GB</option>';
-									<option value="4">IT</option>';
-									<option value="5">PT</option>';
-								</select>
-							</div>
-						</div>   
-									
-						<br/><br/>
+				</div>
+
+				<br/><br/>
 										
-						<div class="form-group">		
-							<label class="col-sm-3 control-label">{{Informations}}</label>
-							<div class="col-sm-9">
-								Ce plugin est compatible avec 2 générations de matériels Verisure. Sélectionnez le type d'alarme correspondant à vos matériels (voir image associée).<br/>
-                                Les informations de connexion demandées sont celles utilisées pour vous connecter sur le portail web Verisure ou via l'application mobile My Verisure.<br/>
-								Le plugin ne vous demandera jamais les mots de passe utilisés pour vous identifier auprès du personnel Securitas Direct lors du déclenchement de votre alarme.<br/>
-							</div>
-						</div>
-										
-						<br/><br/>
-								
-						<div class="form-group">
-							<label class="col-sm-3 control-label">{{Mon installation}}</label>
-							<div class="col-sm-6">
-								<a class="btn btn-danger btn-sm cmdAction" id="bt_SynchronizeMyInstallation"><i class="fas fa-sync"></i> {{Synchroniser}}</a>
-								<a class="btn btn-info btn-sm cmdAction" id="bt_Reporting"><i class="fas fa-info"></i> {{Journal d'activité}}</a>
-								<br/><br/>
-								<span id="nbsp" type="text" class="eqLogicAttr" data-l1key="configuration" data-l2key="nb_smartplug" style="display : none;"></span>
-								<span id="nbclimate" type="text" class="eqLogicAttr" data-l1key="configuration" data-l2key="nb_climate" style="display : none;"></span>
-								<span id="nbdoor" type="text" class="eqLogicAttr" data-l1key="configuration" data-l2key="nb_doorsensor" style="display : none;"></span>
-								<span id="nbcams" type="text" class="eqLogicAttr" data-l1key="configuration" data-l2key="nb_camera" style="display : none;"></span>
-								<span id="nbdevice" type="text" class="eqLogicAttr" data-l1key="configuration" data-l2key="nb_device" style="display : none;"></span>
-								<table id="table_smartplug" class="table table-bordered table-condensed">
-									<thead>
-										<tr>
-											<th style="width: 15%;">{{ID}}</th>
-											<th style="width: 42.5%;">{{Nom}}</th>
-											<th style="width: 42.5%;">{{Type}}</th>
-										</tr>
-									</thead>
-									<tbody>
-									</tbody>
-								</table>
-							</div>
-						</div>
-							
-					</fieldset>
-				</form>
+				<div class="row">
+					<div class="col-sm-12">      
+						<form class="form-horizontal">
+							<fieldset>
+
+								<div class="form-group">		
+									<label class="col-sm-3 control-label" style="margin-left:-10px;">{{Informations}}</label>
+									<div class="col-sm-9">
+										Ce plugin est compatible avec 2 générations de matériels Verisure. Sélectionnez le type d'alarme correspondant à vos matériels (voir image associée).<br/>
+										Les informations de connexion demandées sont celles utilisées pour vous connecter sur le portail web Verisure ou via l'application mobile My Verisure.<br/>
+										Le plugin ne vous demandera jamais les mots de passe utilisés pour vous identifier auprès du personnel Securitas Direct lors du déclenchement de votre alarme.<br/>
+									</div>
+								</div>
+
+							</fieldset>
+						</form>  
+                    </div>
+				</div>										
+						
+				<br/><br/>
 				
-			</div>
+				<div class="row">
+					<div class="col-sm-12">      
+						<form class="form-horizontal">
+							<fieldset>
+				
+								<div class="form-group">
+									<label class="col-sm-3 control-label" style="margin-left:-10px;">{{Mon installation}}</label>
+									<div class="col-sm-6">
+										<a class="btn btn-danger btn-sm cmdAction" id="bt_SynchronizeMyInstallation"><i class="fas fa-sync"></i> {{Synchroniser}}</a>
+										<a class="btn btn-info btn-sm cmdAction" id="bt_Reporting"><i class="fas fa-info"></i> {{Journal d'activité}}</a>
+										<br/><br/>
+										<span id="nbsp" type="text" class="eqLogicAttr" data-l1key="configuration" data-l2key="nb_smartplug" style="display : none;"></span>
+										<span id="nbclimate" type="text" class="eqLogicAttr" data-l1key="configuration" data-l2key="nb_climate" style="display : none;"></span>
+										<span id="nbdoor" type="text" class="eqLogicAttr" data-l1key="configuration" data-l2key="nb_doorsensor" style="display : none;"></span>
+										<span id="nbcams" type="text" class="eqLogicAttr" data-l1key="configuration" data-l2key="nb_camera" style="display : none;"></span>
+										<span id="nbdevice" type="text" class="eqLogicAttr" data-l1key="configuration" data-l2key="nb_device" style="display : none;"></span>
+										<table id="table_smartplug" class="table table-bordered table-condensed">
+											<thead>
+												<tr>
+													<th style="width: 15%;">{{ID}}</th>
+													<th style="width: 42.5%;">{{Nom}}</th>
+													<th style="width: 42.5%;">{{Type}}</th>
+												</tr>
+											</thead>
+											<tbody>
+											</tbody>
+										</table>
+									</div>
+								</div>
+							
+							</fieldset>
+						</form>
+					</div>
+				</div>
 			
+			</div>
+						
 			<script>
 			
 			if ($('.eqLogicAttr[data-l2key=alarmtype]').value() != "1" && $('.eqLogicAttr[data-l2key=alarmtype]').value() != "2") {
@@ -256,7 +276,7 @@ $eqLogics = eqLogic::byType($plugin->getId());
 				
 				if ($('.eqLogicAttr[data-l2key=alarmtype]').value() == "1") {
 					$('#div_img').empty();
-					var img ='<img src="plugins/verisure/core/img/alarm_verisure.png" height="130" width="295" />';
+					var img ='<img src="plugins/verisure/core/img/alarm_verisure.png" height="170" width="385" />';
 					$('#div_img').append(img);
 					
 					/*$('#sel_country').empty();
@@ -385,7 +405,7 @@ $eqLogics = eqLogic::byType($plugin->getId());
 				<table id="table_cmd" class="table table-bordered table-condensed">
 					<thead>
 						<tr>
-							<th>{{Nom}}</th><th>{{Type}}</th><th>{{Action}}</th>
+							<th>{{ID}}</th><th>{{Nom}}</th><th>{{Type}}</th><th>{{Logical ID}}</th><th>{{Options}}</th><th>{{Valeur}}</th><th>{{Action}}</th>
 						</tr>
 					</thead>
 					<tbody>
