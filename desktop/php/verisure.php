@@ -233,7 +233,7 @@ $eqLogics = eqLogic::byType($plugin->getId());
 								<div class="form-group">
 									<label class="col-sm-3 control-label" style="margin-left:-10px;">{{Mon installation}}</label>
 									<div class="col-sm-6">
-										<a class="btn btn-danger btn-sm cmdAction" id="bt_SynchronizeMyInstallation"><i class="fas fa-sync"></i> {{Synchroniser}}</a>
+										<a class="btn btn-danger btn-sm cmdAction" id="bt_Authentication_2FA"><i class="fas fa-sync"></i> {{Authentification 2FA}}</a>
 										<a class="btn btn-info btn-sm cmdAction" id="bt_Reporting"><i class="fas fa-info"></i> {{Journal d'activité}}</a>
 										<br/><br/>
 										<span id="nbsp" type="text" class="eqLogicAttr" data-l1key="configuration" data-l2key="nb_smartplug" style="display : none;"></span>

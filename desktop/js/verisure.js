@@ -101,8 +101,15 @@ function printEqLogic(_eqLogic) {
 };
 
 
-$('#bt_SynchronizeMyInstallation').on('click',function() {
+$('#bt_Authentication_2FA').on('click',function() {
  
+	var alarmtype = $('.eqLogicAttr[data-l2key=alarmtype]').value();
+	var numinstall = $('.eqLogicAttr[data-l2key=numinstall]').value();
+	var username = $('.eqLogicAttr[data-l2key=username]').value();
+	var pwd = $('.eqLogicAttr[data-l2key=password]').value();
+	var code = $('.eqLogicAttr[data-l2key=code]').value();
+	var country = $('.eqLogicAttr[data-l2key=country]').value();
+	
 	$('#table_smartplug tbody').empty();
 	$('#nbsp').empty();
 	$('#nbclimate').empty();
@@ -110,18 +117,18 @@ $('#bt_SynchronizeMyInstallation').on('click',function() {
 	$('#nbcams').empty();
 	$('#nbdevice').empty();
   
-	$('#div_alert').showAlert({message: '{{Synchronisation en cours}}', level: 'warning'});	
+	$('#div_alert').showAlert({message: '{{Authentification en cours}}', level: 'warning'});	
 	$.ajax({													// fonction permettant de faire de l'ajax
 		type: "POST", 											// methode de transmission des données au fichier php
 		url: "plugins/verisure/core/ajax/verisure.ajax.php", 	// url du fichier php
 		data: {
-			action: "SynchronizeMyInstallation",
-			alarmtype: $('.eqLogicAttr[data-l2key=alarmtype]').value(),
-			numinstall: $('.eqLogicAttr[data-l2key=numinstall]').value(),
-			username: $('.eqLogicAttr[data-l2key=username]').value(),
-			pwd: $('.eqLogicAttr[data-l2key=password]').value(),
-			code: $('.eqLogicAttr[data-l2key=code]').value(),
-			country: $('.eqLogicAttr[data-l2key=country]').value()
+			action: "Authentication_2FA",
+			alarmtype: alarmtype,
+			numinstall: numinstall,
+			username: username,
+			pwd: pwd,
+			code: code,
+			country: country
 			},
 		dataType: 'json',
 			error: function (request, status, error) {
@@ -130,36 +137,52 @@ $('#bt_SynchronizeMyInstallation').on('click',function() {
 		success: function (data) { 															
 			
 			if ($('.eqLogicAttr[data-l2key=alarmtype]').value() == 1)   {
-				if (data.state != 'ok') {
-					$('#div_alert').showAlert({message: '{{Erreur lors de la synchronisation}}', level: 'danger'});
+				if (data.state != 'ok' || data.result == null) {
+					$('#div_alert').showAlert({message: '{{Erreur lors de l\'authentification 2FA}}', level: 'danger'});
 					return;
 				}
 				else  {
-					var nbsp = data.result['Devices'].length;
-					$('#nbsp').append(nbsp); 
-					for(j = 0; j < nbsp ; j++) {
-						var tr = '<tr>';
-						tr += '<td>';
-						tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="'+data.result['Devices'][j]['idDev']+'" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugID'+j+'">';
-						tr += '</td>';
-						tr += '<td>';
-						tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="'+data.result['Devices'][j]['alias']+'" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugName'+j+'">';
-						tr += '</td>';
-						tr += '<td>';
-						tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="'+data.result['Devices'][j]['aliasType']+'" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugModel'+j+'">';
-						tr += '</td>';
-						tr += '<td>';					
-						tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="'+data.result['Devices'][j]['type']+'"  style="display : none;" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugType'+j+'">';
-						tr += '</td>';
-						tr += '</tr>';
-						$('#table_smartplug tbody').append(tr);
+					if ( data.result['type'] == "OTP" ) {
+						var nb_phones = data.result['res'].length;
+						var message = "\n Vérification de l'identité (2FA) \n Choisissez le téléphone pour l'authentification par SMS :\n\n";
+						for(i = 0; i < nb_phones ; i++) {
+							var id = parseInt(data.result['res'][i]['id']) + 1;
+							message = message + " " + id + " : " + data.result['res'][i]['phone'] + "\n";
+						}
+						var result = prompt(message, "");
+						var phone_id = parseInt(result - 1);
+						sendOTP(alarmtype, numinstall, username, pwd, code, country, phone_id);
 					}
-					var tr = $('#table_smartplug tbody tr:last');
+
+					if ( data.result['type'] == "devices" ) {
+						var nbsp = data.result['res'].length;
+						$('#nbsp').append(nbsp); 
+						for(j = 0; j < nbsp ; j++) {
+							var tr = '<tr>';
+							tr += '<td>';
+							tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="'+data.result['res'][j]['id']+'" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugID'+j+'">';
+							tr += '</td>';
+							tr += '<td>';
+							tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="'+data.result['res'][j]['name']+'" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugName'+j+'">';
+							tr += '</td>';
+							tr += '<td>';
+							if (data.result['res'][j]['type'] == "CENT") { tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="Centrale de l\'alarme" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugModel'+j+'">'; }
+							if (data.result['res'][j]['type'] == "MG") { tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="Détecteur de chocs et d\'ouverture" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugModel'+j+'">'; }
+							if (data.result['res'][j]['type'] == "XP" || data.result['res'][j]['type'] == "XR" || data.result['res'][j]['type'] == "YR") { tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="Détecteur de mouvements avec images" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugModel'+j+'">'; }
+							tr += '</td>';
+							tr += '<td>';					
+							tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="'+data.result['res'][j]['type']+'"  style="display : none;" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugType'+j+'">';
+							tr += '</td>';
+							tr += '</tr>';
+							$('#table_smartplug tbody').append(tr);
+						}
+						var tr = $('#table_smartplug tbody tr:last');
+					}
 				}
-				$('#div_alert').showAlert({message: '{{Synchronisation terminée avec succès}}', level: 'success'});
+				$('#div_alert').showAlert({message: '{{Authentification 2FA terminée avec succès}}', level: 'success'});
 			}
 			
-			if ($('.eqLogicAttr[data-l2key=alarmtype]').value() == 2)   {
+			/*if ($('.eqLogicAttr[data-l2key=alarmtype]').value() == 2)   {
 				if (data.state != 'ok') {
 					$('#div_alert').showAlert({message: '{{Erreur lors de la synchronisation}}', level: 'danger'});
 					return;
@@ -257,19 +280,108 @@ $('#bt_SynchronizeMyInstallation').on('click',function() {
 					var tr = $('#table_smartplug tbody tr:last');
 				}
 				$('#div_alert').showAlert({message: '{{Synchronisation terminée avec succès}}', level: 'success'});
-			}
+			}*/
 		}
 	});
 });
 
 
+function sendOTP(alarmtype, numinstall, username, pwd, code, country, phone_id)
+{
+ 
+	$('#div_alert').showAlert({message: '{{Envoi du SMS en cours}}', level: 'warning'});	
+	$.ajax({													// fonction permettant de faire de l'ajax
+		type: "POST", 											// methode de transmission des données au fichier php
+		url: "plugins/verisure/core/ajax/verisure.ajax.php", 	// url du fichier php
+		data: {
+			action: "Send_OTP",
+			alarmtype: alarmtype,
+			numinstall: numinstall,
+			username: username,
+			pwd: pwd,
+			code: code,
+			country: country,
+			phone_id: phone_id,
+			},
+		dataType: 'json',
+			error: function (request, status, error) {
+			handleAjaxError(request, status, error);
+			},
+		success: function (data) { 			
+			
+			if (data.state != 'ok') {
+				$('#div_alert').showAlert({message: '{{Erreur lors de l\'authentification 2FA}}', level: 'danger'});
+				return;
+			}
+			else  {
+				var message = "\n Vérification de l'identité (2FA) \n Saisissez le code reçu par SMS :\n\n";
+				var result = prompt(message, "");
+				validateDevice(alarmtype, numinstall, username, pwd, code, country, result);
+			}
+		}
+	});
+};
+
+
+function validateDevice(alarmtype, numinstall, username, pwd, code, country, sms_code)
+{
+ 
+	$('#div_alert').showAlert({message: '{{Validation de l\'équipement}}', level: 'warning'});	
+	$.ajax({													// fonction permettant de faire de l'ajax
+		type: "POST", 											// methode de transmission des données au fichier php
+		url: "plugins/verisure/core/ajax/verisure.ajax.php", 	// url du fichier php
+		data: {
+			action: "Validate_Device",
+			alarmtype: alarmtype,
+			numinstall: numinstall,
+			username: username,
+			pwd: pwd,
+			code: code,
+			country: country,
+			sms_code: sms_code,
+			},
+		dataType: 'json',
+			error: function (request, status, error) {
+			handleAjaxError(request, status, error);
+			},
+		success: function (data) { 			
+			
+			if (data.state != 'ok' || data.result == null) {
+				$('#div_alert').showAlert({message: '{{Erreur lors de l\'authentification 2FA}}', level: 'danger'});
+				return;
+			}
+			else  {
+				var nbsp = data.result['res'].length;
+				$('#nbsp').append(nbsp); 
+				for(j = 0; j < nbsp ; j++) {
+					var tr = '<tr>';
+					tr += '<td>';
+					tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="'+data.result['res'][j]['id']+'" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugID'+j+'">';
+					tr += '</td>';
+					tr += '<td>';
+					tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="'+data.result['res'][j]['name']+'" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugName'+j+'">';
+					tr += '</td>';
+					tr += '<td>';
+					if (data.result['res'][j]['type'] == "CENT") { tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="Centrale de l\'alarme" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugModel'+j+'">'; }
+					if (data.result['res'][j]['type'] == "MG") { tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="Détecteur de chocs et d\'ouverture" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugModel'+j+'">'; }
+					if (data.result['res'][j]['type'] == "XP" || data.result['res'][j]['type'] == "XR" || data.result['res'][j]['type'] == "YR") { tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="Détecteur de mouvements avec images" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugModel'+j+'">'; }
+					tr += '</td>';
+					tr += '<td>';					
+					tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="'+data.result['res'][j]['type']+'"  style="display : none;" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugType'+j+'">';
+					tr += '</td>';
+					tr += '</tr>';
+					$('#table_smartplug tbody').append(tr);
+				}
+				var tr = $('#table_smartplug tbody tr:last');
+			}
+			$('#div_alert').showAlert({message: '{{Authentification 2FA terminée avec succès}}', level: 'success'});
+		}
+	});
+};
+
+
 $('#bt_Reporting').on('click',function() {
 	
 	$('#md_modal').dialog({title: "{{Journal d'activité}}"});
-	$('#md_modal').load('index.php?v=d&plugin=verisure&modal=report.verisure&alarmtype=' + $('.eqLogicAttr[data-l2key=alarmtype]').value() 
-																			+ '&numinstall=' + $('.eqLogicAttr[data-l2key=numinstall]').value()
-																			+ '&username=' + $('.eqLogicAttr[data-l2key=username]').value()
-																			+ '&pwd=' + encodeURIComponent($('.eqLogicAttr[data-l2key=password]').value())
-																			+ '&code=' + $('.eqLogicAttr[data-l2key=code]').value()
-																			+ '&country=' + $('.eqLogicAttr[data-l2key=country]').value()).dialog('open');
+	$('#md_modal').load('index.php?v=d&plugin=verisure&modal=report.verisure&eqLogic_id='+ $('.eqLogicAttr[data-l1key=id]').value()).dialog('open');
 });

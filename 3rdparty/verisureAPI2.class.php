@@ -19,17 +19,25 @@
 
 class verisureAPI2 {
 	
-    /*Available domains for Securitas Direct / Versisure - @var string */
+    /*Available auth domains for Securitas Direct / Versisure - @var string */
+	private $available_auth_domains = array(
+											 "https://m-api01.verisure.com",
+											 "https://m-api02.verisure.com");
+	
+	/*Available domains for Securitas Direct / Versisure - @var string */
 	private $available_domains = array(
 										"https://e-api01.verisure.com",
 										"https://e-api02.verisure.com");
 		
+	/*Working authentification domain for Securitas Direct / Versisure - @var string */
+	private $workingAuthDomain;	
+
 	/*Working domain for Securitas Direct / Versisure - @var string */
 	private $workingDomain;	
 	
 	/*Base URL for Securitas Direct / Versisure - @var string */
 	private $baseUrl = "/xbn/2/"; 
-    	
+   
 	/* Verisure Username - @var string */
 	private $username;
 	
@@ -57,7 +65,8 @@ class verisureAPI2 {
 		$this->username = $username;
 		$this->password = $password;
 		$this->code = $code;
-		$this->authorization = base64_encode(sprintf("CPE/%s:%s", $this->username, $this->password));
+		//$this->authorization = base64_encode(sprintf("CPE/%s:%s", $this->username, $this->password));
+		$this->authorization = base64_encode(sprintf("%s:%s", $this->username, $this->password));
 		$this->cookie = null;
 		$this->giid = null;
 		$this->transactionID = null;
@@ -81,6 +90,7 @@ class verisureAPI2 {
 		curl_setopt($curl, CURLOPT_CONNECTTIMEOUT,	5);
 		curl_setopt($curl, CURLOPT_RETURNTRANSFER,	true);
         curl_setopt($curl, CURLOPT_VERBOSE, 		false);
+		//curl_setopt($curl, CURLOPT_COOKIE, 			$this->cookie);
 		
 		$result = curl_exec($curl);
         $httpRespCode  = curl_getinfo($curl, CURLINFO_HTTP_CODE);
@@ -93,17 +103,20 @@ class verisureAPI2 {
 	private function setHeaders()   {				//Define headers
 		
 		$headers = array();
-        $headers[] = 'Accept: application/json, text/javascript, */*; q=0.01';
-        $headers[] = 'Content-Type: application/json';
+        //$headers[] = 'Accept: application/json, text/javascript, */*; q=0.01';
+        //$headers[] = 'Content-Type: application/json';
+		$headers[] = 'Accept: application/json';
+		$headers[] = 'APPLICATION_ID: PS_PYTHON';
 
         if ($this->cookie == null)  {				// Login
 			$headers[] = sprintf('Authorization: Basic %s', $this->authorization);
 		}
 		else  {										// Other request
-            $headers[] = sprintf('Cookie: vid=%s', $this->cookie);
+            $headers[] = sprintf('Cookie: %s', $this->cookie);
+			//$headers[] = sprintf('cookie: vid=%s', $this->cookie);
 		}
 		
-		$headers[] = 'UserAgent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.125 Safari/537.36';
+		//$headers[] = 'UserAgent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.125 Safari/537.36';
 		return $headers;
 	}	
 
@@ -114,31 +127,37 @@ class verisureAPI2 {
 		$headers = $this->setHeaders();
 		$data = null;
 		
-		$this->workingDomain = $this->available_domains[0];
-		$url = $this->workingDomain.$this->baseUrl.'cookie';
+		$this->workingAuthDomain = $this->available_auth_domains[0];
+		//$url = $this->workingDomain.$this->baseUrl.'cookie';
+		$url = $this->workingAuthDomain.'/auth/login';
 		$result = $this->doRequest($method, $url, $headers, $data);
 		$httpRespCode = $result[0];
 		$jsonResult = $result[1];
 		
+		log::add('verisure', 'debug', json_encode($result),JSON_PRETTY_PRINT);
+
 		if ($httpRespCode != 200)   {
-			$this->workingDomain = $this->available_domains[1];
-			$url = $this->workingDomain.$this->baseUrl.'cookie';
+			$this->workingAuthDomain = $this->available_auth_domains[1];
+			//$url = $this->workingDomain.$this->baseUrl.'cookie';
+			$url = $this->workingAuthDomain.'/auth/login';
 			$result2 = $this->doRequest($method, $url, $headers, $data);
 			$httpRespCode2 = $result2[0];
 			$jsonResult2 = $result2[1];
 			
 			if ($httpRespCode2 != 200)   {
 				$this->cookie = "Err cookie";
-				return array("No Verisure server is available at this moment", $httpRespCode2, $this->cookie);
+				return array("No Verisure server is available at this moment", $httpRespCode2, $jsonResult2);
 			}
 			else   {
-				$this->cookie = json_decode($jsonResult2, false)->{'cookie'};
-				return array($this->workingDomain, $httpRespCode2, $this->cookie);
+				//$this->cookie = json_decode($jsonResult2, false)->{'cookie'};
+				$this->cookie = json_decode($jsonResult2, false)->{'stepUpToken'};
+				return array($this->workingAuthDomain, $httpRespCode2, $this->cookie);
 			}
 		}
 		else   {
-			$this->cookie = json_decode($jsonResult, false)->{'cookie'};
-			return array($this->workingDomain, $httpRespCode, $this->cookie);
+			//$this->cookie = json_decode($jsonResult, false)->{'cookie'};
+			$this->cookie = json_decode($jsonResult, false)->{'stepUpToken'};
+			return array($this->workingAuthDomain, $httpRespCode, $this->cookie);
 		}
 	}
 	
@@ -161,7 +180,9 @@ class verisureAPI2 {
 	public function getGiid()  {				// Get the giid number
 		
 		$method = "GET";
+		$this->workingDomain = $this->available_domains[0];
 		$url = sprintf($this->workingDomain.$this->baseUrl.'installation/search?email=%s', urlencode($this->username));
+		//$url = sprintf($this->workingAuthDomain.$this->baseUrl.'installation/search?email=%s', urlencode($this->username));
 		$headers = $this->setHeaders();
 		$data = null;
 		$result = $this->doRequest($method, $url, $headers, $data);
@@ -171,7 +192,9 @@ class verisureAPI2 {
 		if ($httpRespCode == 200)  {
         	$this->giid = json_decode($jsonResult, false)[0]->{'giid'};		// Installation ID 0 by default
         }
-      			
+      	
+		log::add('verisure', 'debug', json_encode($result),JSON_PRETTY_PRINT);
+		
 		return array($httpRespCode, $this->giid);
 	}
   
