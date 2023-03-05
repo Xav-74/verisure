@@ -437,7 +437,7 @@ class verisureAPI {
 			break;
 		}
 
-		log::add('verisure', 'debug', '| Content = '.json_encode($content));
+		//log::add('verisure', 'debug', '| Content = '.json_encode($content));
 		return json_encode($content);
     }
 
