@@ -156,26 +156,27 @@ $('#bt_Authentication_2FA').on('click',function() {
 
 					if ( data.result['type'] == "devices" ) {
 						var nbsp = data.result['res'].length;
-						$('#nbsp').append(nbsp); 
+						$('#nbsp').append(nbsp);
 						for(j = 0; j < nbsp ; j++) {
-							if (data.result['res'][j]['type'] != "CENT") {
-								var tr = '<tr>';
-								tr += '<td>';
-								tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="'+data.result['res'][j]['code']+'" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugID'+j+'">';
-								tr += '</td>';
-								tr += '<td>';
-								tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="'+data.result['res'][j]['name']+'" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugName'+j+'">';
-								tr += '</td>';
-								tr += '<td>';
-								if (data.result['res'][j]['type'] == "MG") { tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="Détecteur de chocs et d\'ouverture" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugModel'+j+'">'; }
-								if (data.result['res'][j]['type'] == "XP" || data.result['res'][j]['type'] == "XR" || data.result['res'][j]['type'] == "YR") { tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="Détecteur de mouvements avec images" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugModel'+j+'">'; }
-								tr += '</td>';
-								tr += '<td>';					
-								tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="'+data.result['res'][j]['type']+'"  style="display : none;" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugType'+j+'">';
-								tr += '</td>';
-								tr += '</tr>';
-								$('#table_smartplug tbody').append(tr);
-							}
+							var tr = '<tr>';
+							tr += '<td>';
+							if (data.result['res'][j]['type'] != "CENT") { tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="'+data.result['res'][j]['code']+'" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugID'+j+'">'; }
+							else { tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="0" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugID'+j+'">'; }
+							tr += '</td>';
+							tr += '<td>';
+							tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="'+data.result['res'][j]['name']+'" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugName'+j+'">';
+							tr += '</td>';
+							tr += '<td>';
+							if (data.result['res'][j]['type'] == "MG") { tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="Détecteur de chocs et d\'ouverture" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugModel'+j+'">'; }
+							else if (data.result['res'][j]['type'] == "XP" || data.result['res'][j]['type'] == "XR" || data.result['res'][j]['type'] == "YR") { tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="Détecteur de mouvements avec images" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugModel'+j+'">'; }
+							else if (data.result['res'][j]['type'] == "CENT") { tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="Centrale" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugModel'+j+'">'; }
+							else { tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="'+data.result['res'][j]['type']+'" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugModel'+j+'">'; }
+							tr += '</td>';
+							tr += '<td>';					
+							tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="'+data.result['res'][j]['type']+'"  style="display : none;" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugType'+j+'">';
+							tr += '</td>';
+							tr += '</tr>';
+							$('#table_smartplug tbody').append(tr);
 						}
 						var tr = $('#table_smartplug tbody tr:last');
 					}
@@ -315,7 +316,7 @@ function sendOTP(alarmtype, numinstall, username, pwd, code, country, phone_id)
 				return;
 			}
 			else  {
-				var message = "\n Vérification de l'identité (2FA) \n Saisissez le code reçu par SMS :\n\n";
+				var message = "\n Vérification de l'identité (2FA) \n Saisissez le code reçu par SMS :\n";
 				var result = prompt(message, "");
 				validateDevice(alarmtype, numinstall, username, pwd, code, country, result);
 			}
@@ -353,26 +354,27 @@ function validateDevice(alarmtype, numinstall, username, pwd, code, country, sms
 			}
 			else  {
 				var nbsp = data.result['res'].length;
-				$('#nbsp').append(nbsp); 
+				$('#nbsp').append(nbsp);
 				for(j = 0; j < nbsp ; j++) {
-					if (data.result['res'][j]['type'] != "CENT") {
-						var tr = '<tr>';
-						tr += '<td>';
-						tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="'+data.result['res'][j]['code']+'" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugID'+j+'">';
-						tr += '</td>';
-						tr += '<td>';
-						tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="'+data.result['res'][j]['name']+'" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugName'+j+'">';
-						tr += '</td>';
-						tr += '<td>';
-						if (data.result['res'][j]['type'] == "MG") { tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="Détecteur de chocs et d\'ouverture" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugModel'+j+'">'; }
-						if (data.result['res'][j]['type'] == "XP" || data.result['res'][j]['type'] == "XR" || data.result['res'][j]['type'] == "YR") { tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="Détecteur de mouvements avec images" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugModel'+j+'">'; }
-						tr += '</td>';
-						tr += '<td>';					
-						tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="'+data.result['res'][j]['type']+'"  style="display : none;" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugType'+j+'">';
-						tr += '</td>';
-						tr += '</tr>';
-						$('#table_smartplug tbody').append(tr);
-					}
+					var tr = '<tr>';
+					tr += '<td>';
+					if (data.result['res'][j]['type'] != "CENT") { tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="'+data.result['res'][j]['code']+'" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugID'+j+'">'; }
+					else { tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="0" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugID'+j+'">'; }
+					tr += '</td>';
+					tr += '<td>';
+					tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="'+data.result['res'][j]['name']+'" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugName'+j+'">';
+					tr += '</td>';
+					tr += '<td>';
+					if (data.result['res'][j]['type'] == "MG") { tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="Détecteur de chocs et d\'ouverture" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugModel'+j+'">'; }
+					else if (data.result['res'][j]['type'] == "XP" || data.result['res'][j]['type'] == "XR" || data.result['res'][j]['type'] == "YR") { tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="Détecteur de mouvements avec images" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugModel'+j+'">'; }
+					else if (data.result['res'][j]['type'] == "CENT") { tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="Centrale" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugModel'+j+'">'; }
+					else { tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="'+data.result['res'][j]['type']+'" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugModel'+j+'">'; }
+					tr += '</td>';
+					tr += '<td>';					
+					tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="'+data.result['res'][j]['type']+'"  style="display : none;" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugType'+j+'">';
+					tr += '</td>';
+					tr += '</tr>';
+					$('#table_smartplug tbody').append(tr);
 				}
 				var tr = $('#table_smartplug tbody tr:last');
 			}
