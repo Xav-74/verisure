@@ -39,13 +39,13 @@ class verisureAPI {
 	private $refresh_token;
 	
 	// Device specific configuration for the API
-	const DEVICE_BRAND = "apple";		//"apple";
-	const DEVICE_NAME = "iPhone14,7";		//Samsung Galaxy S22	//"iPhone14,7";
-	const DEVICE_OS_VERSION = "16.3";		//"16.3"; 
+	const DEVICE_BRAND = "apple";
+	const DEVICE_NAME = "iPhone14,7";
+	const DEVICE_OS_VERSION = "16.3";
 	const DEVICE_RESOLUTION = "";
 	const DEVICE_TYPE = "";
-	const DEVICE_VERSION = "10.82.0"; 	//"10.82.0";
-	const CALLBY = "OWI_10";			//"OWI_10";
+	const DEVICE_VERSION = "10.82.0";
+	const CALLBY = "OWI_10";
 		
 	
 	public function __construct($numinstall, $username, $password, $country) {
@@ -127,9 +127,6 @@ class verisureAPI {
 		$body = substr($result, $header_size);
       	curl_close($curl);
         
-		//log::add('verisure', 'debug', '| httpRespCode => '.$httpRespCode);
-		//log::add('verisure', 'debug', '| Response => '.$body);
-
 		return array($httpRespCode, $body);
 	}
 
@@ -391,7 +388,7 @@ class verisureAPI {
 						'numRows' => 50,
 						'offset' => 0,
 						'hasLocksmithRequested' => false,
-						'singleActivityFilter' => [1,2,13,16,24,25,26,29,31,32,40,46,202,203,204,311]
+						'singleActivityFilter' => $data1
 					),
 					'query' => 'query ActV2Home($numinst: String!, $numRows: Int, $offset: Int, $hasLocksmithRequested: Boolean, $singleActivityFilter: [Int], $panel: String) { xSActV2(numinst: $numinst, input: {timeFilter: ALL, numRows: $numRows, offset: $offset, hasLocksmithRequested: $hasLocksmithRequested, singleActivityFilter: $singleActivityFilter, panel: $panel}) { reg { alias type device source idSignal myVerisureUser time img signalType } } }',
 				);
@@ -430,7 +427,7 @@ class verisureAPI {
 						'numinst' => $this->numinstall,
 						'panel' => $this->panel,
 						'signalType' => "16",
-						'idSignal' => "1092151924"
+						'idSignal' => $data1
 					),
 					'query' => 'query mkGetPhotoImages($numinst: String!, $idSignal: String!, $signalType: String!, $panel: String!) { xSGetPhotoImages(numinst: $numinst, idsignal: $idSignal, signaltype: $signalType, panel: $panel) { devices { id code name images { id image type } } } }',
 				);
@@ -444,7 +441,7 @@ class verisureAPI {
 
 	private function generateId() {
 
-		date_default_timezone_set('UTC');
+		//date_default_timezone_set('UTC');
 		$now = date('YndHis');
 		$id = 'OWI_______________'.$this->username.'_______________'.$now.'0';
 		return $id;
@@ -768,11 +765,13 @@ class verisureAPI {
 	}
 
 
-	public function GetReportAlarm()  {			// Get the information of last actions
+	public function GetReportAlarm($filter)  {			// Get the information of last actions
+		
+		if ( $filter == null ) { $filter = [1,2,13,16,24,25,26,29,31,32,40,46,202,203,204,311]; }
 		
 		$method = "POST";
 		$headers = $this->setHeaders("ActV2Home");
-		$content = $this->setContent("ActV2Home", null, null, null);
+		$content = $this->setContent("ActV2Home", $filter, null, null);
 		$result = $this->doRequest($content, $method, $headers);
 
 		$httpRespCode = $result[0];
@@ -814,38 +813,35 @@ class verisureAPI {
 
 			if ( $res2['data']['xSRequestImagesStatus']['res'] == "OK" ) {
 
-				$now = date("y-m-d H:i:s");
-				sleep(5);
-				
-				$method3 = "POST";
-				$headers3 = $this->setHeaders("mkGetPhotoImages");
-				$content3 = $this->setContent("mkGetPhotoImages", null, null, null);
-				$result3 = $this->doRequest($content3, $method3, $headers3);
-
-				$httpRespCode3 = $result3[0];
-				$response3 = $result3[1];
-				$res3 = json_decode($response3, true);
-				$img = $res3['data']['xSGetPhotoImages']['devices'][0]['images'][0]['image'];
-				//$timestamp = $res3['data']['xSGetThumbnail']['timestamp'];
-
-				/*while ( $timestamp <=  $now ) {
+				$now = date("Y-m-d H:i:s");
+				$report_check = false;
+				$retry = 10;
+				While ( $retry > 0 && $report_check != true ) {
 					sleep(5);
-					$method3 = "POST";
-					$headers3 = $this->setHeaders("mkGetPhotoImages");
-					$content3 = $this->setContent("mkGetPhotoImages",  null, null, null);
-					$result3 = $this->doRequest($content3, $method3, $headers3);
-
+					$result3 = $this->GetReportAlarm([16]);
 					$httpRespCode3 = $result3[0];
 					$response3 = $result3[1];
-					$res3 = json_decode($response3, true);
-					//$timestamp = $res3['data']['xSGetThumbnail']['timestamp'];
+					$res3 = json_decode($response3, true)['data']['xSActV2'];
+					if ( $now < $res3['reg'][0]['time'] )  {
+						$report_check = true;
+						$idSignal = $res3['reg'][0]['idSignal'];
+					}
+					$retry--;	
+				}
+				
+				$method4 = "POST";
+				$headers4 = $this->setHeaders("mkGetPhotoImages");
+				$content4 = $this->setContent("mkGetPhotoImages", $idSignal, null, null);
+				$result4 = $this->doRequest($content4, $method4, $headers4);
 
-					$img = $res3['data']['xSGetPhotoImages']['devices'][0]['images'][0]['image'];
-				}*/
+				$httpRespCode4 = $result4[0];
+				$response4 = $result4[1];
+				$res4 = json_decode($response4, true);
+				$img = $res4['data']['xSGetPhotoImages']['devices'][0]['images'][0]['image'];
 			}
 		}
 
-		return array($httpRespCode, $response, $httpRespCode2, $response2, $httpRespCode3, $response3, $img);
+		return array($httpRespCode, $response, $httpRespCode2, $response2, $httpRespCode3, $response3, $httpRespCode4, $response4, $img);
 	}
 }
 

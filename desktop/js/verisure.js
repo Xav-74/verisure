@@ -147,7 +147,7 @@ $('#bt_Authentication_2FA').on('click',function() {
 						var message = "\n Vérification de l'identité (2FA) \n Choisissez le téléphone pour l'authentification par SMS :\n\n";
 						for(i = 0; i < nb_phones ; i++) {
 							var id = parseInt(data.result['res'][i]['id']) + 1;
-							message = message + " " + id + " : " + data.result['res'][i]['phone'] + "\n";
+							message = message + "Tapez " + id + " pour le " + data.result['res'][i]['phone'] + "\n";
 						}
 						var result = prompt(message, "");
 						var phone_id = parseInt(result - 1);
@@ -158,23 +158,24 @@ $('#bt_Authentication_2FA').on('click',function() {
 						var nbsp = data.result['res'].length;
 						$('#nbsp').append(nbsp); 
 						for(j = 0; j < nbsp ; j++) {
-							var tr = '<tr>';
-							tr += '<td>';
-							tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="'+data.result['res'][j]['id']+'" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugID'+j+'">';
-							tr += '</td>';
-							tr += '<td>';
-							tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="'+data.result['res'][j]['name']+'" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugName'+j+'">';
-							tr += '</td>';
-							tr += '<td>';
-							if (data.result['res'][j]['type'] == "CENT") { tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="Centrale de l\'alarme" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugModel'+j+'">'; }
-							if (data.result['res'][j]['type'] == "MG") { tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="Détecteur de chocs et d\'ouverture" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugModel'+j+'">'; }
-							if (data.result['res'][j]['type'] == "XP" || data.result['res'][j]['type'] == "XR" || data.result['res'][j]['type'] == "YR") { tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="Détecteur de mouvements avec images" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugModel'+j+'">'; }
-							tr += '</td>';
-							tr += '<td>';					
-							tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="'+data.result['res'][j]['type']+'"  style="display : none;" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugType'+j+'">';
-							tr += '</td>';
-							tr += '</tr>';
-							$('#table_smartplug tbody').append(tr);
+							if (data.result['res'][j]['type'] != "CENT") {
+								var tr = '<tr>';
+								tr += '<td>';
+								tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="'+data.result['res'][j]['code']+'" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugID'+j+'">';
+								tr += '</td>';
+								tr += '<td>';
+								tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="'+data.result['res'][j]['name']+'" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugName'+j+'">';
+								tr += '</td>';
+								tr += '<td>';
+								if (data.result['res'][j]['type'] == "MG") { tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="Détecteur de chocs et d\'ouverture" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugModel'+j+'">'; }
+								if (data.result['res'][j]['type'] == "XP" || data.result['res'][j]['type'] == "XR" || data.result['res'][j]['type'] == "YR") { tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="Détecteur de mouvements avec images" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugModel'+j+'">'; }
+								tr += '</td>';
+								tr += '<td>';					
+								tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="'+data.result['res'][j]['type']+'"  style="display : none;" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugType'+j+'">';
+								tr += '</td>';
+								tr += '</tr>';
+								$('#table_smartplug tbody').append(tr);
+							}
 						}
 						var tr = $('#table_smartplug tbody tr:last');
 					}

@@ -811,7 +811,7 @@ class verisure extends eqLogic {
 			$MyAlarm = new verisureAPI($this->getConfiguration('numinstall'),$this->getConfiguration('username'),$this->getConfiguration('password'),$this->getConfiguration('country'));
 			$result_Login = $MyAlarm->Login();
           	log::add('verisure', 'debug', '│ Request mkLoginToken - httpRespCode => '.$result_Login[0].' - response => '.$result_Login[1]);
-			$result_GetReportAlarm = $MyAlarm->GetReportAlarm();
+			$result_GetReportAlarm = $MyAlarm->GetReportAlarm(null);
 			log::add('verisure', 'debug', '│ Request ActV2Home - httpRespCode => '.$result_GetReportAlarm[0].' - response => '.$result_GetReportAlarm[1]);
 			$response_GetReportAlarm = json_decode($result_GetReportAlarm[1], true);
 			$result_Logout = $MyAlarm->Logout();
@@ -838,7 +838,7 @@ class verisure extends eqLogic {
 
 	public function GetPhotosRequest($device)	{		//Type 1 & 2
 
-		/*if ( $this->getConfiguration('alarmtype') == 1 )   { 
+		if ( $this->getConfiguration('alarmtype') == 1 )   { 
 			log::add('verisure', 'debug', '┌───────── Demande de photos ─────────');
 			log::add('verisure', 'debug', '│ Equipement '.$this->getHumanName().' - Alarme type '.$this->getConfiguration('alarmtype'));
 			$MyAlarm = new verisureAPI($this->getConfiguration('numinstall'),$this->getConfiguration('username'),$this->getConfiguration('password'),$this->getConfiguration('country'));
@@ -847,12 +847,13 @@ class verisure extends eqLogic {
 			$result_GetPhotosRequest = $MyAlarm->GetPhotosRequest($device);
 			log::add('verisure', 'debug', '│ Request RequestImages - httpRespCode => '.$result_GetPhotosRequest[0].' - response => '.$result_GetPhotosRequest[1]);
 			log::add('verisure', 'debug', '│ Request RequestImagesStatus - httpRespCode => '.$result_GetPhotosRequest[2].' - response => '.$result_GetPhotosRequest[3]);	
-			log::add('verisure', 'debug', '│ Request mkGetPhotoImages - httpRespCode => '.$result_GetPhotosRequest[4].' - response => '.$result_GetPhotosRequest[5]);	
+			log::add('verisure', 'debug', '│ Request ActV2Home - httpRespCode => '.$result_GetPhotosRequest[4].' - response => '.$result_GetPhotosRequest[5]);
+			log::add('verisure', 'debug', '│ Request mkGetPhotoImages - httpRespCode => '.$result_GetPhotosRequest[6].' - response => '.$result_GetPhotosRequest[7]);	
 			$result_Logout = $MyAlarm->Logout();
 			log::add('verisure', 'debug', '│ Request mkLogout - httpRespCode => '.$result_Logout[0].' - response => '.$result_Logout[1]);
 
-			if ( $result_GetPhotosRequest[4] == 200 )  {
-				$res = $result_GetPhotosRequest[6];
+			if ( $result_GetPhotosRequest[6] == 200 )  {
+				$res = $result_GetPhotosRequest[8];
 				log::add('verisure', 'debug', '└───────── Journal d\'activité OK ─────────');
 				$this->checkAndUpdateCmd('networkstate', $this->SetNetworkState(1));
 			}
@@ -863,7 +864,7 @@ class verisure extends eqLogic {
 				$this->checkAndUpdateCmd('networkstate', $this->SetNetworkState(0));
 			}
 			return $res;
-		}*/
+		}
 	}
 	
 	public function SetNetworkState($result)  {		//Type 1
