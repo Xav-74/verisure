@@ -169,6 +169,7 @@ $('#bt_Authentication_2FA').on('click',function() {
 							tr += '<td>';
 							if (data.result['res'][j]['type'] == "MG") { tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="Détecteur de chocs et d\'ouverture" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugModel'+j+'">'; }
 							else if (data.result['res'][j]['type'] == "XP" || data.result['res'][j]['type'] == "XR" || data.result['res'][j]['type'] == "YR") { tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="Détecteur de mouvements avec images" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugModel'+j+'">'; }
+							else if (data.result['res'][j]['type'] == "FR") { tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="Détecteur De fumée" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugModel'+j+'">'; }
 							else if (data.result['res'][j]['type'] == "CENT") { tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="Centrale" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugModel'+j+'">'; }
 							else { tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="'+data.result['res'][j]['type']+'" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugModel'+j+'">'; }
 							tr += '</td>';
@@ -367,6 +368,7 @@ function validateDevice(alarmtype, numinstall, username, pwd, code, country, sms
 					tr += '<td>';
 					if (data.result['res'][j]['type'] == "MG") { tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="Détecteur de chocs et d\'ouverture" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugModel'+j+'">'; }
 					else if (data.result['res'][j]['type'] == "XP" || data.result['res'][j]['type'] == "XR" || data.result['res'][j]['type'] == "YR") { tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="Détecteur de mouvements avec images" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugModel'+j+'">'; }
+					else if (data.result['res'][j]['type'] == "FR") { tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="Détecteur De fumée" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugModel'+j+'">'; }
 					else if (data.result['res'][j]['type'] == "CENT") { tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="Centrale" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugModel'+j+'">'; }
 					else { tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="'+data.result['res'][j]['type']+'" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugModel'+j+'">'; }
 					tr += '</td>';

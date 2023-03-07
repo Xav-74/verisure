@@ -682,7 +682,7 @@ class verisure extends eqLogic {
 
 
 			if ( $result_ArmAlarm[2] == 200 && $response_ArmAlarm['data']['xSArmStatus']['res'] == "OK" )  {
-				$res = $response_ArmAlarm['data']['xSDisarmStatus']['protomResponse'];
+				$res = $response_ArmAlarm['data']['xSArmStatus']['protomResponse'];
 				log::add('verisure', 'debug', '└───────── Activation mode total OK ─────────');
 			}
 			else  {
@@ -711,7 +711,7 @@ class verisure extends eqLogic {
         log::add('verisure', 'debug', '│ Request mkLogout - httpRespCode => '.$result_Logout[0].' - response => '.$result_Logout[1]);
 
 		if ( $result_ArmAlarm[2] == 200 && $response_ArmAlarm['data']['xSArmStatus']['res'] == "OK" )  {
-			$res = $response_ArmAlarm['data']['xSDisarmStatus']['protomResponse'];
+			$res = $response_ArmAlarm['data']['xSArmStatus']['protomResponse'];
 			log::add('verisure', 'debug', '└───────── Activation mode nuit OK ─────────');
 		}
 		else  {
@@ -735,7 +735,7 @@ class verisure extends eqLogic {
         log::add('verisure', 'debug', '│ Request mkLogout - httpRespCode => '.$result_Logout[0].' - response => '.$result_Logout[1]);
 
 		if ( $result_ArmAlarm[2] == 200 && $response_ArmAlarm['data']['xSArmStatus']['res'] == "OK" )  {
-			$res = $response_ArmAlarm['data']['xSDisarmStatus']['protomResponse'];
+			$res = $response_ArmAlarm['data']['xSArmStatus']['protomResponse'];
 			log::add('verisure', 'debug', '└───────── Activation mode jour OK ─────────');
 		}
 		else  {
@@ -759,7 +759,7 @@ class verisure extends eqLogic {
         log::add('verisure', 'debug', '│ Request mkLogout - httpRespCode => '.$result_Logout[0].' - response => '.$result_Logout[1]);
 
 		if ( $result_ArmAlarm[2] == 200 && $response_ArmAlarm['data']['xSArmStatus']['res'] == "OK" )  {
-			$res = $response_ArmAlarm['data']['xSDisarmStatus']['protomResponse'];
+			$res = $response_ArmAlarm['data']['xSArmStatus']['protomResponse'];
 			log::add('verisure', 'debug', '└───────── Activation mode extérieur OK ─────────');
 		}
 		else  {
