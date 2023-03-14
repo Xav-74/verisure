@@ -138,22 +138,12 @@ class verisure extends eqLogic {
 		$version = jeedom::versionAlias($_version);
 		$replace['#version#'] = $_version;
 			
-		/*if ( $this->getConfiguration('alarmtype') == 1 )   { 
-			$replace['#numinstall#'] = $this->getConfiguration('numinstall');
-			$replace['#username#'] = $this->getConfiguration('username');
-			$replace['#password#'] = $this->getConfiguration('password');
-			$replace['#country#'] = $this->getConfiguration('country');
-		}*/
-			
 		if ( $this->getConfiguration('alarmtype') == 2 )   { 
 			$replace['#nb_smartplug#'] = $this->getConfiguration('nb_smartplug');
 			$replace['#nb_climate#'] = $this->getConfiguration('nb_climate');
 			$replace['#nb_doorsensor#'] = $this->getConfiguration('nb_doorsensor');
 			$replace['#nb_camera#'] = $this->getConfiguration('nb_camera');
 			$replace['#nb_device#'] = $this->getConfiguration('nb_device');
-			/*$replace['#username#'] = $this->getConfiguration('username');
-			$replace['#password#'] = $this->getConfiguration('password');
-			$replace['#code#'] = $this->getConfiguration('code');*/
 		}
 			
 		$this->emptyCacheWidget(); 		//vide le cache. Pratique pour le développement
@@ -545,7 +535,6 @@ class verisure extends eqLogic {
           	$response_Login = json_decode($result_Login[1], true);
 
 			if ( $response_Login['data']['xSLoginToken']['needDeviceAuthorization'] == true) {
-
 				$result_ValidateDevice = $MyAlarm->ValidateDevice(null);
           		log::add('verisure', 'debug', '│ Request mkValidateDevice - httpRespCode => '.$result_ValidateDevice[0].' - response => '.$result_ValidateDevice[1]);
 				$response_ValidateDevice = json_decode($result_ValidateDevice[1], true);
@@ -559,7 +548,6 @@ class verisure extends eqLogic {
 			}
 
 			if ( $response_Login['data']['xSLoginToken']['needDeviceAuthorization'] == false) {
-
 				$result_ListInstallations = $MyAlarm->ListInstallations();
           		log::add('verisure', 'debug', '│ Request mkInstallationList - httpRespCode => '.$result_ListInstallations[0].' - response => '.$result_ListInstallations[1]);
 				$result_ListDevices = $MyAlarm->ListDevices();
@@ -577,13 +565,50 @@ class verisure extends eqLogic {
 					return $result;
 				}
 			}
-
 			log::add('verisure', 'debug', '└───────── Erreur d\'authentification 2FA !! ─────────');
 			return null;
 		}
 		
 		if ( $alarmtype == 2 )   {
 		
+			log::add('verisure', 'debug', '┌───────── Démarrage de l\'authentification 2FA ─────────');
+			log::add('verisure', 'debug', '│ Alarme type '.$alarmtype);
+			$MyAlarm = new verisureAPI2($username,$password,$code);
+			$result_Login = $MyAlarm->Login();
+          	log::add('verisure', 'debug', '│ Request Login - domain => '.$result_Login[0].' - httpRespCode => '.$result_Login[1].' - response => '.$result_Login[2]);
+			$response_Login = json_decode($result_Login[2], true);
+			
+			if ( $result_Login[1] == 401 ) {
+				$result_Logout = $MyAlarm->Logout();
+				log::add('verisure', 'error', '│ Request Logout - httpRespCode => '.$result_Logout[0].' - response => Multifactor authentication needed');
+				log::add('verisure', 'debug', '└───────── Erreur d\'authentification 2FA !! ─────────');
+				return null;
+			}
+			else {
+				if ( $response_Login['stepUpToken'] != "") {
+					$result = array();
+					$result['type'] = "OTP";
+					$result['res'] = array('phone','email');
+					return $result;
+				}
+				else {
+					$result_fetchAllInstallations = $MyAlarm->fetchAllInstallations();	
+					log::add('verisure', 'debug', '│ Request fetchAllInformations - httpRespCode => '.$result_fetchAllInstallations[0].' - response => '.$result_fetchAllInstallations[1]);
+					$result_ListDevices = $MyAlarm->ListDevices();
+          			log::add('verisure', 'debug', '│ Request Devices - httpRespCode => '.$result_ListDevices[0].' - response => '.$result_ListDevices[1]);				
+					$response_ListDevices = json_decode($result_ListDevices[1], true);
+					log::add('verisure', 'debug', '└───────── Authentification 2FA terminée avec succès ─────────');
+
+					if ( $result_ListDevices[0] == 200 ) {
+						$result = array();
+						$result['type'] = "devices";
+						$result['res'] = $response_ListDevices['data']['installation']['devices'];
+						return $result;
+					}
+				}
+			}
+			log::add('verisure', 'debug', '└───────── Erreur d\'authentification 2FA !! ─────────');
+			return null;
 		}
 	}
 
@@ -594,6 +619,14 @@ class verisure extends eqLogic {
 			$MyAlarm = new verisureAPI($numinstall,$username,$password,$country);
 			$result_SendOTP = $MyAlarm->SendOTP($phone_id);
 			log::add('verisure', 'debug', '│ Request mkSendOTP - httpRespCode => '.$result_SendOTP[0].' - response => '.$result_SendOTP[1]);
+			return null;
+		}
+
+		if ( $alarmtype == 2 )   {
+
+			$MyAlarm = new verisureAPI2($username,$password,$code);
+			$result_RequestMFA = $MyAlarm->RequestMFA($phone_id);
+			log::add('verisure', 'debug', '│ Request RequestMFA - domain => '.$result_RequestMFA[0].' - httpRespCode => '.$result_RequestMFA[1].' - response => '.$result_RequestMFA[2]);
 			return null;
 		}
 	}
@@ -616,7 +649,6 @@ class verisure extends eqLogic {
 				$result_ListDevices = $MyAlarm->ListDevices();
           		log::add('verisure', 'debug', '│ Request xSDeviceList - httpRespCode => '.$result_ListDevices[0].' - response => '.$result_ListDevices[1]);				
 				$response_ListDevices = json_decode($result_ListDevices[1], true);
-				
 				$result_Logout = $MyAlarm->Logout();
           		log::add('verisure', 'debug', '│ Request mkLogout - httpRespCode => '.$result_Logout[0].' - response => '.$result_Logout[1]);
 				log::add('verisure', 'debug', '└───────── Authentification 2FA terminée avec succès ─────────');
@@ -628,7 +660,33 @@ class verisure extends eqLogic {
 					return $result;
 				}
 			}
+			log::add('verisure', 'debug', '└───────── Erreur d\'authentification 2FA !! ─────────');
+			return null;
+		}
 
+		if ( $alarmtype == 2 )   {
+
+			$MyAlarm = new verisureAPI2($username,$password,$code);
+			$result_ValidateMFA = $MyAlarm->ValidateMFA($sms_code);
+			log::add('verisure', 'debug', '│ Request ValidateMFA - domain => '.$result_ValidateMFA[0].' - httpRespCode => '.$result_ValidateMFA[1].' - response => '.$result_ValidateMFA[2]);
+			$response_ValidateDevice = json_decode($result_ValidateMFA[2], true);
+
+			if ( $response_ValidateDevice['accessToken'] != "") {
+
+				$result_fetchAllInstallations = $MyAlarm->fetchAllInstallations();	
+				log::add('verisure', 'debug', '│ Request fetchAllInformations - httpRespCode => '.$result_fetchAllInstallations[0].' - response => '.$result_fetchAllInstallations[1]);
+				$result_ListDevices = $MyAlarm->ListDevices();
+          		log::add('verisure', 'debug', '│ Request Devices - httpRespCode => '.$result_ListDevices[0].' - response => '.$result_ListDevices[1]);				
+				$response_ListDevices = json_decode($result_ListDevices[1], true);
+				log::add('verisure', 'debug', '└───────── Authentification 2FA terminée avec succès ─────────');
+
+				if ( $result_ListDevices[0] == 200 ) {
+					$result = array();
+					$result['type'] = "devices";
+					$result['res'] = $response_ListDevices['data']['installation']['devices'];
+					return $result;
+				}
+			}
 			log::add('verisure', 'debug', '└───────── Erreur d\'authentification 2FA !! ─────────');
 			return null;
 		}
@@ -661,7 +719,61 @@ class verisure extends eqLogic {
 		}
 		
 		if ( $this->getConfiguration('alarmtype') == 2 )   { 
+			log::add('verisure', 'debug', '┌───────── Demande de statut ─────────');
+			log::add('verisure', 'debug', '│ Equipement '.$this->getHumanName().' - Alarme type '.$this->getConfiguration('alarmtype'));
+			$MyAlarm = new verisureAPI2($this->getConfiguration('username'),$this->getConfiguration('password'),$this->getConfiguration('code'));
+			$result_Login = $MyAlarm->Login();
+          	log::add('verisure', 'debug', '│ Request Login - domain => '.$result_Login[0].' - httpRespCode => '.$result_Login[1].' - response => '.$result_Login[2]);
+			$result_fetchAllInstallations = $MyAlarm->fetchAllInstallations();	
+			log::add('verisure', 'debug', '│ Request fetchAllInformations - httpRespCode => '.$result_fetchAllInstallations[0].' - response => '.$result_fetchAllInstallations[1]);
+			$result_getStateAlarm = $MyAlarm->getStateAlarm();
+			log::add('verisure', 'debug', '│ Request ArmState - httpRespCode => '.$result_getStateAlarm[0].' - response => '.$result_getStateAlarm[1]);
+			$response_getStateAlarm = json_decode($result_getStateAlarm[1], true);
 			
+			//getStateDevice
+			$result_getClimatesInformation = $MyAlarm->getClimatesInformation();
+			log::add('verisure', 'debug', '│ Request Climate - httpRespCode => '.$result_getClimatesInformation[0].' - response => '.$result_getClimatesInformation[1]);
+			$response_getClimatesInformation = json_decode($result_getClimatesInformation[1], true);
+			$result_getDoorWindowsInformation = $MyAlarm->getDoorWindowsInformation();
+			log::add('verisure', 'debug', '│ Request DoorWindow - httpRespCode => '.$result_getDoorWindowsInformation[0].' - response => '.$result_getDoorWindowsInformation[1]);
+			$response_getDoorWindowsInformation = json_decode($result_getDoorWindowsInformation[1], true);
+			$result_getCamerasInformation = $MyAlarm->getCamerasInformation();
+			log::add('verisure', 'debug', '│ Request Camera - httpRespCode => '.$result_getCamerasInformation[0].' - response => '.$result_getCamerasInformation[1]);
+			$response_getCamerasInformation = json_decode($result_getCamerasInformation[1], true);
+			$result_getSmartplugsInformation = $MyAlarm->getSmartplugsInformation();
+			log::add('verisure', 'debug', '│ Request SmartPlug - httpRespCode => '.$result_getSmartplugsInformation[0].' - response => '.$result_getSmartplugsInformation[1]);
+			$response_getSmartplugsInformation = json_decode($result_getSmartplugsInformation[1], true);
+
+			if ( $result_getClimatesInformation[0] == 200 && $result_getDoorWindowsInformation[0] == 200 && $result_getCamerasInformation[0] == 200 && $result_getSmartplugsInformation[0] == 200)  {
+				$tab_device = array();
+				$tab_device['lastModified'] = date("Y-m-d H:i:s");
+				$tab_device['climateDevice'] = $response_getClimatesInformation['data']['installation']['climates'];
+				$tab_device['doorWindowDevice'] = $response_getDoorWindowsInformation['data']['installation']['doorWindows'];
+				$tab_device['cameraDevice'] = $response_getCamerasInformation['data']['installation']['cameras'];
+				$tab_device['smartPlugDevice'] = $response_getSmartplugsInformation['data']['installation']['smartplugs'];
+								
+				$filename = __PLGBASE__.'/data/'.'stateDevices.json';
+				if (file_put_contents($filename, json_encode($tab_device), LOCK_EX)) {
+					log::add('verisure', 'debug', '│ Fichier JSON enregistré avec succès dans '. $filename);
+				}
+				else {
+					log::add('verisure', 'debug', '│ Fichier JSON non enregistré !');
+				}		
+			}
+			else  {
+				log::add('verisure', 'debug', '│ Fichier JSON pas mis à jour ! !');
+			}
+
+			if ( $result_getStateAlarm[0] == 200 && $response_getStateAlarm['data']['installation']['armState']['statusType'] != "" )  {
+				$res = $response_getStateAlarm['data']['installation']['armState']['statusType'];
+				$this->SetDeviceAttribute();
+				log::add('verisure', 'debug', '└───────── Mise à jour statut OK ─────────');
+			}
+			else  {
+				$res = "Erreur commande Verisure";
+			}
+
+			return $res;
 		}
 	}
 	
@@ -692,7 +804,25 @@ class verisure extends eqLogic {
 		}
 		
 		if ( $this->getConfiguration('alarmtype') == 2 )   {
-			
+			log::add('verisure', 'debug', '┌───────── Demande activation mode total ─────────');
+			log::add('verisure', 'debug', '│ Equipement '.$this->getHumanName().' - Alarme type '.$this->getConfiguration('alarmtype'));
+			$MyAlarm = new verisureAPI2($this->getConfiguration('username'),$this->getConfiguration('password'),$this->getConfiguration('code'));
+			$result_Login = $MyAlarm->Login();
+          	log::add('verisure', 'debug', '│ Request Login - domain => '.$result_Login[0].' - httpRespCode => '.$result_Login[1].' - response => '.$result_Login[2]);
+			$result_fetchAllInstallations = $MyAlarm->fetchAllInstallations();	
+			log::add('verisure', 'debug', '│ Request fetchAllInformations - httpRespCode => '.$result_fetchAllInstallations[0].' - response => '.$result_fetchAllInstallations[1]);
+			$result_setStateAlarm = $MyAlarm->setStateAlarm('armAway');
+			log::add('verisure', 'debug', '│ Request armAway - httpRespCode => '.$result_setStateAlarm[0].' - response => '.$result_setStateAlarm[1]);
+			$response_setStateAlarm = json_decode($result_setStateAlarm[1], true);
+
+			if ( $result_setStateAlarm[0] == 200 && $response_setStateAlarm['data']['armStateArmAway'] != "" )  {
+				$res = 'ARMED_AWAY';
+				log::add('verisure', 'debug', '└───────── Activation mode total OK ─────────');
+			}
+			else  {
+				$res = "Erreur commande Verisure";
+			}
+			return $res;
 		}
 	}
 		
@@ -769,7 +899,26 @@ class verisure extends eqLogic {
 	}
 	
 	public function ArmHomeAlarm()	{	//Type 2
-				
+		
+		log::add('verisure', 'debug', '┌───────── Demande activation mode partiel ─────────');
+		log::add('verisure', 'debug', '│ Equipement '.$this->getHumanName().' - Alarme type '.$this->getConfiguration('alarmtype'));
+		$MyAlarm = new verisureAPI2($this->getConfiguration('username'),$this->getConfiguration('password'),$this->getConfiguration('code'));
+		$result_Login = $MyAlarm->Login();
+		log::add('verisure', 'debug', '│ Request Login - domain => '.$result_Login[0].' - httpRespCode => '.$result_Login[1].' - response => '.$result_Login[2]);
+		$result_fetchAllInstallations = $MyAlarm->fetchAllInstallations();	
+		log::add('verisure', 'debug', '│ Request fetchAllInformations - httpRespCode => '.$result_fetchAllInstallations[0].' - response => '.$result_fetchAllInstallations[1]);
+		$result_setStateAlarm = $MyAlarm->setStateAlarm('armHome');
+		log::add('verisure', 'debug', '│ Request armHome - httpRespCode => '.$result_setStateAlarm[0].' - response => '.$result_setStateAlarm[1]);
+		$response_setStateAlarm = json_decode($result_setStateAlarm[1], true);
+
+		if ( $result_setStateAlarm[0] == 200 && $response_setStateAlarm['data']['armStateArmHome'] != "" )  {
+			$res = 'ARMED_HOME';
+			log::add('verisure', 'debug', '└───────── Activation mode partiel OK ─────────');
+		}
+		else  {
+			$res = "Erreur commande Verisure";
+		}
+		return $res;		
 	}
 	
 	public function DisarmAlarm()	{	//Type 1 & 2
@@ -790,7 +939,7 @@ class verisure extends eqLogic {
 
 			if ( $result_DisarmAlarm[2] == 200 && $response_DisarmAlarm['data']['xSDisarmStatus']['res'] == "OK" )  {
 				$res = $response_DisarmAlarm['data']['xSDisarmStatus']['protomResponse'];
-				log::add('verisure', 'debug', '└───────── Mise à jour statut OK ─────────');
+				log::add('verisure', 'debug', '└───────── Désactivation OK ─────────');
 			}
 			else  {
 				$res = "Erreur commande Verisure";
@@ -799,13 +948,32 @@ class verisure extends eqLogic {
 		}
 		
 		if ( $this->getConfiguration('alarmtype') == 2 )   { 
-			
+			log::add('verisure', 'debug', '┌───────── Demande désactivation ─────────');
+			log::add('verisure', 'debug', '│ Equipement '.$this->getHumanName().' - Alarme type '.$this->getConfiguration('alarmtype'));
+			$MyAlarm = new verisureAPI2($this->getConfiguration('username'),$this->getConfiguration('password'),$this->getConfiguration('code'));
+			$result_Login = $MyAlarm->Login();
+          	log::add('verisure', 'debug', '│ Request Login - domain => '.$result_Login[0].' - httpRespCode => '.$result_Login[1].' - response => '.$result_Login[2]);
+			$result_fetchAllInstallations = $MyAlarm->fetchAllInstallations();	
+			log::add('verisure', 'debug', '│ Request fetchAllInformations - httpRespCode => '.$result_fetchAllInstallations[0].' - response => '.$result_fetchAllInstallations[1]);
+			$result_setStateAlarm = $MyAlarm->setStateAlarm('disarm');
+			log::add('verisure', 'debug', '│ Request disarm - httpRespCode => '.$result_setStateAlarm[0].' - response => '.$result_setStateAlarm[1]);
+			$response_setStateAlarm = json_decode($result_setStateAlarm[1], true);
+
+			if ( $result_setStateAlarm[0] == 200 && $response_setStateAlarm['data']['armStateDisarm'] != "" )  {
+				$res = 'DISARMED';
+				log::add('verisure', 'debug', '└───────── Désactivation OK ─────────');
+			}
+			else  {
+				$res = "Erreur commande Verisure";
+			}
+			return $res;			
 		}
 	}
 	
 	public function GetReportAlarm()	{		//Type 1 & 2
 		
 		if ( $this->getConfiguration('alarmtype') == 1 )   {
+			
 			log::add('verisure', 'debug', '┌───────── Demande du journal d\'activité ─────────');
 			log::add('verisure', 'debug', '│ Equipement '.$this->getHumanName().' - Alarme type '.$this->getConfiguration('alarmtype'));
 			$MyAlarm = new verisureAPI($this->getConfiguration('numinstall'),$this->getConfiguration('username'),$this->getConfiguration('password'),$this->getConfiguration('country'));
@@ -833,6 +1001,28 @@ class verisure extends eqLogic {
 		
 		if ( $this->getConfiguration('alarmtype') == 2 )   {
 			
+			log::add('verisure', 'debug', '┌───────── Demande du journal d\'activité ─────────');
+			log::add('verisure', 'debug', '│ Equipement '.$this->getHumanName().' - Alarme type '.$this->getConfiguration('alarmtype'));
+			$MyAlarm = new verisureAPI2($this->getConfiguration('username'),$this->getConfiguration('password'),$this->getConfiguration('code'));
+			$result_Login = $MyAlarm->Login();
+          	log::add('verisure', 'debug', '│ Request Login - domain => '.$result_Login[0].' - httpRespCode => '.$result_Login[1].' - response => '.$result_Login[2]);
+			$result_fetchAllInstallations = $MyAlarm->fetchAllInstallations();	
+			log::add('verisure', 'debug', '│ Request fetchAllInformations - httpRespCode => '.$result_fetchAllInstallations[0].' - response => '.$result_fetchAllInstallations[1]);
+			$result_getReportAlarm = $MyAlarm->getReportAlarm();
+			log::add('verisure', 'debug', '│ Request EventLog - httpRespCode => '.$result_getReportAlarm[0].' - response => '.$result_getReportAlarm[1]);
+			$response_getReportAlarm = json_decode($result_getReportAlarm[1], true);
+
+			if ( $result_getReportAlarm[0] == 200 )  {
+				$res = array();
+				$res['eventLog'] = $response_getReportAlarm['data']['installation']['eventLog']['pagedList'];
+				log::add('verisure', 'debug', '└───────── Journal d\'activité OK ─────────');
+			}
+			else  {
+				$res = null;
+				log::add('verisure', 'debug', '│ /!\ Erreur commande Verisure GetReportAlarm()');
+				log::add('verisure', 'debug', '└───────── Journal d\'activité NOK ─────────');
+			}
+			return $res;
 		}
 	}
 
@@ -854,16 +1044,21 @@ class verisure extends eqLogic {
 
 			if ( $result_GetPhotosRequest[6] == 200 )  {
 				$res = $result_GetPhotosRequest[8];
-				log::add('verisure', 'debug', '└───────── Journal d\'activité OK ─────────');
+				log::add('verisure', 'debug', '└───────── Demande de photos OK ─────────');
 				$this->checkAndUpdateCmd('networkstate', $this->SetNetworkState(1));
 			}
 			else  {
 				$res = null;
 				log::add('verisure', 'debug', '│ /!\ Erreur commande Verisure GetPhotosRequest()');
-				log::add('verisure', 'debug', '└───────── Journal d\'activité NOK ─────────');
+				log::add('verisure', 'debug', '└───────── Demande de photos NOK ─────────');
 				$this->checkAndUpdateCmd('networkstate', $this->SetNetworkState(0));
 			}
 			return $res;
+		}
+
+		if ( $this->getConfiguration('alarmtype') == 2 )   {
+
+
 		}
 	}
 	
@@ -905,21 +1100,21 @@ class verisure extends eqLogic {
 		log::add('verisure', 'debug', '┌───────── Demande set Smartplug ─────────');
 		log::add('verisure', 'debug', '│ Equipement '.$this->getHumanName().' - Alarme type '.$this->getConfiguration('alarmtype'));
 		$MyAlarm = new verisureAPI2($this->getConfiguration('username'),$this->getConfiguration('password'),$this->getConfiguration('code'));
-		$result_login = $MyAlarm->Login();
-		log::add('verisure', 'debug', '│ Request LOGIN - 0 => '.$result_login[0].' - 1 => '.$result_login[1].' - 2 => '.$result_login[2]);
-		$result_giid = $MyAlarm->getGiid();
-		log::add('verisure', 'debug', '│ Request GIID - 0 => '.$result_giid[0].' - 1 => '.$result_giid[1]);
-		$result_setstate = $MyAlarm->setStateSmartplug($device_label, $state);
-		log::add('verisure', 'debug', '│ Request SETSTATESMARTPLUG - 0 => '.$result_setstate[0].' - 1 => '.$result_setstate[1].' - 2 => '.$result_setstate[2]);
-		$result_logout = $MyAlarm->Logout();
-		log::add('verisure', 'debug', '│ Request LOGOUT - 0 => '.$result_logout[0].' - 1 => '.$result_logout[1]);
+		$result_Login = $MyAlarm->Login();
+		log::add('verisure', 'debug', '│ Request Login - domain => '.$result_Login[0].' - httpRespCode => '.$result_Login[1].' - response => '.$result_Login[2]);
+		$result_fetchAllInstallations = $MyAlarm->fetchAllInstallations();	
+		log::add('verisure', 'debug', '│ Request fetchAllInformations - httpRespCode => '.$result_fetchAllInstallations[0].' - response => '.$result_fetchAllInstallations[1]);
+		log::add('verisure', 'debug', '| SmartPlug : '.$device_label.' - Commande envoyée : '.($state?'On':'Off'));
+		$result_setStateSmartplug = $MyAlarm->setStateSmartplug($device_label, $state);
+		log::add('verisure', 'debug', '│ Request UpdateState - httpRespCode => '.$result_setStateSmartplug[0].' - response => '.$result_setStateSmartplug[1]);
+		$response_setStateSmartplug = json_decode($result_setStateSmartplug[1], true);
 		
-		if ( $result_setstate[0] == 200 )  {
+		if ( $result_setStateSmartplug[0] == 200 && $response_setStateSmartplug['data']['SmartPlugSetState'] == true )  {
 			$result = 'OK';
 			log::add('verisure', 'debug', '└───────── Demande set Smartplug OK ─────────');
 		}
 		else  {
-			$result = "Erreur de connexion au cloud Verisure";
+			$result = "Erreur commande Verisure";
 		}
 		return $result;
 	}
@@ -939,20 +1134,20 @@ class verisure extends eqLogic {
         $data = json_decode($content, true);
         
 		foreach ($data['climateDevice'] as $climateDevice)  {
-			$device_label = $climateDevice['deviceLabel'];
-			$temp = $climateDevice['temperature'];
+			$device_label = $climateDevice['device']['deviceLabel'];
+			$temp = $climateDevice['temperatureValue'];
 			$this->checkAndUpdateCmd($device_label.'::Temp', $temp);
 			log::add('verisure', 'debug',  '│ Mise à jour température '.$device_label.' : '.$temp);
 			
-			if ( $climateDevice['deviceType'] == "SMOKE3" )   {
-				$humidity = $climateDevice['humidity'];
+			if ( $climateDevice['humidityValue'] != null )   {
+				$humidity = $climateDevice['humidityValue'];
 				$this->checkAndUpdateCmd($device_label.'::Humidity', $humidity);
 				log::add('verisure', 'debug',  '│ Mise à jour humidité '.$device_label.' : '.$humidity);
 			}
 		}
 		
 		foreach ($data['smartPlugDevice'] as $smartPlugDevice)  {
-			$device_label = $smartPlugDevice['deviceLabel'];
+			$device_label = $smartPlugDevice['device']['deviceLabel'];
 			if ( $smartPlugDevice['currentState'] == "ON" )   {
 				$this->checkAndUpdateCmd($device_label.'::State', "1");
 				log::add('verisure', 'debug',  '│ Mise à jour état SmartPlug '.$device_label.' : '."ON");
@@ -964,7 +1159,7 @@ class verisure extends eqLogic {
 		}
 		
 		foreach ($data['doorWindowDevice'] as $doorWindowDevice)  {
-			$device_label = $doorWindowDevice['deviceLabel'];
+			$device_label = $doorWindowDevice['device']['deviceLabel'];
 			if ( $doorWindowDevice['state'] == "OPEN" )   {
 				$this->checkAndUpdateCmd($device_label.'::State', "1");
 				log::add('verisure', 'debug',  '│ Mise à jour état ouverture '.$device_label.' : '."OPEN");
@@ -987,19 +1182,6 @@ class verisure extends eqLogic {
 		else { return "D"; }
 	}
 
-	/*public function GetDeviceInformation($device_id) {		//Type1
-
-		$device_array = $this->getConfiguration('devices');
-		for ($j = 0; $j < $this->getConfiguration('nb_smartplug'); $j++)  {
-			if ($device_array['smartplugID'.$j] == $device_id)  {
-				$name = $device_array['smartplugName'.$j];
-				if ((int)$device_id < 10) { $zone = $device_array['smartplugType'.$j]."0".$device_array['smartplugID'.$j]; }
-				else  { $zone = $device_array['smartplugType'.$j]."0".$device_array['smartplugID'.$j]; }
-				$res = array($name, $zone);
-				return $res;
-			}
-		}
-	}*/
 }
 
 
@@ -1205,8 +1387,8 @@ class verisureCmd extends cmd {
 							case 'OK':
 								$eqlogic->checkAndUpdateCmd($device_label.'::State', "1");	
 							break;
-							case 'Erreur de connexion au cloud Verisure':
-								log::add('verisure', 'debug', '│ /!\ Erreur de connexion au cloud Verisure');
+							case 'Erreur commande Verisure':
+								log::add('verisure', 'debug', '│ /!\ Erreur commande Verisure SetSmartplugState()');
 								log::add('verisure', 'debug', '└───────── Demande set Smartplug NOK ─────────');
 							break;
 						}
@@ -1218,8 +1400,8 @@ class verisureCmd extends cmd {
 							case 'OK':
 								$eqlogic->checkAndUpdateCmd($device_label.'::State', "0");	
 							break;
-							case 'Erreur de connexion au cloud Verisure':
-								log::add('verisure', 'debug', '│ /!\ Erreur de connexion au cloud Verisure');
+							case 'Erreur commande Verisure':
+								log::add('verisure', 'debug', '│ /!\ Erreur commande Verisure SetSmartplugState()');
 								log::add('verisure', 'debug', '└───────── Demande set Smartplug NOK ─────────');
 							break;
 						}
@@ -1243,8 +1425,8 @@ class verisureCmd extends cmd {
 						$eqlogic->checkAndUpdateCmd('enable', "1");
 						$eqlogic->checkAndUpdateCmd('mode', "Partiel");
 					break;
-					case 'Erreur de connexion au cloud Verisure':
-						log::add('verisure', 'debug', '│ /!\ Erreur de connexion au cloud Verisure');
+					case 'Erreur commande Verisure':
+						log::add('verisure', 'debug', '│ /!\ Erreur commande Verisure GetStateAlarm()');
 						log::add('verisure', 'debug', '└───────── Mise à jour statut NOK ─────────');
 					break;
 				}
@@ -1258,8 +1440,8 @@ class verisureCmd extends cmd {
 						$eqlogic->checkAndUpdateCmd('enable', "0");	
 						$eqlogic->checkAndUpdateCmd('mode', "Désactivée");
 					break;
-					case 'Erreur de connexion au cloud Verisure':
-						log::add('verisure', 'debug', '│ /!\ Erreur de connexion au cloud Verisure');
+					case 'Erreur commande Verisure':
+						log::add('verisure', 'debug', '│ /!\ Erreur commande Verisure DisarmAlarm()');
 						log::add('verisure', 'debug', '└───────── Désactivation NOK ─────────');
 					break;
 				}	
@@ -1272,8 +1454,8 @@ class verisureCmd extends cmd {
 						$eqlogic->checkAndUpdateCmd('enable', "1");	
 						$eqlogic->checkAndUpdateCmd('mode', "Partiel");
 					break;
-					case 'Erreur de connexion au cloud Verisure':
-						log::add('verisure', 'debug', '│ /!\ Erreur de connexion au cloud Verisure');
+					case 'Erreur commande Verisure':
+						log::add('verisure', 'debug', '│ /!\ Erreur commande Verisure ArmHomeAlarm()');
 						log::add('verisure', 'debug', '└───────── Activation mode home NOK ─────────');
 					break;
 				}	
@@ -1286,8 +1468,8 @@ class verisureCmd extends cmd {
 						$eqlogic->checkAndUpdateCmd('enable', "1");	
 						$eqlogic->checkAndUpdateCmd('mode', "Total");
 					break;
-					case 'Erreur de connexion au cloud Verisure':
-						log::add('verisure', 'debug', '│ /!\ Erreur de connexion au cloud Verisure');
+					case 'Erreur commande Verisure':
+						log::add('verisure', 'debug', '│ /!\ Erreur commande Verisure ArmTotalAlarm()');
 						log::add('verisure', 'debug', '└───────── Activation mode total NOK ─────────');
 					break;
 				}	

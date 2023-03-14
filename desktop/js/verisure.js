@@ -174,7 +174,7 @@ $('#bt_Authentication_2FA').on('click',function() {
 							else { tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="'+data.result['res'][j]['type']+'" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugModel'+j+'">'; }
 							tr += '</td>';
 							tr += '<td>';					
-							tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="'+data.result['res'][j]['type']+'"  style="display : none;" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugType'+j+'">';
+							tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="'+data.result['res'][j]['type']+'" style="display : none;" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugType'+j+'">';
 							tr += '</td>';
 							tr += '</tr>';
 							$('#table_smartplug tbody').append(tr);
@@ -185,105 +185,133 @@ $('#bt_Authentication_2FA').on('click',function() {
 				$('#div_alert').showAlert({message: '{{Authentification 2FA terminée avec succès}}', level: 'success'});
 			}
 			
-			/*if ($('.eqLogicAttr[data-l2key=alarmtype]').value() == 2)   {
-				if (data.state != 'ok') {
-					$('#div_alert').showAlert({message: '{{Erreur lors de la synchronisation}}', level: 'danger'});
+			if ($('.eqLogicAttr[data-l2key=alarmtype]').value() == 2)   {
+				if (data.state != 'ok' || data.result == null) {
+					$('#div_alert').showAlert({message: '{{Erreur lors de l\'authentification 2FA}}', level: 'danger'});
 					return;
 				}
 				else  {
-					var nbsp = 0;
-					var nbclimate = data.result['climateDevice'].length;
-					$('#nbclimate').append(nbclimate); 
-					for(j = 0; j < nbclimate ; j++) {
-						var tr = '<tr>';
-						tr += '<td>';
-						tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="'+data.result['climateDevice'][j]['deviceLabel']+'" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugID'+j+'">';
-						tr += '</td>';
-						tr += '<td>';
-						tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="'+data.result['climateDevice'][j]['deviceArea']+'" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugName'+j+'">';
-						tr += '</td>';
-						tr += '<td>';
-						tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="'+data.result['climateDevice'][j]['deviceType']+'" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugModel'+j+'">';
-						tr += '</td>';
-						tr += '<td>';					
-						tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="climateDevice" style="display : none;" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugType'+j+'">';
-						tr += '</td>';
-						tr += '</tr>';
-						$('#table_smartplug tbody').append(tr);
+					if ( data.result['type'] == "OTP" ) {
+						var nb_type = data.result['res'].length;
+						var message = "\n Vérification de l'identité (2FA) \n Choisissez la méthode pour l'authentification :\n\n";
+						for(i = 0; i < nb_type ; i++) {
+							var id = i + 1;
+							if ( data.result['res'][i] == 'phone' ) { message = message + "Tapez " + id + " pour utiliser votre téléphone (recommandé)" + "\n";}
+							if ( data.result['res'][i] == 'email' ) { message = message + "Tapez " + id + " pour utiliser votre email" + "\n";}
+						}
+						var result = prompt(message, "");
+						if ( parseInt(result - 1) == 0 ) { var type = 'phone'; }
+						else if ( parseInt(result - 1) == 1 ) { var type = 'email'; }
+						sendOTP(alarmtype, numinstall, username, pwd, code, country, type);
 					}
-					nbsp = nbclimate;
 					
-					var nbdoor = data.result['doorWindowDevice'].length;
-					$('#nbdoor').append(nbdoor);
-					for(j = 0; j < nbdoor ; j++) {
-						var i = j + nbsp;
-						var tr = '<tr>';
-						tr += '<td>';
-						tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="'+data.result['doorWindowDevice'][j]['deviceLabel']+'" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugID'+i+'">';
-						tr += '</td>';
-						tr += '<td>';
-						tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="'+data.result['doorWindowDevice'][j]['area']+'" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugName'+i+'">';
-						tr += '</td>';
-						tr += '<td>';
-						tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="DOORSENSOR1" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugModel'+i+'">';
-						tr += '</td>';
-						tr += '<td>';					
-						tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="doorWindowDevice" style="display : none;" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugType'+i+'">';
-						tr += '</td>';
-						tr += '</tr>';
-						$('#table_smartplug tbody').append(tr);
-					}
-					nbsp += nbdoor;
+					if ( data.result['type'] == "devices" ) {
 					
-					var nbcams = data.result['cameraDevice'].length;
-					$('#nbcams').append(nbcams);
-					for(j = 0; j < nbcams ; j++) {
-						var i = j + nbsp;
-						var tr = '<tr>';
-						tr += '<td>';
-						tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="'+data.result['cameraDevice'][j]['deviceLabel']+'" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugID'+i+'">';
-						tr += '</td>';
-						tr += '<td>';
-						tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="'+data.result['cameraDevice'][j]['area']+'" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugName'+i+'">';
-						tr += '</td>';
-						tr += '<td>';
-						tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="CAMERA1" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugModel'+i+'">';
-						tr += '</td>';
-						tr += '<td>';					
-						tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="cameraDevice" style="display : none;" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugType'+i+'">';
-						tr += '</td>';
-						tr += '</tr>';
-						$('#table_smartplug tbody').append(tr);
+						var nbsp = data.result['res'].length;
+						var nbclimate = 0;
+						var nbdoor = 0;
+						var nbcams = 0;
+						var nbdevice = 0;
+
+						$('#nbsp').append(nbsp);
+						for(j = 0; j < nbsp ; j++) {
+							var tr = '<tr>';
+							tr += '<td>';
+							tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="'+data.result['res'][j]['deviceLabel']+'" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugID'+j+'">';
+							tr += '</td>';
+							tr += '<td>';
+							tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="'+data.result['res'][j]['area']+'" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugName'+j+'">';
+							tr += '</td>';
+							tr += '<td>';
+							if (data.result['res'][j]['gui']['deviceGroup'] == "MAGNETIC") { 
+								tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="Détecteur de chocs et d\'ouverture" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugModel'+j+'">';
+								tr += '</td>';
+								tr += '<td>';					
+								tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="doorWindowDevice" style="display : none;" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugType'+j+'">';
+								tr += '</td>';
+								tr += '</tr>';
+								nbdoor++;
+							}
+							else if (data.result['res'][j]['gui']['deviceGroup'] == "CAMERA") {
+								tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="Détecteur de mouvements avec images" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugModel'+j+'">';
+								tr += '</td>';
+								tr += '<td>';					
+								tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="cameraDevice" style="display : none;" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugType'+j+'">';
+								tr += '</td>';
+								tr += '</tr>';
+								nbcams++;
+							}
+							else if (data.result['res'][j]['gui']['deviceGroup'] == "SMOKE") {
+								tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="Détecteur De fumée" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugModel'+j+'">';
+								tr += '</td>';
+								tr += '<td>';					
+								tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="climateDevice" style="display : none;" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugType'+j+'">';
+								tr += '</td>';
+								tr += '</tr>';
+								nbclimate++;
+							}
+							else if (data.result['res'][j]['gui']['deviceGroup'] == "SIREN") {
+								tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="Sirène" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugModel'+j+'">';
+								tr += '</td>';
+								tr += '<td>';					
+								tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="climateDevice" style="display : none;" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugType'+j+'">';
+								tr += '</td>';
+								tr += '</tr>';
+								nbclimate++;
+							}
+							else if (data.result['res'][j]['gui']['deviceGroup'] == "VOICEBOX") {
+								tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="VoiceBox" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugModel'+j+'">';
+								tr += '</td>';
+								tr += '<td>';					
+								tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="climateDevice" style="display : none;" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugType'+j+'">';
+								tr += '</td>';
+								tr += '</tr>';
+								nbclimate++;
+							}
+							else if (data.result['res'][j]['gui']['deviceGroup'] == "CONTROLPLUG") {
+								tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="SmartPlug" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugModel'+j+'">';
+								tr += '</td>';
+								tr += '<td>';					
+								tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="smartPlugDevice" style="display : none;" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugType'+j+'">';
+								tr += '</td>';
+								tr += '</tr>';
+								nbdevice++;
+							}
+							else if (data.result['res'][j]['gui']['deviceGroup'] == "KEYPAD") {
+								tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="Clavier" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugModel'+j+'">';
+								tr += '</td>';
+								tr += '<td>';					
+								tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="keypadDevice" style="display : none;" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugType'+j+'">';
+								tr += '</td>';
+								tr += '</tr>';
+							}
+							else if (data.result['res'][j]['gui']['deviceGroup'] == "GATEWAY") {
+								tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="Centrale" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugModel'+j+'">';
+								tr += '</td>';
+								tr += '<td>';					
+								tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="centrale" style="display : none;" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugType'+j+'">';
+								tr += '</td>';
+								tr += '</tr>';
+							}
+							else { 
+								tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="'+data.result['res'][j]['gui']['deviceGroup']+'" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugModel'+j+'">';
+								tr += '</td>';
+								tr += '<td>';					
+								tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="'+data.result['res'][j]['gui']['label']+'" style="display : none;" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugType'+j+'">';
+								tr += '</td>';
+								tr += '</tr>';
+							}
+							$('#table_smartplug tbody').append(tr);
+						}
+						var tr = $('#table_smartplug tbody tr:last');
+						$('#nbclimate').append(nbclimate);
+						$('#nbdoor').append(nbdoor);
+						$('#nbcams').append(nbcams);
+						$('#nbdevice').append(nbdevice);
 					}
-					nbsp += nbcams;
-										
-					var nbdevice = data.result['smartPlugDevice'].length;
-					$('#nbdevice').append(nbdevice);
-					for(j = 0; j < nbdevice ; j++) {
-						var i = j + nbsp;
-						var tr = '<tr>';
-						tr += '<td>';
-						tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="'+data.result['smartPlugDevice'][j]['deviceLabel']+'" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugID'+i+'">';
-						tr += '</td>';
-						tr += '<td>';
-						tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="'+data.result['smartPlugDevice'][j]['area']+'" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugName'+i+'">';
-						tr += '</td>';
-						tr += '<td>';
-						tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="SMARTPLUG1" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugModel'+i+'">';
-						tr += '</td>';
-						tr += '<td>';					
-						tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="smartPlugDevice" style="display : none;" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugType'+i+'">';
-						tr += '</td>';
-						tr += '</tr>';
-						$('#table_smartplug tbody').append(tr);
-					}
-					nbsp += nbdevice;
-					
-					$('#nbsp').append(nbsp);
-					var tr = $('#table_smartplug tbody tr:last');
+					$('#div_alert').showAlert({message: '{{Synchronisation terminée avec succès}}', level: 'success'});
 				}
-				$('#div_alert').showAlert({message: '{{Synchronisation terminée avec succès}}', level: 'success'});
-			}*/
+			}
 		}
 	});
 });
@@ -292,7 +320,7 @@ $('#bt_Authentication_2FA').on('click',function() {
 function sendOTP(alarmtype, numinstall, username, pwd, code, country, phone_id)
 {
  
-	$('#div_alert').showAlert({message: '{{Envoi du SMS en cours}}', level: 'warning'});	
+	$('#div_alert').showAlert({message: '{{Envoi du code en cours}}', level: 'warning'});	
 	$.ajax({													// fonction permettant de faire de l'ajax
 		type: "POST", 											// methode de transmission des données au fichier php
 		url: "plugins/verisure/core/ajax/verisure.ajax.php", 	// url du fichier php
@@ -317,7 +345,7 @@ function sendOTP(alarmtype, numinstall, username, pwd, code, country, phone_id)
 				return;
 			}
 			else  {
-				var message = "\n Vérification de l'identité (2FA) \n Saisissez le code reçu par SMS :\n";
+				var message = "\n Vérification de l'identité (2FA) \n Saisissez le code reçu :\n";
 				var result = prompt(message, "");
 				validateDevice(alarmtype, numinstall, username, pwd, code, country, result);
 			}
@@ -349,38 +377,153 @@ function validateDevice(alarmtype, numinstall, username, pwd, code, country, sms
 			},
 		success: function (data) { 			
 			
-			if (data.state != 'ok' || data.result == null) {
-				$('#div_alert').showAlert({message: '{{Erreur lors de l\'authentification 2FA}}', level: 'danger'});
-				return;
-			}
-			else  {
-				var nbsp = data.result['res'].length;
-				$('#nbsp').append(nbsp);
-				for(j = 0; j < nbsp ; j++) {
-					var tr = '<tr>';
-					tr += '<td>';
-					if (data.result['res'][j]['type'] != "CENT") { tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="'+data.result['res'][j]['code']+'" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugID'+j+'">'; }
-					else { tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="0" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugID'+j+'">'; }
-					tr += '</td>';
-					tr += '<td>';
-					tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="'+data.result['res'][j]['name']+'" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugName'+j+'">';
-					tr += '</td>';
-					tr += '<td>';
-					if (data.result['res'][j]['type'] == "MG") { tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="Détecteur de chocs et d\'ouverture" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugModel'+j+'">'; }
-					else if (data.result['res'][j]['type'] == "XP" || data.result['res'][j]['type'] == "XR" || data.result['res'][j]['type'] == "YR") { tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="Détecteur de mouvements avec images" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugModel'+j+'">'; }
-					else if (data.result['res'][j]['type'] == "FR") { tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="Détecteur De fumée" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugModel'+j+'">'; }
-					else if (data.result['res'][j]['type'] == "CENT") { tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="Centrale" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugModel'+j+'">'; }
-					else { tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="'+data.result['res'][j]['type']+'" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugModel'+j+'">'; }
-					tr += '</td>';
-					tr += '<td>';					
-					tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="'+data.result['res'][j]['type']+'"  style="display : none;" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugType'+j+'">';
-					tr += '</td>';
-					tr += '</tr>';
-					$('#table_smartplug tbody').append(tr);
+			if ($('.eqLogicAttr[data-l2key=alarmtype]').value() == 1)   {
+			
+				if (data.state != 'ok' || data.result == null) {
+					$('#div_alert').showAlert({message: '{{Erreur lors de l\'authentification 2FA}}', level: 'danger'});
+					return;
 				}
-				var tr = $('#table_smartplug tbody tr:last');
+				else  {
+					var nbsp = data.result['res'].length;
+					$('#nbsp').append(nbsp);
+					for(j = 0; j < nbsp ; j++) {
+						var tr = '<tr>';
+						tr += '<td>';
+						if (data.result['res'][j]['type'] != "CENT") { tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="'+data.result['res'][j]['code']+'" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugID'+j+'">'; }
+						else { tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="0" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugID'+j+'">'; }
+						tr += '</td>';
+						tr += '<td>';
+						tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="'+data.result['res'][j]['name']+'" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugName'+j+'">';
+						tr += '</td>';
+						tr += '<td>';
+						if (data.result['res'][j]['type'] == "MG") { tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="Détecteur de chocs et d\'ouverture" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugModel'+j+'">'; }
+						else if (data.result['res'][j]['type'] == "XP" || data.result['res'][j]['type'] == "XR" || data.result['res'][j]['type'] == "YR") { tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="Détecteur de mouvements avec images" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugModel'+j+'">'; }
+						else if (data.result['res'][j]['type'] == "FR") { tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="Détecteur De fumée" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugModel'+j+'">'; }
+						else if (data.result['res'][j]['type'] == "CENT") { tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="Centrale" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugModel'+j+'">'; }
+						else { tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="'+data.result['res'][j]['type']+'" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugModel'+j+'">'; }
+						tr += '</td>';
+						tr += '<td>';					
+						tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="'+data.result['res'][j]['type']+'"  style="display : none;" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugType'+j+'">';
+						tr += '</td>';
+						tr += '</tr>';
+						$('#table_smartplug tbody').append(tr);
+					}
+					var tr = $('#table_smartplug tbody tr:last');
+				}
+				$('#div_alert').showAlert({message: '{{Authentification 2FA terminée avec succès}}', level: 'success'});
 			}
-			$('#div_alert').showAlert({message: '{{Authentification 2FA terminée avec succès}}', level: 'success'});
+
+			if ($('.eqLogicAttr[data-l2key=alarmtype]').value() == 2)   {
+			
+				if (data.state != 'ok' || data.result == null) {
+					$('#div_alert').showAlert({message: '{{Erreur lors de l\'authentification 2FA}}', level: 'danger'});
+					return;
+				}
+				else  {
+					var nbsp = data.result['res'].length;
+					var nbclimate = 0;
+					var nbdoor = 0;
+					var nbcams = 0;
+					var nbdevice = 0;
+
+					$('#nbsp').append(nbsp);
+					for(j = 0; j < nbsp ; j++) {
+						var tr = '<tr>';
+						tr += '<td>';
+						tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="'+data.result['res'][j]['deviceLabel']+'" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugID'+j+'">';
+						tr += '</td>';
+						tr += '<td>';
+						tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="'+data.result['res'][j]['area']+'" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugName'+j+'">';
+						tr += '</td>';
+						tr += '<td>';
+						if (data.result['res'][j]['gui']['deviceGroup'] == "MAGNETIC") { 
+							tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="Détecteur de chocs et d\'ouverture" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugModel'+j+'">';
+							tr += '</td>';
+							tr += '<td>';					
+							tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="doorWindowDevice" style="display : none;" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugType'+j+'">';
+							tr += '</td>';
+							tr += '</tr>';
+							nbdoor++;
+						}
+						else if (data.result['res'][j]['gui']['deviceGroup'] == "CAMERA") {
+							tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="Détecteur de mouvements avec images" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugModel'+j+'">';
+							tr += '</td>';
+							tr += '<td>';					
+							tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="cameraDevice" style="display : none;" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugType'+j+'">';
+							tr += '</td>';
+							tr += '</tr>';
+							nbcams++;
+						}
+						else if (data.result['res'][j]['gui']['deviceGroup'] == "SMOKE") {
+							tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="Détecteur De fumée" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugModel'+j+'">';
+							tr += '</td>';
+							tr += '<td>';					
+							tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="climateDevice" style="display : none;" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugType'+j+'">';
+							tr += '</td>';
+							tr += '</tr>';
+							nbclimate++;
+						}
+						else if (data.result['res'][j]['gui']['deviceGroup'] == "SIREN") {
+							tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="Sirène" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugModel'+j+'">';
+							tr += '</td>';
+							tr += '<td>';					
+							tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="climateDevice" style="display : none;" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugType'+j+'">';
+							tr += '</td>';
+							tr += '</tr>';
+							nbclimate++;
+						}
+						else if (data.result['res'][j]['gui']['deviceGroup'] == "VOICEBOX") {
+							tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="VoiceBox" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugModel'+j+'">';
+							tr += '</td>';
+							tr += '<td>';					
+							tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="climateDevice" style="display : none;" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugType'+j+'">';
+							tr += '</td>';
+							tr += '</tr>';
+							nbclimate++;
+						}
+						else if (data.result['res'][j]['gui']['deviceGroup'] == "CONTROLPLUG") {
+							tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="SmartPlug" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugModel'+j+'">';
+							tr += '</td>';
+							tr += '<td>';					
+							tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="smartPlugDevice" style="display : none;" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugType'+j+'">';
+							tr += '</td>';
+							tr += '</tr>';
+							nbdevice++;
+						}
+						else if (data.result['res'][j]['gui']['deviceGroup'] == "KEYPAD") {
+							tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="Clavier" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugModel'+j+'">';
+							tr += '</td>';
+							tr += '<td>';					
+							tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="keypadDevice" style="display : none;" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugType'+j+'">';
+							tr += '</td>';
+							tr += '</tr>';
+						}
+						else if (data.result['res'][j]['gui']['deviceGroup'] == "GATEWAY") {
+							tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="Centrale" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugModel'+j+'">';
+							tr += '</td>';
+							tr += '<td>';					
+							tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="centrale" style="display : none;" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugType'+j+'">';
+							tr += '</td>';
+							tr += '</tr>';
+						}
+						else { 
+							tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="'+data.result['res'][j]['gui']['deviceGroup']+'" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugModel'+j+'">';
+							tr += '</td>';
+							tr += '<td>';					
+							tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="'+data.result['res'][j]['gui']['label']+'" style="display : none;" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugType'+j+'">';
+							tr += '</td>';
+							tr += '</tr>';
+						}
+						$('#table_smartplug tbody').append(tr);
+					}
+					var tr = $('#table_smartplug tbody tr:last');
+					$('#nbclimate').append(nbclimate);
+					$('#nbdoor').append(nbdoor);
+					$('#nbcams').append(nbcams);
+					$('#nbdevice').append(nbdevice);
+				}
+				$('#div_alert').showAlert({message: '{{Synchronisation terminée avec succès}}', level: 'success'});
+			}
 		}
 	});
 };

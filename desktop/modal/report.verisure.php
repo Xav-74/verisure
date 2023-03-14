@@ -198,77 +198,72 @@
 							}
 							
 							if ( $eqLogic->getConfiguration('alarmtype') == 2 )  {
-								$i = 0;
 								$j = 1;
-								$filter = array('ARM','DISARM','INTRUSION','SOS','PICTURE');
-								foreach ($report['eventLogItems'] as $items)  {
-									if (in_array($report['eventLogItems'][$i]['eventCategory'], $filter))  {
-										echo '<tr>';
-										echo '<td>';
-										echo $j;
-										echo '</td>';
-										echo '<td>';
-										$date = new DateTime($report['eventLogItems'][$i]['eventTime'], new DateTimeZone('UTC'));
-										$date->setTimezone(new DateTimeZone(config::byKey('timezone')));
-										echo $date->format('d/m/Y H:i:s');
-										echo '</td>';
-										switch ($report['eventLogItems'][$i]['eventCategory'])  {
-											case 'ARM':
-												echo '<td>';
-												if ($report['eventLogItems'][$i]['armState'] == 'ARMED_AWAY') {echo '<img src="plugins/verisure/core/img/logo_total.png" height="35" width="35"/>';}
-                                                if ($report['eventLogItems'][$i]['armState'] == 'ARMED_HOME') {echo '<img src="plugins/verisure/core/img/logo_home.png" height="35" width="35"/>';}
-												echo '</td>';
-												echo '<td>';
-												echo $report['eventLogItems'][$i]['armState'];
-												echo '<br/>';
-												echo 'Device / User : '. $report['eventLogItems'][$i]['deviceType'].' - '. $report['eventLogItems'][$i]['deviceArea'].' - '.$report['eventLogItems'][$i]['userName'];
-												echo '</td>';
-												break;
-                                            case 'DISARM':
-												echo '<td>';
-												echo '<img src="plugins/verisure/core/img/logo_desactive.png" height="35" width="35"/>';
-												echo '</td>';
-												echo '<td>';
-												echo $report['eventLogItems'][$i]['armState'];
-												echo '<br/>';
-												echo 'Device / User : '. $report['eventLogItems'][$i]['deviceType'].' - '. $report['eventLogItems'][$i]['deviceArea'].' - '.$report['eventLogItems'][$i]['userName'];
-												echo '</td>';
-												break;
-											 case 'INTRUSION':
-												echo '<td>';
-												echo '<img src="plugins/verisure/core/img/logo_alerte.png" height="35" width="35"/>';
-												echo '</td>';
-												echo '<td>';
-												echo $report['eventLogItems'][$i]['eventCategory'];
-												echo '<br/>';
-												echo 'Device : '. $report['eventLogItems'][$i]['deviceType'].' - '. $report['eventLogItems'][$i]['deviceArea'];
-												echo '</td>';
-												break;
-											case 'SOS':
-												echo '<td>';
-												echo '<img src="plugins/verisure/core/img/logo_sos.png" height="35" width="35"/>';
-												echo '</td>';
-												echo '<td>';
-												echo $report['eventLogItems'][$i]['eventCategory'];
-												echo '<br/>';
-												echo 'Device : '. $report['eventLogItems'][$i]['deviceType'].' - '. $report['eventLogItems'][$i]['deviceArea'];
-												echo '</td>';
-												break;
-											case 'PICTURE':
-												echo '<td>';
-												echo '<img src="plugins/verisure/core/img/logo_photos.png" height="35" width="35"/>';
-												echo '</td>';
-												echo '<td>';
-												echo $report['eventLogItems'][$i]['eventCategory'];
-												echo '<br/>';
-												echo 'Device : '. $report['eventLogItems'][$i]['deviceType'].' - '. $report['eventLogItems'][$i]['deviceArea'];
-												echo '</td>';
-												break;
-										}
-										echo '</tr>';
-										$j++;
+								foreach ($report['eventLog'] as $eventLog)  {
+									echo '<tr>';
+									echo '<td>';
+									echo $j;
+									echo '</td>';
+									echo '<td>';
+									$date = new DateTime($eventLog['eventTime'], new DateTimeZone('UTC'));
+									$date->setTimezone(new DateTimeZone(config::byKey('timezone')));
+									echo $date->format('d/m/Y H:i:s');
+									echo '</td>';
+									switch ($eventLog['eventCategory'])  {
+										case 'ARM':
+											echo '<td>';
+											if ($eventLog['armState'] == 'ARMED_AWAY') {echo '<img src="plugins/verisure/core/img/logo_total.png" height="35" width="35"/>';}
+                                            if ($eventLog['armState'] == 'ARMED_HOME') {echo '<img src="plugins/verisure/core/img/logo_home.png" height="35" width="35"/>';}
+											echo '</td>';
+											echo '<td>';
+											echo $eventLog['armState'];
+											echo '<br/>';
+											echo 'Device / User : '. $eventLog['device']['gui']['label'].' - '. $eventLog['device']['area'].' - '.$eventLog['userName'];
+											echo '</td>';
+										break;
+                                        case 'DISARM':
+											echo '<td>';
+											echo '<img src="plugins/verisure/core/img/logo_desactive.png" height="35" width="35"/>';
+											echo '</td>';
+											echo '<td>';
+											echo $eventLog['armState'];
+											echo '<br/>';
+											echo 'Device / User : '. $eventLog['device']['gui']['label'].' - '. $eventLog['device']['area'].' - '.$eventLog['userName'];
+											echo '</td>';
+										break;
+										case 'INTRUSION':
+											echo '<td>';
+											echo '<img src="plugins/verisure/core/img/logo_alerte.png" height="35" width="35"/>';
+											echo '</td>';
+											echo '<td>';
+											echo $eventLog['eventCategory'];
+											echo '<br/>';
+											echo 'Device : '. $eventLog['device']['gui']['label'].' - '. $eventLog['device']['area'];
+											echo '</td>';
+										break;
+										case 'SOS':
+											echo '<td>';
+											echo '<img src="plugins/verisure/core/img/logo_sos.png" height="35" width="35"/>';
+											echo '</td>';
+											echo '<td>';
+											echo $eventLog['eventCategory'];
+											echo '<br/>';
+											echo 'Device : '. $eventLog['device']['gui']['label'].' - '. $eventLog['device']['area'];
+											echo '</td>';
+										break;
+										case 'PICTURE':
+											echo '<td>';
+											echo '<img src="plugins/verisure/core/img/logo_photos.png" height="35" width="35"/>';
+											echo '</td>';
+											echo '<td>';
+											echo $eventLog['eventCategory'];
+											echo '<br/>';
+											echo 'Device : '. $eventLog['device']['gui']['label'].' - '. $eventLog['device']['area'];
+											echo '</td>';
+										break;
 									}
-									$i++;
+									echo '</tr>';
+									$j++;
 								}
 							}
 						?>

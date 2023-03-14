@@ -84,9 +84,9 @@
         });
 		$.getJSON("/plugins/verisure/data/stateDevices.json", function(climate) {
             $.each(climate.climateDevice, function (key, val) {
-                var name = "Température "+val.deviceArea;
-                var temp = val.temperature+" °C";
-				if ( val.humidity != null ) { temp = temp+" ("+val.humidity+" %)"; }
+                var name = "Température "+val.device.area;
+                var temp = val.temperatureValue+" °C";
+				if ( val.humidityValue != null ) { temp = temp+" ("+val.humidityValue+" %)"; }
                 $('<tr class="row text-center">').append(
 					$('<td class="col-10 text-left" style="font-size: 12px !important">').text(name),
 					$('<td class="col-2">').text(temp),
@@ -95,7 +95,7 @@
         });
 		$.getJSON("/plugins/verisure/data/stateDevices.json", function(device) {
             $.each(device.smartPlugDevice, function (key, val) {
-                var name = "Smartplug "+val.area;
+                var name = "Smartplug "+val.device.area;
                 var icon = "";
 				if (val.currentState == "OFF") {
 					icon = '<i class="icon_red jeedomapp-prise"></i>';
