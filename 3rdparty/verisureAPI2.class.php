@@ -249,6 +249,31 @@ class verisureAPI2 {
 					'query' => 'mutation UpdateState($giid: String!, $deviceLabel: String!, $state: Boolean!) { SmartPlugSetState(giid: $giid, input:[{deviceLabel: $deviceLabel, state: $state}]) }',
 				);
 			break;
+
+			case "CaptureImageRequest":
+				$content = array(
+					'operationName' => 'CaptureImageRequest',
+					'variables' => array(
+						'giid' => $this->giid,
+						'deviceLabel' => $data1,
+					),
+					'query' => 'mutation CaptureImageRequest($giid: String!, $deviceLabel: String!) { CameraRequestImageCapture(giid: $giid, deviceLabel: $deviceLabel) { requestId __typename } }',
+				);
+			break;
+
+			case "ImageCaptureStatus":
+				$content = array(
+					'operationName' => 'ImageCaptureStatus',
+					'variables' => array(
+						'giid' => $this->giid,
+						'deviceLabel' => $data1,
+						'requestId' => $data2
+					),
+					'query' => 'query ImageCaptureStatus($giid: String!, $deviceLabel: String!, $requestId: String!) { installation(giid: $giid) { imageCaptureRequestStatus(search: {deviceLabel: $deviceLabel, requestId: $requestId}) { seriesId imageId completionTime captureTime requestTime failedReason status imageOrientation __typename } __typename } }',
+				);
+			break;
+
+
 		}
 
 		//log::add('verisure', 'debug', '| Content = '.json_encode($content));
@@ -263,6 +288,7 @@ class verisureAPI2 {
 		$this->accessToken = $array['accessToken'];
 		$this->refreshToken = $array['refreshToken'];
 		$this->vidToken = $array['vidToken'];
+		$this->giid = $array['giid'];
 		//log::add('verisure', 'debug', '| Device file loaded');
 	}
 
@@ -273,7 +299,8 @@ class verisureAPI2 {
 			'stepUpToken' => $this->stepUpToken,
 			'accessToken' => $this->accessToken,
 			'refreshToken' => $this->refreshToken,
-			'vidToken' => $this->vidToken		
+			'vidToken' => $this->vidToken,
+			'giid' => $this->giid	
 		);
 		file_put_contents(dirname(__FILE__).'/../data/cookie.json', json_encode($array));
 		//log::add('verisure', 'debug', '| Device file saved');
@@ -434,6 +461,7 @@ class verisureAPI2 {
 		
 		if ($httpRespCode == 200)  {
         	$this->giid = json_decode($response, false)->{'data'}->{'account'}->{'installations'}[0]->{'giid'};		// Installation ID 0 by default
+			$this->saveDevice();
         }
       			
 		return array($httpRespCode, $response);
@@ -575,6 +603,72 @@ class verisureAPI2 {
 		$response = $result[1];
 		      			
 		return array($httpRespCode, $response);
+	}
+
+	public function captureImageRequest($device)  {					// Photos request)
+
+		$method = "POST";
+		$url = $this->workingDomain.$this->baseUrl;
+		$headers = $this->setHeaders(null);
+		$data = $this->setContent('CaptureImageRequest', $device, null, null);
+		$result = $this->doRequest($data, $method, $headers, $url);
+		
+		$httpRespCode = $result[0];
+		$response = $result[1];
+		$res = json_decode($response, true);
+		$requestId = $res['data']['CameraRequestImageCapture']['requestId'];
+
+		if ( $httpRespCode == 200 && $res['data']['CameraRequestImageCapture']['requestId'] != "" ) {
+
+			$retry = 20;
+			$wait = "REQUESTED";
+			While ( $retry > 0 && $wait != "COMPLETED")  {
+				sleep(2);
+				$method2 = "POST";
+				$url2 = $this->workingDomain.$this->baseUrl;
+				$headers2 = $this->setHeaders(null);
+				$data2 = $this->setContent("ImageCaptureStatus", $device, $requestId, null);
+				$result2 = $this->doRequest($data2, $method2, $headers2, $url2);
+				
+				$httpRespCode2 = $result2[0];
+				$response2 = $result2[1];
+				$res2 = json_decode($response2, true);
+				$wait = $res2['data']['installation']['imageCaptureRequestStatus']['status'];
+				$retry--;
+			}
+
+			if ( $res2['data']['installation']['imageCaptureRequestStatus']['status'] == "COMPLETED" )  {
+
+				$method3 = "POST";
+				$url3 = $this->workingDomain.$this->baseUrl;
+				$headers3 = $this->setHeaders(null);
+				$data3 = $this->setContent("Camera", null, null, null);
+				$result3 = $this->doRequest($data3, $method3, $headers3, $url3);
+
+				$httpRespCode3 = $result3[0];
+				$response3 = $result3[1];
+				$res3 = json_decode($response3, true);
+
+				foreach ( $res3['data']['installation']['cameras'] as $cameras )  {
+					if ( $cameras['device']['deviceLabel'] == $device ) { $urlDownload  = $cameras['latestCameraSeries']['image'][0]['url']; }
+				}
+
+				if ( $urlDownload != "" )  {
+
+					$method4 = "GET";
+					$url4 = $urlDownload;
+					$headers4 = $this->setHeaders(null);
+					$headers4[] = 'Accept: image/jpeg';
+					$data4 = null;
+					$result4 = $this->doRequest($data4, $method4, $headers4, $url4);
+
+					$httpRespCode4 = $result4[0];
+					$img = $result4[1];
+				}
+			}
+
+			return array($httpRespCode, $response, $httpRespCode2, $response2, $httpRespCode3, $response3, $httpRespCode4, $img);
+		}
 	}
 }
 

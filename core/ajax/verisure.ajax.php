@@ -50,6 +50,11 @@ try {
 		ajax::success($result);
 	}
 
+	if (init('action') == 'Reset_Token') {
+		$result = verisure::Reset_Token(init('alarmtype'),init('numinstall'));
+		ajax::success($result);
+	}
+
     throw new Exception(__('Aucune méthode correspondante à : ', __FILE__) . init('action'));
     /*     * *********Catch exeption*************** */
 }
