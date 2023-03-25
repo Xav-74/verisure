@@ -98,7 +98,7 @@ class verisureAPI2 {
 			'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.5005.124 Safari/537.36 Edg/102.0.1245.41'
 		);
        	
-		if ( $operation == 'login' ) {				// Login
+		if ( $operation == 'login_mfa' ) {				// Login with MFA
 			$headers[] = sprintf('Authorization: Basic %s', $this->authorization);
 		}
 
@@ -313,12 +313,35 @@ class verisureAPI2 {
 		$result = substr($result, 4, strlen($result));
 		return $result;
 	}
-	
 
-	public function Login()  {										// Login to Verisure Cloud
+
+	private function getAccessToken($str) {
+
+		$result = strstr(strstr($str,'vs-access'),';',true);
+		$result = substr($result, 4, strlen($result));
+		return $result;
+	}
+
+
+	private function getRefreshToken($str) {
+
+		$result = strstr(strstr($str,'vs-refresh='),';',true);
+		$result = substr($result, 4, strlen($result));
+		return $result;
+	}
+
+
+	private function getExpirationDate($str) {
+
+		$result = strstr(strrchr($str,'Expires='),';',true);
+		return $result;
+	}
+
+
+	public function Login_MFA()  {										// Login to Verisure Cloud with MFA
 		
 		$method = "POST";
-		$headers = $this->setHeaders('login');
+		$headers = $this->setHeaders('login_mfa');
 		$data = null;
 		$this->workingDomain = $this->availableDomain[0];
 		$url = $this->workingDomain.'/auth/login';
@@ -351,6 +374,46 @@ class verisureAPI2 {
 			if (json_decode($response, false)->{'refreshToken'} != "") { $this->refreshToken = json_decode($response, false)->{'refreshToken'}; };
 			$this->saveDevice();
 			return array($this->workingDomain, $httpRespCode, $response);
+		}
+	}
+
+
+	public function Login()  {										// Login to Verisure Cloud with cookies
+		
+		$method = "GET";
+		$headers = $this->setHeaders(null);
+		$data = null;
+		$this->workingDomain = $this->availableDomain[0];
+		$url = $this->workingDomain.'/auth/login';
+		
+		$result = $this->doRequest($data, $method, $headers, $url);
+		$httpRespCode = $result[0];
+		$response = $result[2];
+
+		if ($httpRespCode != 200)   {
+			$this->workingDomain = $this->availableDomain[1];
+			$url = $this->workingDomain.'/auth/login';
+			$result2 = $this->doRequest($data, $method, $headers, $url);
+			$httpRespCode2 = $result2[0];
+			$response2 = $result2[1];
+			
+			if ($httpRespCode2 != 200)   {
+				return array("Verisure session error", $httpRespCode2, $response2);
+			}
+			else   {
+				//$this->accessToken = $this->getAccessToken($result2[2]);
+				$this->refreshToken = $this->getRefreshToken($result2[2]);
+				$date = $this->getExpirationDate($result2[2]);
+				$this->saveDevice();
+				return array($this->workingDomain, $httpRespCode2, "Token refreshed - ".$date);
+			}
+		}
+		else   {
+			//$this->accessToken = $this->getAccessToken($result[2]);
+			$this->refreshToken = $this->getRefreshToken($result[2]);
+			$date = $this->getExpirationDate($result[2]);
+			$this->saveDevice();
+		return array($this->workingDomain, $httpRespCode, "Token refreshed - ".$date);
 		}
 	}
 	

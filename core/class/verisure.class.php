@@ -574,8 +574,8 @@ class verisure extends eqLogic {
 			log::add('verisure', 'debug', '┌───────── Démarrage de l\'authentification 2FA ─────────');
 			log::add('verisure', 'debug', '│ Alarme type '.$alarmtype);
 			$MyAlarm = new verisureAPI2($username,$password,$code);
-			$result_Login = $MyAlarm->Login();
-          	log::add('verisure', 'debug', '│ Request Login - domain => '.$result_Login[0].' - httpRespCode => '.$result_Login[1].' - response => '.$result_Login[2]);
+			$result_Login = $MyAlarm->Login_MFA();
+          	log::add('verisure', 'debug', '│ Request Login 2FA - domain => '.$result_Login[0].' - httpRespCode => '.$result_Login[1].' - response => '.$result_Login[2]);
 			$response_Login = json_decode($result_Login[2], true);
 			
 			if ( $result_Login[1] == 401 ) {
