@@ -29,30 +29,18 @@ class verisureAPI2 {
 	private $password;
 	private $code;
 	private $authorization;
-	private $stepUpToken;
-	private $accessToken;
-	private $refreshToken;
-	private $vidToken;
 	private $giid;
-	private $transactionID;		
+
 	
-		
 	public function __construct($username, $password, $code) {
 		
 		$this->username = $username;
 		$this->password = $password;
 		$this->code = $code;
-		$this->stepUpToken = null;
-		$this->accessToken = null;
-		$this->refreshToken = null;
-		$this->vidToken = null;
 		$this->giid = null;
 		$this->workingDomain = null;
 		$this->authorization = base64_encode(sprintf("%s:%s", $this->username, $this->password));
 
-		if (file_exists(dirname(__FILE__).'/../data/cookie.json')) {
-            $this->loadDevice();
-		}
 	}
 
 
@@ -72,7 +60,9 @@ class verisureAPI2 {
 		curl_setopt($curl, CURLOPT_HEADER, 			true);
 		curl_setopt($curl, CURLOPT_HTTPHEADER, 		$headers);
 		curl_setopt($curl, CURLOPT_VERBOSE, 		false);
-					
+		if ( file_exists(dirname(__FILE__).'/../data/cookie.txt') ) { curl_setopt($curl, CURLOPT_COOKIEFILE, dirname(__FILE__).'/../data/cookie.txt'); }
+		if ( $url == $this->workingDomain.'/auth/login' || $url == $this->workingDomain.'/auth/mfa/validate' ) { curl_setopt($curl, CURLOPT_COOKIEJAR, dirname(__FILE__).'/../data/cookie.txt'); }
+		
 		$result = curl_exec($curl);
 
 		if (!$result) {
@@ -98,15 +88,10 @@ class verisureAPI2 {
 			'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.5005.124 Safari/537.36 Edg/102.0.1245.41'
 		);
        	
-		if ( $operation == 'login' ) {				// Login
+		if ( $operation == 'login_mfa' ) {				// Login with MFA
 			$headers[] = sprintf('Authorization: Basic %s', $this->authorization);
 		}
 
-		$headers[] = sprintf('Cookie: vs-stepup=%s', $this->stepUpToken);
-		$headers[] = sprintf('Cookie: vs-access=%s', $this->accessToken);
-		$headers[] = sprintf('Cookie: vs-refresh=%s', $this->refreshToken);
-		$headers[] = sprintf('Cookie: vid=%s', $this->vidToken);
-						
 		//log::add('verisure', 'debug', '| Headers = '.str_replace('\\','',json_encode($headers)));
 		return $headers;
 	}	
@@ -280,45 +265,18 @@ class verisureAPI2 {
 		return json_encode($content);
 	}
 
-	
-	private function loadDevice() {
-	
-		$array = json_decode(file_get_contents(dirname(__FILE__).'/../data/cookie.json'), true);
-		$this->stepUpToken = $array['stepUpToken'];
-		$this->accessToken = $array['accessToken'];
-		$this->refreshToken = $array['refreshToken'];
-		$this->vidToken = $array['vidToken'];
-		$this->giid = $array['giid'];
-		//log::add('verisure', 'debug', '| Device file loaded');
-	}
 
+	private function getExpirationDate($str) {
 
-	private function saveDevice() {
-		
-		$array = array(
-			'stepUpToken' => $this->stepUpToken,
-			'accessToken' => $this->accessToken,
-			'refreshToken' => $this->refreshToken,
-			'vidToken' => $this->vidToken,
-			'giid' => $this->giid	
-		);
-		file_put_contents(dirname(__FILE__).'/../data/cookie.json', json_encode($array));
-		//log::add('verisure', 'debug', '| Device file saved');
-	}
-	
-
-	private function getVidToken($str) {
-
-		$result = strstr(strstr($str,'vid='),';',true);
-		$result = substr($result, 4, strlen($result));
+		$result = strstr(strrchr($str,'Expires='),';',true);
 		return $result;
 	}
-	
 
-	public function Login()  {										// Login to Verisure Cloud
+
+	public function LoginMFA()  {										// Login to Verisure Cloud with MFA
 		
 		$method = "POST";
-		$headers = $this->setHeaders('login');
+		$headers = $this->setHeaders('login_mfa');
 		$data = null;
 		$this->workingDomain = $this->availableDomain[0];
 		$url = $this->workingDomain.'/auth/login';
@@ -338,19 +296,47 @@ class verisureAPI2 {
 				return array("Verisure session error", $httpRespCode2, $response2);
 			}
 			else   {
-				if (json_decode($response2, false)->{'stepUpToken'} != "") { $this->stepUpToken = json_decode($response2, false)->{'stepUpToken'}; };
-				if (json_decode($response2, false)->{'accessToken'} != "") { $this->accessToken = json_decode($response2, false)->{'accessToken'}; };
-				if (json_decode($response2, false)->{'refreshToken'} != "") { $this->refreshToken = json_decode($response2, false)->{'refreshToken'}; };
-				$this->saveDevice();
 				return array($this->workingDomain, $httpRespCode2, $response2);
 			}
 		}
 		else   {
-			if (json_decode($response, false)->{'stepUpToken'} != "") { $this->stepUpToken = json_decode($response, false)->{'stepUpToken'}; };
-			if (json_decode($response, false)->{'accessToken'} != "") { $this->accessToken = json_decode($response, false)->{'accessToken'}; };
-			if (json_decode($response, false)->{'refreshToken'} != "") { $this->refreshToken = json_decode($response, false)->{'refreshToken'}; };
-			$this->saveDevice();
 			return array($this->workingDomain, $httpRespCode, $response);
+		}
+	}
+
+
+	public function Login()  {										// Login to Verisure Cloud with cookies
+		
+		$method = "GET";
+		$headers = $this->setHeaders(null);
+		$data = null;
+		$this->workingDomain = $this->availableDomain[0];
+		$url = $this->workingDomain.'/auth/login';
+		
+		$result = $this->doRequest($data, $method, $headers, $url);
+		$httpRespCode = $result[0];
+		$response = $result[1];
+
+		if ($httpRespCode != 200)   {
+			$this->workingDomain = $this->availableDomain[1];
+			$url = $this->workingDomain.'/auth/login';
+			$result2 = $this->doRequest($data, $method, $headers, $url);
+			$httpRespCode2 = $result2[0];
+			$response2 = $result2[1];
+			
+			if ($httpRespCode2 != 200)   {
+				return array("Verisure session error", $httpRespCode2, $response2);
+			}
+			else   {
+				$date = $this->getExpirationDate($result2[2]);
+				$this->fetchAllInstallations();
+				return array($this->workingDomain, $httpRespCode2, $response2.'Token refreshed - '.$date);
+			}
+		}
+		else   {
+			$date = $this->getExpirationDate($result[2]);
+			$this->fetchAllInstallations();
+			return array($this->workingDomain, $httpRespCode, $response.'Token refreshed - '.$date);
 		}
 	}
 	
@@ -365,13 +351,9 @@ class verisureAPI2 {
 		
 		$httpRespCode = $result[0];
 		$response = $result[1];
+		
+		if ( file_exists(dirname(__FILE__).'/../data/cookie.txt') ) { unlink(dirname(__FILE__).'/../data/cookie.txt'); }
 
-		$this->stepUpToken = null;
-		$this->accessToken = null;
-		$this->refreshToken = null;
-		$this->vidToken = null;
-		$this->saveDevice();
-				
 		return array($httpRespCode, $response);
 	}
 	
@@ -431,18 +413,10 @@ class verisureAPI2 {
 				return array("Verisure session error", $httpRespCode2, $response2);
 			}
 			else   {
-				$this->accessToken = json_decode($response2, false)->{'accessToken'};
-				$this->refreshToken = json_decode($response2, false)->{'refreshToken'};
-				$this->vidToken = $this->getVidToken($result2[2]);
-				$this->saveDevice();
 				return array($this->workingDomain, $httpRespCode2, $response2);
 			}
 		}
 		else   {
-			$this->accessToken = json_decode($response, false)->{'accessToken'};
-			$this->refreshToken = json_decode($response, false)->{'refreshToken'};
-			$this->vidToken = $this->getVidToken($result[2]);
-			$this->saveDevice();
 			return array($this->workingDomain, $httpRespCode, $response);
 		}
 	}
@@ -461,8 +435,7 @@ class verisureAPI2 {
 		
 		if ($httpRespCode == 200)  {
         	$this->giid = json_decode($response, false)->{'data'}->{'account'}->{'installations'}[0]->{'giid'};		// Installation ID 0 by default
-			$this->saveDevice();
-        }
+		}
       			
 		return array($httpRespCode, $response);
 	}

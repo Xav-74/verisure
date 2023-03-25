@@ -574,13 +574,13 @@ class verisure extends eqLogic {
 			log::add('verisure', 'debug', '┌───────── Démarrage de l\'authentification 2FA ─────────');
 			log::add('verisure', 'debug', '│ Alarme type '.$alarmtype);
 			$MyAlarm = new verisureAPI2($username,$password,$code);
-			$result_Login = $MyAlarm->Login();
-          	log::add('verisure', 'debug', '│ Request Login - domain => '.$result_Login[0].' - httpRespCode => '.$result_Login[1].' - response => '.$result_Login[2]);
+			$result_Login = $MyAlarm->LoginMFA();
+          	log::add('verisure', 'debug', '│ Request LoginMFA - domain => '.$result_Login[0].' - httpRespCode => '.$result_Login[1].' - response => '.$result_Login[2]);
 			$response_Login = json_decode($result_Login[2], true);
 			
 			if ( $result_Login[1] == 401 ) {
 				$result_Logout = $MyAlarm->Logout();
-				log::add('verisure', 'error', '│ Request Logout - httpRespCode => '.$result_Logout[0].' - response => Multifactor authentication needed');
+				log::add('verisure', 'error', '│ Request Logout - httpRespCode => '.$result_Logout[0].' - response => New multifactor authentication needed');
 				log::add('verisure', 'debug', '└───────── Erreur d\'authentification 2FA !! ─────────');
 				return null;
 			}
@@ -712,7 +712,7 @@ class verisure extends eqLogic {
 
 		if ( $alarmtype == 2 )   {
 		
-			$filename = __PLGBASE__.'/data/'.'cookie.json';
+			$filename = __PLGBASE__.'/data/'.'cookie.txt';
 			if ( file_exists($filename) === true ) {
 				unlink($filename);
 				$result = array();
