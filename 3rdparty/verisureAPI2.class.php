@@ -317,7 +317,7 @@ class verisureAPI2 {
 		$httpRespCode = $result[0];
 		$response = $result[1];
 
-		if ($httpRespCode == 400 && json_decode($response, false)->errorGroup == "UNAUTHORIZED")   {
+		if (json_decode($response, false)->errorGroup == "UNAUTHORIZED")   {
 			$res = $this->LoginMFA();
 			$this->fetchAllInstallations();
 			return $res;
@@ -329,7 +329,7 @@ class verisureAPI2 {
 			$httpRespCode2 = $result2[0];
 			$response2 = $result2[1];
 			
-			if ($httpRespCode == 400 && json_decode($response2, false)->errorGroup == "UNAUTHORIZED")   {
+			if (json_decode($response2, false)->errorGroup == "UNAUTHORIZED")   {
 				$res = $this->LoginMFA();
 				$this->fetchAllInstallations();
 				return $res;
