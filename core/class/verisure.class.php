@@ -55,7 +55,6 @@ class verisure extends eqLogic {
 			if (!is_object($cmdState) || $verisure->getConfiguration('nb_smartplug') == "") {		// Si la commande n'existe pas ou condition non respectée
 			  	continue; 																			// continue la boucle
 			}
-			if ( date('G') == 0 && date('i') < 5 ) return;											// Pas de refresh entre 0h00 et 0h05 car maintenance des serveurs
 			log::add('verisure', 'debug', 'Exécution du cron30');
 			$cmdState->execCmd(); 																	// la commande existe on la lance
 		}	

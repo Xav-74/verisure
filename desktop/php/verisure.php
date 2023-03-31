@@ -233,7 +233,7 @@ $eqLogics = eqLogic::byType($plugin->getId());
 								<div class="form-group">
 									<label class="col-sm-3 control-label help" data-help="{{Attention, la suppression du token nécessitera obligatoirement une nouvelle authentification 2FA !}}" style="margin-left:-10px;">{{Mon installation}}</label>
 									<div class="col-sm-6">
-										<a class="btn btn-default btn-sm cmdAction" id="bt_Authentication_2FA"><i class="fas fa-sync"></i> {{Authentification 2FA}}</a>
+										<a class="btn btn-default btn-sm cmdAction" id="bt_Authentication_2FA"><i class="fas fa-sync"></i> {{Authentification}}</a>
 										<a class="btn btn-danger btn-sm cmdAction" id="bt_Reset_Token"><i class="far fa-trash-alt"></i> {{Suppression Token}}</a>
 										<a class="btn btn-info btn-sm cmdAction" id="bt_Reporting"><i class="fas fa-info"></i> {{Journal d'activité}}</a>
 										<br/><br/>

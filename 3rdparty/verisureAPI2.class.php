@@ -317,14 +317,20 @@ class verisureAPI2 {
 		$httpRespCode = $result[0];
 		$response = $result[1];
 
-		if ($httpRespCode != 200)   {
+		if ($httpRespCode == 401)   {
+			$this->LoginMFA();
+		}
+		elseif ($httpRespCode != 200)   {
 			$this->workingDomain = $this->availableDomain[1];
 			$url = $this->workingDomain.'/auth/login';
 			$result2 = $this->doRequest($data, $method, $headers, $url);
 			$httpRespCode2 = $result2[0];
 			$response2 = $result2[1];
 			
-			if ($httpRespCode2 != 200)   {
+			if ($httpRespCode == 401)   {
+				$this->LoginMFA();
+			}
+			elseif ($httpRespCode2 != 200)   {
 				return array("Verisure session error", $httpRespCode2, $response2);
 			}
 			else   {
