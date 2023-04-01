@@ -318,6 +318,7 @@ class verisureAPI2 {
 		$response = $result[1];
 
 		if (json_decode($response, false)->errorGroup == "UNAUTHORIZED")   {
+			$this->Logout();
 			$res = $this->LoginMFA();
 			$this->fetchAllInstallations();
 			return $res;
@@ -330,6 +331,7 @@ class verisureAPI2 {
 			$response2 = $result2[1];
 			
 			if (json_decode($response2, false)->errorGroup == "UNAUTHORIZED")   {
+				$this->Logout();
 				$res = $this->LoginMFA();
 				$this->fetchAllInstallations();
 				return $res;
