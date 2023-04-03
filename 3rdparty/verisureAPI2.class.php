@@ -432,10 +432,9 @@ class verisureAPI2 {
 
 		$this->Logout();
 		$result = $this->LoginMFA();
-		$httpRespCode = $result[0];
-		$response = $result[1];
+		$response = $result[2];
 
-		if ( json_decode($response, false)->accessToken != "") {
+		if (json_decode($response, false)->refreshToken != "") {
 			$this->fetchAllInstallations();
 		}
 		
@@ -455,10 +454,10 @@ class verisureAPI2 {
 		$response = $result[1];
 		$res = json_decode($response, false);
 
-		if ( $res->errors[0]->data->errorGroup == "UNAUTHORIZED")  {
+		if ($res->errors[0]->data->errorGroup == "UNAUTHORIZED")  {
 			return $this->RefreshToken();
 		}
-		else if ( $res->data->account->installations != null)  {
+		else if ($res->data->account->installations != null)  {
         	$this->giid = $res->data->account->installations[0]->giid;		// Installation ID 0 by default
 		}
 		      			
