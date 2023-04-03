@@ -316,12 +316,9 @@ class verisureAPI2 {
 		$result = $this->doRequest($data, $method, $headers, $url);
 		$httpRespCode = $result[0];
 		$response = $result[1];
-
+		
 		if (json_decode($response, false)->errorGroup == "UNAUTHORIZED")   {
-			$this->Logout();
-			$res = $this->LoginMFA();
-			$this->fetchAllInstallations();
-			return $res;
+			return $this->RefreshToken();
 		}
 		elseif ($httpRespCode != 200)   {
 			$this->workingDomain = $this->availableDomain[1];
@@ -331,10 +328,7 @@ class verisureAPI2 {
 			$response2 = $result2[1];
 			
 			if (json_decode($response2, false)->errorGroup == "UNAUTHORIZED")   {
-				$this->Logout();
-				$res = $this->LoginMFA();
-				$this->fetchAllInstallations();
-				return $res;
+				return $this->RefreshToken();
 			}
 			elseif ($httpRespCode2 != 200)   {
 				return array("Verisure session error", $httpRespCode2, $response2);
@@ -434,6 +428,21 @@ class verisureAPI2 {
 	}
 
 	
+	public function RefreshToken() {
+
+		$this->Logout();
+		$result = $this->LoginMFA();
+		$httpRespCode = $result[0];
+		$response = $result[1];
+
+		if ( json_decode($response, false)->accessToken != "") {
+			$this->fetchAllInstallations();
+		}
+		
+		return $result;
+	}
+	
+	
 	public function fetchAllInstallations()  {					// Get the giid number
 		
 		$method = "POST";
@@ -444,11 +453,15 @@ class verisureAPI2 {
 		
 		$httpRespCode = $result[0];
 		$response = $result[1];
-		
-		if ($httpRespCode == 200)  {
-        	$this->giid = json_decode($response, false)->{'data'}->{'account'}->{'installations'}[0]->{'giid'};		// Installation ID 0 by default
+		$res = json_decode($response, false);
+
+		if ( $res->errors->data->errorGroup == "UNAUTHORIZED")  {
+			return $this->RefreshToken();
 		}
-      			
+		else if ( $res->data->account->installations != null)  {
+        	$this->giid = $res->data->account->installations[0]->giid;		// Installation ID 0 by default
+		}
+		      			
 		return array($httpRespCode, $response);
 	}
   
