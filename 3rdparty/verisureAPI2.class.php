@@ -455,7 +455,7 @@ class verisureAPI2 {
 		$response = $result[1];
 		$res = json_decode($response, false);
 
-		if ( $res->errors->data->errorGroup == "UNAUTHORIZED")  {
+		if ( $res->errors[0]->data->errorGroup == "UNAUTHORIZED")  {
 			return $this->RefreshToken();
 		}
 		else if ( $res->data->account->installations != null)  {
