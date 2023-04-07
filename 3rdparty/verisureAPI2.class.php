@@ -430,6 +430,7 @@ class verisureAPI2 {
 	
 	public function RefreshToken() {
 
+		log::add('verisure', 'debug', 'Token refresh needed');
 		$this->Logout();
 		$result = $this->LoginMFA();
 		$response = $result[2];
