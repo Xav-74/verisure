@@ -35,8 +35,23 @@ try {
         throw new Exception(__('401 - Accès non autorisé', __FILE__));
     }
 
-	if (init('action') == 'SynchronizeMyInstallation') {
-		$result = verisure::SynchronizeMyInstallation(init('alarmtype'),init('numinstall'),init('username'),init('pwd'),init('code'),init('country'));
+	if (init('action') == 'Authentication_2FA') {
+		$result = verisure::Authentication_2FA(init('alarmtype'),init('numinstall'),init('username'),init('pwd'),init('code'),init('country'));
+		ajax::success($result);
+	}
+
+    if (init('action') == 'Send_OTP') {
+		$result = verisure::Send_OTP(init('alarmtype'),init('numinstall'),init('username'),init('pwd'),init('code'),init('country'), init('phone_id'));
+		ajax::success($result);
+	}
+
+    if (init('action') == 'Validate_Device') {
+		$result = verisure::Validate_Device(init('alarmtype'),init('numinstall'),init('username'),init('pwd'),init('code'),init('country'), init('sms_code'));
+		ajax::success($result);
+	}
+
+	if (init('action') == 'Reset_Token') {
+		$result = verisure::Reset_Token(init('alarmtype'),init('numinstall'));
 		ajax::success($result);
 	}
 

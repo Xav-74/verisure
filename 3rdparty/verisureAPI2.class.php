@@ -19,49 +19,28 @@
 
 class verisureAPI2 {
 	
-    /*Available domains for Securitas Direct / Versisure - @var string */
-	private $available_domains = array(
-										"https://e-api01.verisure.com",
-										"https://e-api02.verisure.com");
-		
-	/*Working domain for Securitas Direct / Versisure - @var string */
+   	private $availableDomain = array(
+								"https://automation01.verisure.com",
+								"https://automation02.verisure.com");
+	
 	private $workingDomain;	
-	
-	/*Base URL for Securitas Direct / Versisure - @var string */
-	private $baseUrl = "/xbn/2/"; 
-    	
-	/* Verisure Username - @var string */
-	private $username;
-	
-	/* Verisure Password - @var string */
+	private $baseUrl = "/graphql"; 
+ 	private $username;
 	private $password;
-	
-	/* Verisure code - @var string */
 	private $code;
-	
-	/* Verisure Authorization - @var string */
 	private $authorization;
-		
-	/* Verisure Cookie  */
-	private $cookie;
-	
-	/* Verisure Giid - @var string */
 	private $giid;
 
-	/* Verisure transaction ID - @var string */
-	private $transactionID;		
 	
-		
 	public function __construct($username, $password, $code) {
 		
 		$this->username = $username;
 		$this->password = $password;
 		$this->code = $code;
-		$this->authorization = base64_encode(sprintf("CPE/%s:%s", $this->username, $this->password));
-		$this->cookie = null;
 		$this->giid = null;
-		$this->transactionID = null;
 		$this->workingDomain = null;
+		$this->authorization = base64_encode(sprintf("%s:%s", $this->username, $this->password));
+
 	}
 
 
@@ -70,303 +49,625 @@ class verisureAPI2 {
 	}
  
  
-	private function doRequest($method, $url, $headers, $data) {			//Execute all https request to Verisure Cloud
+	private function doRequest($data, $method, $headers, $url) {		//Execute all https request to Verisure Cloud
        
 		$curl = curl_init();
-		curl_setopt($curl, CURLOPT_URL, 			$url);
-		curl_setopt($curl, CURLOPT_HTTPHEADER, 		$headers);
-		curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 	$method);
-		curl_setopt($curl, CURLOPT_POSTFIELDS,		$data);
-		curl_setopt($curl, CURLOPT_TIMEOUT,			5);
-		curl_setopt($curl, CURLOPT_CONNECTTIMEOUT,	5);
+		
+		curl_setopt($curl, CURLOPT_URL,				$url);
+		curl_setopt($curl, CURLOPT_CUSTOMREQUEST,	$method);
 		curl_setopt($curl, CURLOPT_RETURNTRANSFER,	true);
-        curl_setopt($curl, CURLOPT_VERBOSE, 		false);
+		curl_setopt($curl, CURLOPT_POSTFIELDS,		$data);
+		curl_setopt($curl, CURLOPT_HEADER, 			true);
+		curl_setopt($curl, CURLOPT_HTTPHEADER, 		$headers);
+		curl_setopt($curl, CURLOPT_VERBOSE, 		false);
+		if ( file_exists(dirname(__FILE__).'/../data/cookie.txt') ) { curl_setopt($curl, CURLOPT_COOKIEFILE, dirname(__FILE__).'/../data/cookie.txt'); }
+		if ( $url == $this->workingDomain.'/auth/login' || $url == $this->workingDomain.'/auth/mfa/validate' ) { curl_setopt($curl, CURLOPT_COOKIEJAR, dirname(__FILE__).'/../data/cookie.txt'); }
 		
 		$result = curl_exec($curl);
+
+		if (!$result) {
+            throw new \Exception('Unable to retrieve data');
+        }
+
         $httpRespCode  = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-		curl_close($curl);
-		
-		return array($httpRespCode, $result);
+		$header_size = curl_getinfo($curl, CURLINFO_HEADER_SIZE);
+      	$header = substr($result, 0, $header_size);
+		$body = substr($result, $header_size);
+      	curl_close($curl);
+        
+		return array($httpRespCode, $body, $header);
 	}
 
 
-	private function setHeaders()   {				//Define headers
+	private function setHeaders($operation)   {				//Define headers
 		
-		$headers = array();
-        $headers[] = 'Accept: application/json, text/javascript, */*; q=0.01';
-        $headers[] = 'Content-Type: application/json';
-
-        if ($this->cookie == null)  {				// Login
+		$headers = array(
+			'Content-Type: application/json',
+			'Accept: application/json',
+			'APPLICATION_ID: PS_PYTHON',
+			'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.5005.124 Safari/537.36 Edg/102.0.1245.41'
+		);
+       	
+		if ( $operation == 'login_mfa' ) {				// Login with MFA
 			$headers[] = sprintf('Authorization: Basic %s', $this->authorization);
 		}
-		else  {										// Other request
-            $headers[] = sprintf('Cookie: vid=%s', $this->cookie);
-		}
-		
-		$headers[] = 'UserAgent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.125 Safari/537.36';
+
+		//log::add('verisure', 'debug', '| Headers = '.str_replace('\\','',json_encode($headers)));
 		return $headers;
 	}	
 
-	
-	public function Login()  {					// Login to Verisure Cloud
+
+	private function setContent($operation, $data1, $data2, $data3) {		//Set content for https request to Verisure Cloud
+		
+		$content = "";
+		switch($operation) {
+			
+			case "fetchAllInstallations":
+				$content = array(
+					'operationName' => 'fetchAllInstallations',
+					'variables' => array(
+						'email' => $this->username
+					),
+					'query' => 'query fetchAllInstallations($email: String!){ account(email: $email) { installations { giid alias customerType dealerId subsidiary pinCodeLength locale address { street city postalNumber __typename } __typename } __typename } }',
+				);
+			break;
+
+			case "Devices":
+				$content = array(
+					'operationName' => 'Devices',
+					'variables' => array(
+						'giid' => $this->giid
+					),
+					'query' => 'query Devices($giid: String!) { installation(giid: $giid) { devices { deviceLabel area capability gui { support picture deviceGroup sortOrder label __typename } monitoring { operatorMonitored __typename } canChangeEntryExit entryExit __typename } __typename } }',
+				);
+			break;			
+			
+			case "Climate":
+				$content = array(
+					'operationName' => 'Climate',
+					'variables' => array(
+						'giid' => $this->giid
+					),
+					'query' => 'query Climate($giid: String!) { installation(giid: $giid) { climates { device { deviceLabel area gui { label __typename } __typename } humidityEnabled humidityTimestamp humidityValue temperatureTimestamp temperatureValue thresholds { aboveMaxAlert belowMinAlert sensorType __typename } __typename } __typename } }',
+				);
+			break;
+
+			case "DoorWindow":
+				$content = array(
+					'operationName' => 'DoorWindow',
+					'variables' => array(
+						'giid' => $this->giid
+					),
+					'query' => 'query DoorWindow($giid: String!) { installation(giid: $giid) { doorWindows { device { deviceLabel __typename } type area state wired reportTime __typename } __typename } }',
+				);
+			break;
+
+			case "Camera":
+				$content = array(
+					'operationName' => 'Camera',
+					'variables' => array(
+						'giid' => $this->giid,
+						"all" => true
+					),
+					'query' => 'query Camera($giid: String!, $all: Boolean!) { installation(giid: $giid) { cameras(allCameras: $all) { visibleOnCard initiallyConfigured imageCaptureAllowed imageCaptureAllowedByArmstate device { deviceLabel area __typename } latestCameraSeries { image { imageId imageStatus captureTime url } } } } }',
+				);
+			break;
+
+			case "SmartPlug":
+				$content = array(
+					'operationName' => 'SmartPlug',
+					'variables' => array(
+						'giid' => $this->giid
+					),
+					'query' => 'query SmartPlug($giid: String!) { installation(giid: $giid) { smartplugs { device { deviceLabel area __typename } currentState icon isHazardous __typename } __typename } }',
+				);
+			break;
+
+			case "EventLog":
+				$content = array(
+					'operationName' => 'EventLog',
+					'variables' => array(
+						'giid' => $this->giid,
+						'offset' => 0,
+						'pagesize' => 50,
+						'eventCategories' => $data1,
+						'eventContactIds' => [],
+						'eventDeviceLabels' => [],
+						'fromDate' => null,
+						'toDate' => null
+					),
+					'query' => 'query EventLog($giid: String!, $offset: Int!, $pagesize: Int!, $eventCategories: [String], $fromDate: String, $toDate: String, $eventContactIds: [String], $eventDeviceLabels: [String]) { installation(giid: $giid) { eventLog(offset: $offset, pagesize: $pagesize, eventCategories: $eventCategories, eventContactIds: $eventContactIds, eventDeviceLabels: $eventDeviceLabels, fromDate: $fromDate, toDate: $toDate) { moreDataAvailable pagedList { device { deviceLabel area gui { label __typename } __typename } arloDevice { name __typename } gatewayArea eventType eventCategory eventSource eventId eventTime userName armState userType climateValue sensorType eventCount __typename } __typename } __typename } }',
+				);
+			break;
+
+			case "ArmState":
+				$content = array(
+					'operationName' => 'ArmState',
+					'variables' => array(
+						'giid' => $this->giid
+					),
+					'query' => 'query ArmState($giid: String!) { installation(giid: $giid) { armState { type statusType date name changedVia __typename } __typename } }',
+				);
+			break;
+
+			case "disarm":
+				$content = array(
+					'operationName' => 'disarm',
+					'variables' => array(
+						'giid' => $this->giid,
+						'code' => $this->code
+					),
+					'query' => 'mutation disarm($giid: String!, $code: String!) { armStateDisarm(giid: $giid, code: $code) }',
+				);
+			break;
+
+			case "armAway":
+				$content = array(
+					'operationName' => 'armAway',
+					'variables' => array(
+						'giid' => $this->giid,
+						'code' => $this->code
+					),
+					'query' => 'mutation armAway($giid: String!, $code: String!) { armStateArmAway(giid: $giid, code: $code) }',
+				);
+			break;
+
+			case "armHome":
+				$content = array(
+					'operationName' => 'armHome',
+					'variables' => array(
+						'giid' => $this->giid,
+						'code' => $this->code
+					),
+					'query' => 'mutation armHome($giid: String!, $code: String!) { armStateArmHome(giid: $giid, code: $code) }',
+				);
+			break;
+
+			case "UpdateState":
+				$content = array(
+					'operationName' => 'UpdateState',
+					'variables' => array(
+						'giid' => $this->giid,
+						'deviceLabel' => $data1,
+						'state' => $data2
+					),
+					'query' => 'mutation UpdateState($giid: String!, $deviceLabel: String!, $state: Boolean!) { SmartPlugSetState(giid: $giid, input:[{deviceLabel: $deviceLabel, state: $state}]) }',
+				);
+			break;
+
+			case "CaptureImageRequest":
+				$content = array(
+					'operationName' => 'CaptureImageRequest',
+					'variables' => array(
+						'giid' => $this->giid,
+						'deviceLabel' => $data1,
+					),
+					'query' => 'mutation CaptureImageRequest($giid: String!, $deviceLabel: String!) { CameraRequestImageCapture(giid: $giid, deviceLabel: $deviceLabel) { requestId __typename } }',
+				);
+			break;
+
+			case "ImageCaptureStatus":
+				$content = array(
+					'operationName' => 'ImageCaptureStatus',
+					'variables' => array(
+						'giid' => $this->giid,
+						'deviceLabel' => $data1,
+						'requestId' => $data2
+					),
+					'query' => 'query ImageCaptureStatus($giid: String!, $deviceLabel: String!, $requestId: String!) { installation(giid: $giid) { imageCaptureRequestStatus(search: {deviceLabel: $deviceLabel, requestId: $requestId}) { seriesId imageId completionTime captureTime requestTime failedReason status imageOrientation __typename } __typename } }',
+				);
+			break;
+
+
+		}
+
+		//log::add('verisure', 'debug', '| Content = '.json_encode($content));
+		return json_encode($content);
+	}
+
+
+	private function getExpirationDate($str) {
+
+		$result = strstr(strrchr($str,'Expires='),';',true);
+		return $result;
+	}
+
+
+	public function LoginMFA()  {										// Login to Verisure Cloud with MFA
 		
 		$method = "POST";
-		$headers = $this->setHeaders();
+		$headers = $this->setHeaders('login_mfa');
 		$data = null;
+		$this->workingDomain = $this->availableDomain[0];
+		$url = $this->workingDomain.'/auth/login';
 		
-		$this->workingDomain = $this->available_domains[0];
-		$url = $this->workingDomain.$this->baseUrl.'cookie';
-		$result = $this->doRequest($method, $url, $headers, $data);
+		$result = $this->doRequest($data, $method, $headers, $url);
 		$httpRespCode = $result[0];
-		$jsonResult = $result[1];
-		
+		$response = $result[1];
+				
 		if ($httpRespCode != 200)   {
-			$this->workingDomain = $this->available_domains[1];
-			$url = $this->workingDomain.$this->baseUrl.'cookie';
-			$result2 = $this->doRequest($method, $url, $headers, $data);
+			$this->workingDomain = $this->availableDomain[1];
+			$url = $this->workingDomain.'/auth/login';
+			$result2 = $this->doRequest($data, $method, $headers, $url);
 			$httpRespCode2 = $result2[0];
-			$jsonResult2 = $result2[1];
+			$response2 = $result2[1];
 			
 			if ($httpRespCode2 != 200)   {
-				$this->cookie = "Err cookie";
-				return array("No Verisure server is available at this moment", $httpRespCode2, $this->cookie);
+				return array("Verisure session error", $httpRespCode2, $response2);
 			}
 			else   {
-				$this->cookie = json_decode($jsonResult2, false)->{'cookie'};
-				return array($this->workingDomain, $httpRespCode2, $this->cookie);
+				return array($this->workingDomain, $httpRespCode2, $response2);
 			}
 		}
 		else   {
-			$this->cookie = json_decode($jsonResult, false)->{'cookie'};
-			return array($this->workingDomain, $httpRespCode, $this->cookie);
+			return array($this->workingDomain, $httpRespCode, $response);
+		}
+	}
+
+
+	public function Login()  {										// Login to Verisure Cloud with cookies
+		
+		$method = "GET";
+		$headers = $this->setHeaders(null);
+		$data = null;
+		$this->workingDomain = $this->availableDomain[0];
+		$url = $this->workingDomain.'/auth/login';
+		
+		$result = $this->doRequest($data, $method, $headers, $url);
+		$httpRespCode = $result[0];
+		$response = $result[1];
+		
+		if (json_decode($response, false)->errorGroup == "UNAUTHORIZED")   {
+			return $this->RefreshToken();
+		}
+		elseif ($httpRespCode != 200)   {
+			$this->workingDomain = $this->availableDomain[1];
+			$url = $this->workingDomain.'/auth/login';
+			$result2 = $this->doRequest($data, $method, $headers, $url);
+			$httpRespCode2 = $result2[0];
+			$response2 = $result2[1];
+			
+			if (json_decode($response2, false)->errorGroup == "UNAUTHORIZED")   {
+				return $this->RefreshToken();
+			}
+			elseif ($httpRespCode2 != 200)   {
+				return array("Verisure session error", $httpRespCode2, $response2);
+			}
+			else   {
+				$date = $this->getExpirationDate($result2[2]);
+				$this->fetchAllInstallations();
+				return array($this->workingDomain, $httpRespCode2, $response2.'Token refreshed - '.$date);
+			}
+		}
+		else   {
+			$date = $this->getExpirationDate($result[2]);
+			$this->fetchAllInstallations();
+			return array($this->workingDomain, $httpRespCode, $response.'Token refreshed - '.$date);
 		}
 	}
 	
 	
-	public function Logout()  {					// Logout to Verisure Cloud
+	public function Logout()  {									// Logout to Verisure Cloud
 		
 		$method = "DELETE";
-		$url = $this->workingDomain.$this->baseUrl.'cookie';
-		$headers = $this->setHeaders();
+		$url = $this->workingDomain.'/auth/logout';
+		$headers = $this->setHeaders(null);
 		$data = null;
-		$result = $this->doRequest($method, $url, $headers, $data);
+		$result = $this->doRequest($data, $method, $headers, $url);
 		
 		$httpRespCode = $result[0];
-		$jsonResult = $result[1];
+		$response = $result[1];
+		
+		if ( file_exists(dirname(__FILE__).'/../data/cookie.txt') ) { unlink(dirname(__FILE__).'/../data/cookie.txt'); }
+
+		return array($httpRespCode, $response);
+	}
+	
+	
+	public function RequestMFA($type)  {	
+
+		$method = "POST";
+		$this->workingDomain = $this->availableDomain[0];
+		$url = $this->workingDomain.'/auth/mfa?type='.$type;
+		$headers = $this->setHeaders(null);
+		$data = null;
+		$result = $this->doRequest($data, $method, $headers, $url);
+		
+		$httpRespCode = $result[0];
+		$response = $result[1];
+
+		if ($httpRespCode != 200)   {
+			$this->workingDomain = $this->availableDomain[1];
+			$url = $this->workingDomain.'/auth/mfa?type='.$type;
+			$result2 = $this->doRequest($data, $method, $headers, $url);
+			$httpRespCode2 = $result2[0];
+			$response2 = $result2[1];
+			
+			if ($httpRespCode2 != 200)   {
+				return array("Verisure session error", $httpRespCode2, $response2);
+			}
+			else   {
+				return array($this->workingDomain, $httpRespCode2, $response2);
+			}
+		}
+		else   {
+			return array($this->workingDomain, $httpRespCode, $response);
+		}
+	}
+
+
+	public function ValidateMFA($code)  {	
+
+		$method = "POST";
+		$this->workingDomain = $this->availableDomain[0];
+		$url = $this->workingDomain.'/auth/mfa/validate';
+		$headers = $this->setHeaders(null);
+		$data = json_encode(array('token' => $code));
+		$result = $this->doRequest($data, $method, $headers, $url);
+		
+		$httpRespCode = $result[0];
+		$response = $result[1];
 				
-		return array($httpRespCode, $jsonResult);
+		if ($httpRespCode != 200)   {
+			$this->workingDomain = $this->availableDomain[1];
+			$url = $this->workingDomain.'/auth/mfa/validate';
+			$result2 = $this->doRequest($data, $method, $headers, $url);
+			$httpRespCode2 = $result2[0];
+			$response2 = $result2[1];
+			
+			if ($httpRespCode2 != 200)   {
+				return array("Verisure session error", $httpRespCode2, $response2);
+			}
+			else   {
+				return array($this->workingDomain, $httpRespCode2, $response2);
+			}
+		}
+		else   {
+			return array($this->workingDomain, $httpRespCode, $response);
+		}
+	}
+
+	
+	public function RefreshToken() {
+
+		log::add('verisure', 'debug', '| Token refresh needed');
+		$this->Logout();
+		$result = $this->LoginMFA();
+		$response = $result[2];
+
+		if (json_decode($response, false)->refreshToken != "") {
+			$this->fetchAllInstallations();
+		}
+		
+		return $result;
 	}
 	
 	
-	public function getGiid()  {				// Get the giid number
+	public function fetchAllInstallations()  {					// Get the giid number
 		
-		$method = "GET";
-		$url = sprintf($this->workingDomain.$this->baseUrl.'installation/search?email=%s', urlencode($this->username));
-		$headers = $this->setHeaders();
-		$data = null;
-		$result = $this->doRequest($method, $url, $headers, $data);
+		$method = "POST";
+		$url = $this->workingDomain.$this->baseUrl;
+		$headers = $this->setHeaders(null);
+		$data = $this->setContent('fetchAllInstallations', null, null, null);
+		$result = $this->doRequest($data, $method, $headers, $url);
 		
 		$httpRespCode = $result[0];
-		$jsonResult = $result[1];
-		if ($httpRespCode == 200)  {
-        	$this->giid = json_decode($jsonResult, false)[0]->{'giid'};		// Installation ID 0 by default
-        }
-      			
-		return array($httpRespCode, $this->giid);
+		$response = $result[1];
+		$res = json_decode($response, false);
+
+		if ($res->errors[0]->data->errorGroup == "UNAUTHORIZED")  {
+			return $this->RefreshToken();
+		}
+		else if ($res->data->account->installations != null)  {
+        	$this->giid = $res->data->account->installations[0]->giid;		// Installation ID 0 by default
+		}
+		      			
+		return array($httpRespCode, $response);
 	}
   
   
-  	public function MyInstallation()  {				// Get the installation's information
+	public function ListDevices() {								// Get the list of available devices
 		
-		$method = "GET";
-		$url = sprintf($this->workingDomain.$this->baseUrl.'installation/%s/overview', $this->giid);
-		$headers = $this->setHeaders();
-		$data = null;
-		$result = $this->doRequest($method, $url, $headers, $data);
+		$method = "POST";
+		$url = $this->workingDomain.$this->baseUrl;
+		$headers = $this->setHeaders(null);
+		$data = $this->setContent("Devices", null, null, null);
+		$result = $this->doRequest($data, $method, $headers, $url);
 		
 		$httpRespCode = $result[0];
-		$jsonResult = json_decode($result[1],true);
+		$response = $result[1];
 		
-		$tab_device = array();
-		$tab_device['climateDevice'] = $jsonResult['climateValues'];
-        $tab_device['doorWindowDevice'] = $jsonResult['doorWindow']['doorWindowDevice'];
-		$tab_device['cameraDevice'] = $jsonResult['customerImageCameras'];
-		$tab_device['smartPlugDevice'] = $jsonResult['smartPlugs'];
-		return array($httpRespCode, $result[1], $tab_device);
+		return array($httpRespCode, $response);
+	}
+	
+	
+	public function getStateAlarm()  {							// Get the status of alarm
+		
+		$method = "POST";
+		$url = $this->workingDomain.$this->baseUrl;
+		$headers = $this->setHeaders(null);
+		$data = $this->setContent('ArmState', null, null, null);
+		$result = $this->doRequest($data, $method, $headers, $url);
+		
+		$httpRespCode = $result[0];
+		$response = $result[1];
+		      			
+		return array($httpRespCode, $response);
+	}
+
+	
+	public function getClimatesInformation()  {					// Get climates information
+		
+		$method = "POST";
+		$url = $this->workingDomain.$this->baseUrl;
+		$headers = $this->setHeaders(null);
+		$data = $this->setContent('Climate', null, null, null);
+		$result = $this->doRequest($data, $method, $headers, $url);
+		
+		$httpRespCode = $result[0];
+		$response = $result[1];
+		      			
+		return array($httpRespCode, $response);
 	}
   
 
-	public function getStateAlarm()  {				// Get the status of alarm
+	public function getDoorWindowsInformation()  {				// Get door/windows information
 		
-		$method = "GET";
-		$url = sprintf($this->workingDomain.$this->baseUrl.'installation/%s/armstate', $this->giid);
-		$headers = $this->setHeaders();
-		$data = null;
-		$result = $this->doRequest($method, $url, $headers, $data);
-		
-		$httpRespCode = $result[0];
-		$jsonResult = $result[1];
-		
-		if ($httpRespCode == 200)  {
-        	$stateAlarm = json_decode($jsonResult, false)->{'statusType'};
-        }
-		
-		return array($httpRespCode, $stateAlarm);
-	}
-	
-	
-	public function getStateDevices()  {				// Get the status of alarm devices
-		
-		$method = "GET";
-		$url = sprintf($this->workingDomain.$this->baseUrl.'installation/%s/overview', $this->giid);
-		$headers = $this->setHeaders();
-		$data = null;
-		$result = $this->doRequest($method, $url, $headers, $data);
+		$method = "POST";
+		$url = $this->workingDomain.$this->baseUrl;
+		$headers = $this->setHeaders(null);
+		$data = $this->setContent('DoorWindow', null, null, null);
+		$result = $this->doRequest($data, $method, $headers, $url);
 		
 		$httpRespCode = $result[0];
-		$jsonResult = json_decode($result[1],true);
-		
-		$tab_device = array();
-		$tab_device['lastModified'] = date("Y-m-d H:i:s");
-		$tab_device['climateDevice'] = $jsonResult['climateValues'];
-        $tab_device['doorWindowDevice'] = $jsonResult['doorWindow']['doorWindowDevice'];
-		$tab_device['cameraDevice'] = $jsonResult['customerImageCameras'];
-		$tab_device['smartPlugDevice'] = $jsonResult['smartPlugs'];
-		
-		return array($httpRespCode, json_encode($tab_device));
+		$response = $result[1];
+		      			
+		return array($httpRespCode, $response);
 	}
-	
-	
-	public function setStateAlarm($state)  {				// Set the status of alarm - DISARMED / ARMED_HOME / ARMED_AWAY
+
+
+	public function getCamerasInformation()  {					// Get cameras information
 		
-		$method = "PUT";
-		$url = sprintf($this->workingDomain.$this->baseUrl.'installation/%s/armstate/code/', $this->giid);
-		$headers = $this->setHeaders();
-		$data = json_encode(array( 'code' => $this->code, 'state' => $state));
-		$result = $this->doRequest($method, $url, $headers, $data);
+		$method = "POST";
+		$url = $this->workingDomain.$this->baseUrl;
+		$headers = $this->setHeaders(null);
+		$data = $this->setContent('Camera', null, null, null);
+		$result = $this->doRequest($data, $method, $headers, $url);
 		
 		$httpRespCode = $result[0];
-		$jsonResult = $result[1];
-		
-		if ($httpRespCode == 200)  {
-        	$this->transactionID = json_decode($jsonResult, false)->{'armStateChangeTransactionId'};
-        }
-		
-		$result2 = $this->getTransactionID();
-		$httpRespCode2 = $result2[0];
-		$jsonResult2 = $result2[1];
-		
-		if ($httpRespCode2 == 200)  {
-			$chgange_state = json_decode($jsonResult2, false)->{'result'};
-		}
-		
-		return array($httpRespCode, $this->transactionID, $jsonResult2, $chgange_state);
+		$response = $result[1];
+		      			
+		return array($httpRespCode, $response);
 	}
-	
-	
-	public function getTransactionID()  {				// Get the transactionID information
+
+
+	public function getSmartplugsInformation()  {				// Get smartplugs information
 		
-		$method = "GET";
-		$url = sprintf($this->workingDomain.$this->baseUrl.'installation/%s/code/result/%s', $this->giid, $this->transactionID);
-		$headers = $this->setHeaders();
-		$data = null;
-		$result = $this->doRequest($method, $url, $headers, $data);
+		$method = "POST";
+		$url = $this->workingDomain.$this->baseUrl;
+		$headers = $this->setHeaders(null);
+		$data = $this->setContent('SmartPlug', null, null, null);
+		$result = $this->doRequest($data, $method, $headers, $url);
 		
 		$httpRespCode = $result[0];
-		$jsonResult = $result[1];
-				
-		return array($httpRespCode, $jsonResult);
+		$response = $result[1];
+		      			
+		return array($httpRespCode, $response);
 	}
-	
-	
-	public function getReport()  {				// Get the information of last actions
-	
-		$offset = 0;				//Skip pagesize * offset first events
-		$pagesize = 500;			//Number of events to display - Max 500
-		$filters = array();			//String set : 'ARM', 'DISARM', 'FIRE', 'INTRUSION', 'TECHNICAL', 'SOS', 'WARNING', 'LOCK', 'UNLOCK', 'PICTURE', 'CLIMATE'
+
+
+	public function setStateAlarm($state)  {					// Set the status of alarm - disarm / armHome / armAway
 		
-      	$method = "GET";
-		$headers = $this->setHeaders();
-		$params = array( 'offset' => $offset, 'pagesize' => $pagesize, 'eventCategories' => $filters);
-		$data = http_build_query($params);
-      	$url = sprintf($this->workingDomain.'/celapi/customereventlog/installation/%s/eventlog?', $this->giid).$data;
-      	$result = $this->doRequest($method, $url, $headers, null);
+		$method = "POST";
+		$url = $this->workingDomain.$this->baseUrl;
+		$headers = $this->setHeaders(null);
+		$data = $this->setContent($state, null, null, null);
+		$result = $this->doRequest($data, $method, $headers, $url);
 		
 		$httpRespCode = $result[0];
-		$jsonResult = json_decode($result[1], true);
-		
-		return array($httpRespCode, $result[1], $jsonResult);
+		$response = $result[1];
+		      			
+		return array($httpRespCode, $response);
 	}
-	
+		
 	
 	public function setStateSmartplug($device_label, $state)  {				// Set the status of smartplugs - ON (True) / OFF (False)
-		
+
 		$method = "POST";
-		$url = sprintf($this->workingDomain.$this->baseUrl.'installation/%s/smartplug/state/', $this->giid);
-		$headers = $this->setHeaders();
-		$data = json_encode(array(array('deviceLabel' => $device_label, 'state' => $state)));
-		$result = $this->doRequest($method, $url, $headers, $data);
+		$url = $this->workingDomain.$this->baseUrl;
+		$headers = $this->setHeaders(null);
+		$data = $this->setContent('UpdateState', $device_label, $state, null);
+		$result = $this->doRequest($data, $method, $headers, $url);
 		
 		$httpRespCode = $result[0];
-		$jsonResult = $result[1];
-		
-		return array($httpRespCode, $data, $jsonResult);
+		$response = $result[1];
+		      			
+		return array($httpRespCode, $response);
 	}
-	
-	
-	public function captureImage($device_label)  {				// Capture image from compatible smartplug
-		
+
+
+	public function getReportAlarm()  {	
+
+		//$filter = ["INTRUSION", "FIRE", "SOS", "WATER", "ANIMAL", "TECHNICAL", "WARNING", "ARM", "DISARM", "LOCK", "UNLOCK", "PICTURE", "CLIMATE", "CAMERA_SETTINGS"];
+		$filter = ["INTRUSION", "SOS", "ARM", "DISARM", "PICTURE"];
+
 		$method = "POST";
-		$url = sprintf($this->workingDomain.$this->baseUrl.'installation/%s/device/%s/customerimagecamera/imagecapture', $this->giid, $device_label);
-		$headers = $this->setHeaders();
-		$result = $this->doRequest($method, $url, $headers, null);
+		$url = $this->workingDomain.$this->baseUrl;
+		$headers = $this->setHeaders(null);
+		$data = $this->setContent('EventLog', $filter, null, null);
+		$result = $this->doRequest($data, $method, $headers, $url);
 		
 		$httpRespCode = $result[0];
-		$jsonResult = $result[1];
-		//$requestId = json_decode($jsonResult, false)->{'requestId'};
-		
-		return array($httpRespCode, $jsonResult);
+		$response = $result[1];
+		      			
+		return array($httpRespCode, $response);
 	}
-	
-	
-	public function getImageSeries()  {				// Get series of image from all compatible smartplug
+
+	public function captureImageRequest($device)  {					// Photos request)
+
+		$method = "POST";
+		$url = $this->workingDomain.$this->baseUrl;
+		$headers = $this->setHeaders(null);
+		$data = $this->setContent('CaptureImageRequest', $device, null, null);
+		$result = $this->doRequest($data, $method, $headers, $url);
 		
-		$method = "GET";
-		$url = sprintf($this->workingDomain.$this->baseUrl.'installation/%s/device/customerimagecamera/imageseries/search?', $this->giid);
-		$headers = $this->setHeaders();
-		$params = [
-            'numberOfImageSeries' => 1,
-			'offset' => 0,
-			'fromDate' => "",
-			'toDate' => "",
-			'onlyNotViewed' => "",
-			'_' => $this->giid
-		];
-		$data = http_build_query($params);
-		$result = $this->doRequest($method, $url.$data, $headers, null);
-						
 		$httpRespCode = $result[0];
-		$jsonResult = $result[1];
+		$response = $result[1];
+		$res = json_decode($response, true);
+		$requestId = $res['data']['CameraRequestImageCapture']['requestId'];
+
+		if ( $httpRespCode == 200 && $res['data']['CameraRequestImageCapture']['requestId'] != "" ) {
+
+			$retry = 20;
+			$wait = "REQUESTED";
+			While ( $retry > 0 && $wait != "COMPLETED")  {
+				sleep(2);
+				$method2 = "POST";
+				$url2 = $this->workingDomain.$this->baseUrl;
+				$headers2 = $this->setHeaders(null);
+				$data2 = $this->setContent("ImageCaptureStatus", $device, $requestId, null);
+				$result2 = $this->doRequest($data2, $method2, $headers2, $url2);
 				
-		return array($httpRespCode, $jsonResult);
+				$httpRespCode2 = $result2[0];
+				$response2 = $result2[1];
+				$res2 = json_decode($response2, true);
+				$wait = $res2['data']['installation']['imageCaptureRequestStatus']['status'];
+				$retry--;
+			}
+
+			if ( $res2['data']['installation']['imageCaptureRequestStatus']['status'] == "COMPLETED" )  {
+
+				$method3 = "POST";
+				$url3 = $this->workingDomain.$this->baseUrl;
+				$headers3 = $this->setHeaders(null);
+				$data3 = $this->setContent("Camera", null, null, null);
+				$result3 = $this->doRequest($data3, $method3, $headers3, $url3);
+
+				$httpRespCode3 = $result3[0];
+				$response3 = $result3[1];
+				$res3 = json_decode($response3, true);
+
+				foreach ( $res3['data']['installation']['cameras'] as $cameras )  {
+					if ( $cameras['device']['deviceLabel'] == $device ) { $urlDownload  = $cameras['latestCameraSeries']['image'][0]['url']; }
+				}
+
+				if ( $urlDownload != "" )  {
+
+					$method4 = "GET";
+					$url4 = $urlDownload;
+					$headers4 = $this->setHeaders(null);
+					$headers4[] = 'Accept: image/jpeg';
+					$data4 = null;
+					$result4 = $this->doRequest($data4, $method4, $headers4, $url4);
+
+					$httpRespCode4 = $result4[0];
+					$img = $result4[1];
+				}
+			}
+
+			return array($httpRespCode, $response, $httpRespCode2, $response2, $httpRespCode3, $response3, $httpRespCode4, $img);
+		}
 	}
-	
-	
-	public function downloadImage($device_label, $image_id)  {				// Downlaod image after cpature
-		
-		$method = "GET";
-		$url = sprintf($this->workingDomain.$this->baseUrl.'installation/%s/device/%s/customerimagecamera/image/%s/', $this->giid, $device_label, $image_id);
-		$headers = $this->setHeaders();
-		$headers[] = 'APPLICATION_ID: PS_PYTHON';
-		$headers[] = 'Accept: image/jpeg';
-		$result = $this->doRequest($method, $url, $headers, null);
-		
-		$httpRespCode = $result[0];
-		$jsonResult = $result[1];
-		
-		return array($httpRespCode, $jsonResult);
-	}
-	
 }
 
 ?>
