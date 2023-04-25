@@ -455,10 +455,29 @@ class verisureAPI2 {
 		$response = $result[1];
 		$res = json_decode($response, false);
 
+		if ($res->errors[0]->data->errorGroup == "SERVICE_UNAVAILABLE")  {
+			$this->workingDomain = $this->availableDomain[1];
+			$url = $this->workingDomain.$this->baseUrl;
+			$result2 = $this->doRequest($data, $method, $headers, $url);
+
+			$httpRespCode2 = $result2[0];
+			$response2 = $result2[1];
+			$res2 = json_decode($response2, false);
+
+			if ($res2->errors[0]->data->errorGroup == "UNAUTHORIZED")  {
+				return $this->RefreshToken();
+			}
+			elseif ($res2->data->account->installations != null)  {
+				$this->giid = $res2->data->account->installations[0]->giid;		// Installation ID 0 by default
+			}
+			
+			return array($httpRespCode2, $response2);
+		}
+
 		if ($res->errors[0]->data->errorGroup == "UNAUTHORIZED")  {
 			return $this->RefreshToken();
 		}
-		else if ($res->data->account->installations != null)  {
+		elseif ($res->data->account->installations != null)  {
         	$this->giid = $res->data->account->installations[0]->giid;		// Installation ID 0 by default
 		}
 		      			
