@@ -40,12 +40,10 @@ class verisureAPI2 {
 		$this->giid = null;
 		$this->workingDomain = null;
 		$this->authorization = base64_encode(sprintf("%s:%s", $this->username, $this->password));
-
 	}
 
 
 	public function __destruct()  {
-	
 	}
  
  
@@ -102,13 +100,13 @@ class verisureAPI2 {
 		$content = "";
 		switch($operation) {
 			
-			case "fetchAllInstallations":
+			case "AccountInstallations":
 				$content = array(
-					'operationName' => 'fetchAllInstallations',
+					'operationName' => 'AccountInstallations',
 					'variables' => array(
 						'email' => $this->username
 					),
-					'query' => 'query fetchAllInstallations($email: String!){ account(email: $email) { installations { giid alias customerType dealerId subsidiary pinCodeLength locale address { street city postalNumber __typename } __typename } __typename } }',
+					'query' => 'query AccountInstallations($email: String!) { account(email: $email) { owainstallations { giid alias type subsidiary dealerId __typename } __typename } }',
 				);
 			break;
 
@@ -257,8 +255,7 @@ class verisureAPI2 {
 					'query' => 'query ImageCaptureStatus($giid: String!, $deviceLabel: String!, $requestId: String!) { installation(giid: $giid) { imageCaptureRequestStatus(search: {deviceLabel: $deviceLabel, requestId: $requestId}) { seriesId imageId completionTime captureTime requestTime failedReason status imageOrientation __typename } __typename } }',
 				);
 			break;
-
-
+		
 		}
 
 		//log::add('verisure', 'debug', '| Content = '.json_encode($content));
@@ -284,13 +281,16 @@ class verisureAPI2 {
 		$result = $this->doRequest($data, $method, $headers, $url);
 		$httpRespCode = $result[0];
 		$response = $result[1];
-				
+		log::add('verisure', 'debug', '│ Request LoginMFA - Domain => '.$this->workingDomain.' - httpRespCode => '.$httpRespCode.' - response => '.$response);
+		
 		if ($httpRespCode != 200)   {
 			$this->workingDomain = $this->availableDomain[1];
 			$url = $this->workingDomain.'/auth/login';
+			
 			$result2 = $this->doRequest($data, $method, $headers, $url);
 			$httpRespCode2 = $result2[0];
 			$response2 = $result2[1];
+			log::add('verisure', 'debug', '│ Request LoginMFA - Domain => '.$this->workingDomain.' - httpRespCode => '.$httpRespCode2.' - response => '.$response2);
 			
 			if ($httpRespCode2 != 200)   {
 				return array("Verisure session error", $httpRespCode2, $response2);
@@ -316,32 +316,36 @@ class verisureAPI2 {
 		$result = $this->doRequest($data, $method, $headers, $url);
 		$httpRespCode = $result[0];
 		$response = $result[1];
-		
+				
 		if (json_decode($response, false)->errorGroup == "UNAUTHORIZED")   {
 			return $this->RefreshToken();
 		}
 		elseif ($httpRespCode != 200)   {
 			$this->workingDomain = $this->availableDomain[1];
 			$url = $this->workingDomain.'/auth/login';
+			
 			$result2 = $this->doRequest($data, $method, $headers, $url);
 			$httpRespCode2 = $result2[0];
 			$response2 = $result2[1];
-			
+					
 			if (json_decode($response2, false)->errorGroup == "UNAUTHORIZED")   {
 				return $this->RefreshToken();
 			}
 			elseif ($httpRespCode2 != 200)   {
+				log::add('verisure', 'debug', '│ Request Login - Domain => Verisure session error - httpRespCode => '.$httpRespCode2.' - response => '.$response2);
 				return array("Verisure session error", $httpRespCode2, $response2);
 			}
 			else   {
 				$date = $this->getExpirationDate($result2[2]);
-				$this->fetchAllInstallations();
+				log::add('verisure', 'debug', '│ Request Login - Domain => '.$this->workingDomain.' - httpRespCode => '.$httpRespCode2.' - response => '.$response2.'Token refreshed - '.$date);
+				$this->AccountInstallations();
 				return array($this->workingDomain, $httpRespCode2, $response2.'Token refreshed - '.$date);
 			}
 		}
 		else   {
 			$date = $this->getExpirationDate($result[2]);
-			$this->fetchAllInstallations();
+			log::add('verisure', 'debug', '│ Request Login - Domain => '.$this->workingDomain.' - httpRespCode => '.$httpRespCode.' - response => '.$response.'Token refreshed - '.$date);
+			$this->AccountInstallations();
 			return array($this->workingDomain, $httpRespCode, $response.'Token refreshed - '.$date);
 		}
 	}
@@ -353,11 +357,12 @@ class verisureAPI2 {
 		$url = $this->workingDomain.'/auth/logout';
 		$headers = $this->setHeaders(null);
 		$data = null;
-		$result = $this->doRequest($data, $method, $headers, $url);
 		
+		$result = $this->doRequest($data, $method, $headers, $url);
 		$httpRespCode = $result[0];
 		$response = $result[1];
-		
+		log::add('verisure', 'debug', '│ Request Logout - httpRespCode => '.$httpRespCode.' - response => '.$response);
+
 		if ( file_exists(dirname(__FILE__).'/../data/cookie.txt') ) { unlink(dirname(__FILE__).'/../data/cookie.txt'); }
 
 		return array($httpRespCode, $response);
@@ -371,18 +376,21 @@ class verisureAPI2 {
 		$url = $this->workingDomain.'/auth/mfa?type='.$type;
 		$headers = $this->setHeaders(null);
 		$data = null;
-		$result = $this->doRequest($data, $method, $headers, $url);
 		
+		$result = $this->doRequest($data, $method, $headers, $url);
 		$httpRespCode = $result[0];
 		$response = $result[1];
+		log::add('verisure', 'debug', '│ Request RequestMFA - Domain => '.$this->workingDomain.' - httpRespCode => '.$httpRespCode.' - response => '.$response);
 
 		if ($httpRespCode != 200)   {
 			$this->workingDomain = $this->availableDomain[1];
 			$url = $this->workingDomain.'/auth/mfa?type='.$type;
+			
 			$result2 = $this->doRequest($data, $method, $headers, $url);
 			$httpRespCode2 = $result2[0];
 			$response2 = $result2[1];
-			
+			log::add('verisure', 'debug', '│ Request RequestMFA - Domain => '.$this->workingDomain.' - httpRespCode => '.$httpRespCode2.' - response => '.$response2);
+
 			if ($httpRespCode2 != 200)   {
 				return array("Verisure session error", $httpRespCode2, $response2);
 			}
@@ -403,18 +411,21 @@ class verisureAPI2 {
 		$url = $this->workingDomain.'/auth/mfa/validate';
 		$headers = $this->setHeaders(null);
 		$data = json_encode(array('token' => $code));
-		$result = $this->doRequest($data, $method, $headers, $url);
 		
+		$result = $this->doRequest($data, $method, $headers, $url);
 		$httpRespCode = $result[0];
 		$response = $result[1];
+		log::add('verisure', 'debug', '│ Request ValidateMFA - Domain => '.$this->workingDomain.' - httpRespCode => '.$httpRespCode.' - response => '.$response);
 				
 		if ($httpRespCode != 200)   {
 			$this->workingDomain = $this->availableDomain[1];
 			$url = $this->workingDomain.'/auth/mfa/validate';
+			
 			$result2 = $this->doRequest($data, $method, $headers, $url);
 			$httpRespCode2 = $result2[0];
 			$response2 = $result2[1];
-			
+			log::add('verisure', 'debug', '│ Request ValidateMFA - Domain => '.$this->workingDomain.' - httpRespCode => '.$httpRespCode2.' - response => '.$response2);
+
 			if ($httpRespCode2 != 200)   {
 				return array("Verisure session error", $httpRespCode2, $response2);
 			}
@@ -436,24 +447,25 @@ class verisureAPI2 {
 		$response = $result[2];
 
 		if (json_decode($response, false)->refreshToken != "") {
-			$this->fetchAllInstallations();
+			$this->AccountInstallations();
 		}
 		
 		return $result;
 	}
 	
 	
-	public function fetchAllInstallations()  {					// Get the giid number
+	public function AccountInstallations()  {					// Get the giid number
 		
 		$method = "POST";
 		$url = $this->workingDomain.$this->baseUrl;
 		$headers = $this->setHeaders(null);
-		$data = $this->setContent('fetchAllInstallations', null, null, null);
+		$data = $this->setContent('AccountInstallations', null, null, null);
 		$result = $this->doRequest($data, $method, $headers, $url);
 		
 		$httpRespCode = $result[0];
 		$response = $result[1];
 		$res = json_decode($response, false);
+		log::add('verisure', 'debug', '│ Request AccountInstallations - Domain => '.$this->workingDomain.' - httpRespCode => '.$httpRespCode.' - response => '.$response);
 
 		if ($res->errors[0]->data->errorGroup == "SERVICE_UNAVAILABLE")  {
 			$this->workingDomain = $this->availableDomain[1];
@@ -463,12 +475,13 @@ class verisureAPI2 {
 			$httpRespCode2 = $result2[0];
 			$response2 = $result2[1];
 			$res2 = json_decode($response2, false);
+			log::add('verisure', 'debug', '│ Request AccountInstallations - Domain => '.$this->workingDomain.' - httpRespCode => '.$httpRespCode2.' - response => '.$response2);
 
 			if ($res2->errors[0]->data->errorGroup == "UNAUTHORIZED")  {
 				return $this->RefreshToken();
 			}
-			elseif ($res2->data->account->installations != null)  {
-				$this->giid = $res2->data->account->installations[0]->giid;		// Installation ID 0 by default
+			elseif ($res2->data->account->owainstallations != null)  {
+				$this->giid = $res2->data->account->owainstallations[0]->giid;		// Installation ID 0 by default
 			}
 			
 			return array($httpRespCode2, $response2);
@@ -477,8 +490,8 @@ class verisureAPI2 {
 		if ($res->errors[0]->data->errorGroup == "UNAUTHORIZED")  {
 			return $this->RefreshToken();
 		}
-		elseif ($res->data->account->installations != null)  {
-        	$this->giid = $res->data->account->installations[0]->giid;		// Installation ID 0 by default
+		elseif ($res->data->account->owainstallations != null)  {
+        	$this->giid = $res->data->account->owainstallations[0]->giid;		// Installation ID 0 by default
 		}
 		      			
 		return array($httpRespCode, $response);
@@ -491,11 +504,12 @@ class verisureAPI2 {
 		$url = $this->workingDomain.$this->baseUrl;
 		$headers = $this->setHeaders(null);
 		$data = $this->setContent("Devices", null, null, null);
-		$result = $this->doRequest($data, $method, $headers, $url);
 		
+		$result = $this->doRequest($data, $method, $headers, $url);
 		$httpRespCode = $result[0];
 		$response = $result[1];
-		
+		log::add('verisure', 'debug', '│ Request Devices - httpRespCode => '.$httpRespCode.' - response => '.$response);
+
 		return array($httpRespCode, $response);
 	}
 	
@@ -506,11 +520,12 @@ class verisureAPI2 {
 		$url = $this->workingDomain.$this->baseUrl;
 		$headers = $this->setHeaders(null);
 		$data = $this->setContent('ArmState', null, null, null);
-		$result = $this->doRequest($data, $method, $headers, $url);
 		
+		$result = $this->doRequest($data, $method, $headers, $url);
 		$httpRespCode = $result[0];
 		$response = $result[1];
-		      			
+		log::add('verisure', 'debug', '│ Request ArmState - httpRespCode => '.$httpRespCode.' - response => '.$response);
+		
 		return array($httpRespCode, $response);
 	}
 
@@ -521,11 +536,12 @@ class verisureAPI2 {
 		$url = $this->workingDomain.$this->baseUrl;
 		$headers = $this->setHeaders(null);
 		$data = $this->setContent('Climate', null, null, null);
-		$result = $this->doRequest($data, $method, $headers, $url);
 		
+		$result = $this->doRequest($data, $method, $headers, $url);
 		$httpRespCode = $result[0];
 		$response = $result[1];
-		      			
+		log::add('verisure', 'debug', '│ Request Climate - httpRespCode => '.$httpRespCode.' - response => '.$response);
+
 		return array($httpRespCode, $response);
 	}
   
@@ -536,11 +552,12 @@ class verisureAPI2 {
 		$url = $this->workingDomain.$this->baseUrl;
 		$headers = $this->setHeaders(null);
 		$data = $this->setContent('DoorWindow', null, null, null);
-		$result = $this->doRequest($data, $method, $headers, $url);
 		
+		$result = $this->doRequest($data, $method, $headers, $url);
 		$httpRespCode = $result[0];
 		$response = $result[1];
-		      			
+		log::add('verisure', 'debug', '│ Request DoorWindow - httpRespCode => '.$httpRespCode.' - response => '.$response);
+		
 		return array($httpRespCode, $response);
 	}
 
@@ -551,11 +568,12 @@ class verisureAPI2 {
 		$url = $this->workingDomain.$this->baseUrl;
 		$headers = $this->setHeaders(null);
 		$data = $this->setContent('Camera', null, null, null);
-		$result = $this->doRequest($data, $method, $headers, $url);
 		
+		$result = $this->doRequest($data, $method, $headers, $url);
 		$httpRespCode = $result[0];
 		$response = $result[1];
-		      			
+		log::add('verisure', 'debug', '│ Request Camera - httpRespCode => '.$httpRespCode.' - response => '.$response);
+
 		return array($httpRespCode, $response);
 	}
 
@@ -566,11 +584,12 @@ class verisureAPI2 {
 		$url = $this->workingDomain.$this->baseUrl;
 		$headers = $this->setHeaders(null);
 		$data = $this->setContent('SmartPlug', null, null, null);
-		$result = $this->doRequest($data, $method, $headers, $url);
 		
+		$result = $this->doRequest($data, $method, $headers, $url);
 		$httpRespCode = $result[0];
 		$response = $result[1];
-		      			
+		log::add('verisure', 'debug', '│ Request SmartPlug - httpRespCode => '.$httpRespCode.' - response => '.$response);
+
 		return array($httpRespCode, $response);
 	}
 
@@ -581,11 +600,12 @@ class verisureAPI2 {
 		$url = $this->workingDomain.$this->baseUrl;
 		$headers = $this->setHeaders(null);
 		$data = $this->setContent($state, null, null, null);
-		$result = $this->doRequest($data, $method, $headers, $url);
 		
+		$result = $this->doRequest($data, $method, $headers, $url);
 		$httpRespCode = $result[0];
 		$response = $result[1];
-		      			
+		log::add('verisure', 'debug', '│ Request '.$state.' - httpRespCode => '.$httpRespCode.' - response => '.$response);
+		
 		return array($httpRespCode, $response);
 	}
 		
@@ -596,10 +616,11 @@ class verisureAPI2 {
 		$url = $this->workingDomain.$this->baseUrl;
 		$headers = $this->setHeaders(null);
 		$data = $this->setContent('UpdateState', $device_label, $state, null);
-		$result = $this->doRequest($data, $method, $headers, $url);
 		
+		$result = $this->doRequest($data, $method, $headers, $url);
 		$httpRespCode = $result[0];
 		$response = $result[1];
+		log::add('verisure', 'debug', '│ Request UpdateState - httpRespCode => '.$httpRespCode.' - response => '.$response);
 		      			
 		return array($httpRespCode, $response);
 	}
@@ -614,11 +635,12 @@ class verisureAPI2 {
 		$url = $this->workingDomain.$this->baseUrl;
 		$headers = $this->setHeaders(null);
 		$data = $this->setContent('EventLog', $filter, null, null);
-		$result = $this->doRequest($data, $method, $headers, $url);
 		
+		$result = $this->doRequest($data, $method, $headers, $url);
 		$httpRespCode = $result[0];
 		$response = $result[1];
-		      			
+		log::add('verisure', 'debug', '│ Request EventLog - httpRespCode => '.$httpRespCode.' - response => '.$response);
+		
 		return array($httpRespCode, $response);
 	}
 
@@ -628,10 +650,12 @@ class verisureAPI2 {
 		$url = $this->workingDomain.$this->baseUrl;
 		$headers = $this->setHeaders(null);
 		$data = $this->setContent('CaptureImageRequest', $device, null, null);
-		$result = $this->doRequest($data, $method, $headers, $url);
 		
+		$result = $this->doRequest($data, $method, $headers, $url);
 		$httpRespCode = $result[0];
 		$response = $result[1];
+		log::add('verisure', 'debug', '│ Request CaptureImageRequest - httpRespCode => '.$httpRespCode.' - response => '.$response);
+		
 		$res = json_decode($response, true);
 		$requestId = $res['data']['CameraRequestImageCapture']['requestId'];
 
@@ -645,10 +669,12 @@ class verisureAPI2 {
 				$url2 = $this->workingDomain.$this->baseUrl;
 				$headers2 = $this->setHeaders(null);
 				$data2 = $this->setContent("ImageCaptureStatus", $device, $requestId, null);
-				$result2 = $this->doRequest($data2, $method2, $headers2, $url2);
 				
+				$result2 = $this->doRequest($data2, $method2, $headers2, $url2);
 				$httpRespCode2 = $result2[0];
 				$response2 = $result2[1];
+				log::add('verisure', 'debug', '│ Request ImageCaptureStatus - httpRespCode => '.$httpRespCode2.' - response => '.$response2);
+
 				$res2 = json_decode($response2, true);
 				$wait = $res2['data']['installation']['imageCaptureRequestStatus']['status'];
 				$retry--;
@@ -660,10 +686,12 @@ class verisureAPI2 {
 				$url3 = $this->workingDomain.$this->baseUrl;
 				$headers3 = $this->setHeaders(null);
 				$data3 = $this->setContent("Camera", null, null, null);
+				
 				$result3 = $this->doRequest($data3, $method3, $headers3, $url3);
-
 				$httpRespCode3 = $result3[0];
 				$response3 = $result3[1];
+				log::add('verisure', 'debug', '│ Request Camera - httpRespCode => '.$httpRespCode3.' - response => '.$response3);
+
 				$res3 = json_decode($response3, true);
 
 				foreach ( $res3['data']['installation']['cameras'] as $cameras )  {
@@ -677,10 +705,11 @@ class verisureAPI2 {
 					$headers4 = $this->setHeaders(null);
 					$headers4[] = 'Accept: image/jpeg';
 					$data4 = null;
+					
 					$result4 = $this->doRequest($data4, $method4, $headers4, $url4);
-
 					$httpRespCode4 = $result4[0];
 					$img = $result4[1];
+					log::add('verisure', 'debug', '│ Request DownloadImage - httpRespCode => '.$httpRespCode);
 				}
 			}
 
