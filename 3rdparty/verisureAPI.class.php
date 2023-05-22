@@ -402,7 +402,7 @@ class verisureAPI {
 						'panel' => $this->panel,
 						'devices' => array( (int)$data1 )
 					),
-					'query' => 'mutation RequestImages($numinst: String!, $panel: String!, $devices: [Int]!, $mediaType: Int, $resolution: Int, $imageNumber: Int, $deviceType: Int) { xSRequestImages(numinst: $numinst, panel: $panel, devices: $devices, mediaType: $mediaType, resolution: $resolution, imageNumber: $imageNumber, deviceType: $deviceType) { res msg referenceId } }',
+					'query' => 'mutation RequestImages($numinst: String!, $panel: String!, $devices: [Int]!, $mediaType: Int, $resolution: Int, $deviceType: Int) { xSRequestImages(numinst: $numinst, panel: $panel, devices: $devices, mediaType: $mediaType, resolution: $resolution, deviceType: $deviceType) { res msg referenceId } }',
 				);
 			break;
 
@@ -510,12 +510,13 @@ class verisureAPI {
 		$method = "POST";
 		$headers = $this->setHeaders("mkLoginToken");
 		$content = $this->setContent("mkLoginToken", null, null, null);
-		$result = $this->doRequest($content, $method, $headers);
 		
+		$result = $this->doRequest($content, $method, $headers);
 		$httpRespCode = $result[0];
-		$response = $result[1];  
+		$response = $result[1];
+		log::add('verisure', 'debug', '│ Request mkLoginToken - httpRespCode => '.$httpRespCode.' - response => '.$response);  
+		
 		$res = json_decode($response, true);
-
 		if ( $res['data']['xSLoginToken']['needDeviceAuthorization'] == false ) {
 			$this->auth_token = $res['data']['xSLoginToken']['hash'];
 			$this->refresh_token = $res['data']['xSLoginToken']['refreshToken'];
@@ -531,11 +532,12 @@ class verisureAPI {
 		$method = "POST";
 		$headers = $this->setHeaders("Logout");
 		$content = $this->setContent("Logout", null, null, null);
-		$result = $this->doRequest($content, $method, $headers);
 		
+		$result = $this->doRequest($content, $method, $headers);
 		$httpRespCode = $result[0];
 		$response = $result[1];
-		
+		log::add('verisure', 'debug', '│ Request Logout - httpRespCode => '.$httpRespCode.' - response => '.$response);
+
 		return array($httpRespCode, $response);
 	}
 
@@ -548,17 +550,17 @@ class verisureAPI {
 		$method = "POST";
 		$headers = $this->setHeaders("mkValidateDevice");
 		$content = $this->setContent("mkValidateDevice", null, null, null);
-		$result = $this->doRequest($content, $method, $headers);
 		
+		$result = $this->doRequest($content, $method, $headers);
 		$httpRespCode = $result[0];
-		$response = $result[1];  
+		$response = $result[1];
+		log::add('verisure', 'debug', '│ Request mkValidateDevice - httpRespCode => '.$httpRespCode.' - response => '.$response);  
+		
 		$res = json_decode($response, true);
-
 		if ( $res['errors'][0]['message'] == "Unauthorized" ) {
 			$this->auth_otp_token = $res['errors'][0]['data']['auth-otp-hash'];
 			$this->saveDevice();
 		}
-
 		if ( $res['data']['xSValidateDevice']['res'] == "OK" ) {
 			$this->auth_token = $res['data']['xSValidateDevice']['hash'];
 			$this->saveDevice();
@@ -577,10 +579,12 @@ class verisureAPI {
 		$method = "POST";
 		$headers = $this->setHeaders("mkSendOTP");
 		$content = $this->setContent("mkSendOTP", $phone_id, null, null);
-		$result = $this->doRequest($content, $method, $headers);
 		
+		$result = $this->doRequest($content, $method, $headers);
 		$httpRespCode = $result[0];
 		$response = $result[1];  
+		log::add('verisure', 'debug', '│ Request mkSendOTP - httpRespCode => '.$httpRespCode.' - response => '.$response);
+
 		$this->auth_otp_challenge = false;
 
 		return array($httpRespCode, $response);
@@ -594,12 +598,13 @@ class verisureAPI {
 		$method = "POST";
 		$headers = $this->setHeaders("RefreshLogin");
 		$content = $this->setContent("RefreshLogin", null, null, null);
-		$result = $this->doRequest($content, $method, $headers);
 		
+		$result = $this->doRequest($content, $method, $headers);
 		$httpRespCode = $result[0];
 		$response = $result[1];  
+		log::add('verisure', 'debug', '│ Request RefreshLogin - httpRespCode => '.$httpRespCode.' - response => '.$response);
+		
 		$res = json_decode($response, true);
-
 		if ( $res['data']['xSRefreshLogin']['needDeviceAuthorization'] == false ) {
 			$this->auth_token = $res['data']['xSRefreshLogin']['hash'];
 			$this->refresh_token = $res['data']['xSRefreshLogin']['refreshToken'];
@@ -617,11 +622,12 @@ class verisureAPI {
 		$method = "POST";
 		$headers = $this->setHeaders("Srv");
 		$content = $this->setContent("Srv", null, null, null);
-		$result = $this->doRequest($content, $method, $headers);
 		
+		$result = $this->doRequest($content, $method, $headers);
 		$httpRespCode = $result[0];
 		$response = $result[1];
-		
+		log::add('verisure', 'debug', '│ Request Srv - httpRespCode => '.$httpRespCode.' - response => '.$response);
+
 		return array($httpRespCode, $response);
 	}
 
@@ -631,12 +637,13 @@ class verisureAPI {
 		$method = "POST";
 		$headers = $this->setHeaders("mkInstallationList");
 		$content = $this->setContent("mkInstallationList", null, null, null);
-		$result = $this->doRequest($content, $method, $headers);
 		
+		$result = $this->doRequest($content, $method, $headers);
 		$httpRespCode = $result[0];
 		$response = $result[1];
+		log::add('verisure', 'debug', '│ Request mkInstallationList - httpRespCode => '.$httpRespCode.' - response => '.$response);
+		
 		$res = json_decode($response, true);
-
 		if ( $res['data']['xSInstallations']['installations'] != "" ) {
 			
 			foreach ( $res['data']['xSInstallations']['installations'] as $installation )  {
@@ -654,11 +661,12 @@ class verisureAPI {
 		$method = "POST";
 		$headers = $this->setHeaders("xSDeviceList");
 		$content = $this->setContent("xSDeviceList", null, null, null);
-		$result = $this->doRequest($content, $method, $headers);
 		
+		$result = $this->doRequest($content, $method, $headers);
 		$httpRespCode = $result[0];
 		$response = $result[1];
-		
+		log::add('verisure', 'debug', '│ Request xSDeviceList - httpRespCode => '.$httpRespCode.' - response => '.$response);
+
 		return array($httpRespCode, $response);
 	}
 
@@ -668,13 +676,14 @@ class verisureAPI {
 		$method = "POST";
 		$headers = $this->setHeaders("CheckAlarm");
 		$content = $this->setContent("CheckAlarm", null, null, null);
+		
 		$result = $this->doRequest($content, $method, $headers);
-
 		$httpRespCode = $result[0];
 		$response = $result[1];
+		log::add('verisure', 'debug', '│ Request CheckAlarm - httpRespCode => '.$httpRespCode.' - response => '.$response);
+
 		$res = json_decode($response, true);
 		$referenceId = $res['data']['xSCheckAlarm']['referenceId'];
-	
 		if ( $res['data']['xSCheckAlarm']['res'] == "OK" ) {
 
 			$counter = 1;
@@ -684,15 +693,18 @@ class verisureAPI {
 				$method2 = "POST";
 				$headers2 = $this->setHeaders("CheckAlarmStatus");
 				$content2 = $this->setContent("CheckAlarmStatus", $referenceId, $counter, null);
-				$result2 = $this->doRequest($content2, $method2, $headers2);
 				
+				$result2 = $this->doRequest($content2, $method2, $headers2);
 				$httpRespCode2 = $result2[0];
 				$response2 = $result2[1];
+				
 				$res2 = json_decode($response2, true);
 				$wait = $res2['data']['xSCheckAlarmStatus']['res'];
 				$counter++;
 			}
 		}
+		log::add('verisure', 'debug', '│ Request CheckAlarmStatus - httpRespCode => '.$httpRespCode2.' - response => '.$response2);
+		
 		return array($httpRespCode, $response, $httpRespCode2, $response2);
 	}
 
@@ -702,13 +714,14 @@ class verisureAPI {
 		$method = "POST";
 		$headers = $this->setHeaders("xSArmPanel");
 		$content = $this->setContent("xSArmPanel", $mode, $currentStatus, null);
+		
 		$result = $this->doRequest($content, $method, $headers);
-
 		$httpRespCode = $result[0];
 		$response = $result[1];
+		log::add('verisure', 'debug', '│ Request xSArmPanel - httpRespCode => '.$httpRespCode.' - response => '.$response);
+
 		$res = json_decode($response, true);
 		$referenceId = $res['data']['xSArmPanel']['referenceId'];
-	
 		if ( $res['data']['xSArmPanel']['res'] == "OK" ) {
 
 			$counter = 1;
@@ -718,15 +731,18 @@ class verisureAPI {
 				$method2 = "POST";
 				$headers2 = $this->setHeaders("ArmStatus");
 				$content2 = $this->setContent("ArmStatus", $mode, $referenceId, $counter);
-				$result2 = $this->doRequest($content2, $method2, $headers2);
 				
+				$result2 = $this->doRequest($content2, $method2, $headers2);
 				$httpRespCode2 = $result2[0];
 				$response2 = $result2[1];
+				
 				$res2 = json_decode($response2, true);
 				$wait = $res2['data']['xSArmStatus']['res'];
 				$counter++;
 			}
 		}
+		log::add('verisure', 'debug', '│ Request ArmStatus - httpRespCode => '.$httpRespCode2.' - response => '.$response2);
+		
 		return array($httpRespCode, $response, $httpRespCode2, $response2);
 	}
 
@@ -736,13 +752,14 @@ class verisureAPI {
 		$method = "POST";
 		$headers = $this->setHeaders("xSDisarmPanel");
 		$content = $this->setContent("xSDisarmPanel", $currentStatus, null, null);
+		
 		$result = $this->doRequest($content, $method, $headers);
-
 		$httpRespCode = $result[0];
 		$response = $result[1];
+		log::add('verisure', 'debug', '│ Request xSDisarmPanel - httpRespCode => '.$httpRespCode.' - response => '.$response);
+
 		$res = json_decode($response, true);
 		$referenceId = $res['data']['xSDisarmPanel']['referenceId'];
-	
 		if ( $res['data']['xSDisarmPanel']['res'] == "OK" ) {
 
 			$counter = 1;
@@ -752,15 +769,18 @@ class verisureAPI {
 				$method2 = "POST";
 				$headers2 = $this->setHeaders("DisarmStatus");
 				$content2 = $this->setContent("DisarmStatus", $referenceId, $counter, null);
-				$result2 = $this->doRequest($content2, $method2, $headers2);
 				
+				$result2 = $this->doRequest($content2, $method2, $headers2);
 				$httpRespCode2 = $result2[0];
 				$response2 = $result2[1];
+								
 				$res2 = json_decode($response2, true);
 				$wait = $res2['data']['xSDisarmStatus']['res'];
 				$counter++;
 			}
 		}
+		log::add('verisure', 'debug', '│ Request DisarmStatus - httpRespCode => '.$httpRespCode2.' - response => '.$response2);
+
 		return array($httpRespCode, $response, $httpRespCode2, $response2);
 	}
 
@@ -772,10 +792,11 @@ class verisureAPI {
 		$method = "POST";
 		$headers = $this->setHeaders("ActV2Home");
 		$content = $this->setContent("ActV2Home", $filter, null, null);
+		
 		$result = $this->doRequest($content, $method, $headers);
-
 		$httpRespCode = $result[0];
 		$response = $result[1];
+		log::add('verisure', 'debug', '│ Request ActV2Home - httpRespCode => '.$httpRespCode.' - response => '.$response);
 
 		return array($httpRespCode, $response);
 	}
@@ -786,13 +807,14 @@ class verisureAPI {
 		$method = "POST";
 		$headers = $this->setHeaders("RequestImages");
 		$content = $this->setContent("RequestImages", $device, null, null);
+		
 		$result = $this->doRequest($content, $method, $headers);
-
 		$httpRespCode = $result[0];
 		$response = $result[1];
+		log::add('verisure', 'debug', '│ Request RequestImages - httpRespCode => '.$httpRespCode.' - response => '.$response);
+
 		$res = json_decode($response, true);
 		$referenceId = $res['data']['xSRequestImages']['referenceId'];
-
 		if ( $res['data']['xSRequestImages']['res'] == "OK" ) {
 
 			$counter = 1;
@@ -802,14 +824,16 @@ class verisureAPI {
 				$method2 = "POST";
 				$headers2 = $this->setHeaders("RequestImagesStatus");
 				$content2 = $this->setContent("RequestImagesStatus", $device, $referenceId, $counter);
-				$result2 = $this->doRequest($content2, $method2, $headers2);
 				
+				$result2 = $this->doRequest($content2, $method2, $headers2);
 				$httpRespCode2 = $result2[0];
 				$response2 = $result2[1];
+				
 				$res2 = json_decode($response2, true);
 				$wait = $res2['data']['xSRequestImagesStatus']['res'];
 				$counter++;
 			}
+			log::add('verisure', 'debug', '│ Request RequestImagesStatus - httpRespCode => '.$httpRespCode2.' - response => '.$response2);
 
 			if ( $res2['data']['xSRequestImagesStatus']['res'] == "OK" ) {
 
@@ -832,10 +856,12 @@ class verisureAPI {
 				$method4 = "POST";
 				$headers4 = $this->setHeaders("mkGetPhotoImages");
 				$content4 = $this->setContent("mkGetPhotoImages", $idSignal, null, null);
+				
 				$result4 = $this->doRequest($content4, $method4, $headers4);
-
 				$httpRespCode4 = $result4[0];
 				$response4 = $result4[1];
+				log::add('verisure', 'debug', '│ Request mkGetPhotoImages - httpRespCode => '.$httpRespCode4.' - response => '.$response4);
+
 				$res4 = json_decode($response4, true);
 				$img = $res4['data']['xSGetPhotoImages']['devices'][0]['images'][0]['image'];
 			}

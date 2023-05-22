@@ -1,10 +1,13 @@
 <div id="versiure_widget_ID" class="eqLogic-widget eqLogic verisure_widget_#id# verisure" style="text-align:center; min-width:270px; max-width:270px; border:#border#; border-radius:#border-radius#; background-color:#background-color#; color:#color#; #style#;" data-eqType="#eqType#" data-translate-category="#translate_category#" data-category="#category#" data-tags="#tags#" data-eqLogic_id="#id#" data-eqLogic_uid="#uid#" data-version="dashboard">
 	
-	<div class="widget-name" style="padding-left: 5px;">
-		<a href="#eqLink#" style="font-size:1.1em; margin-left:-5px; #hideEqLogicName#">#name_display#</a>
-		<span class="object_name" style="font-size:1.1em ;display:none;">#object_name#</span>
-		<span class="pull-left" title="Qualité du réseau : #networkstate#">
+	<div class="text-center widget-name" style="padding-left: 0px;">
+		<span class="pull-left" style="padding-left: 3px;" title="Qualité du réseau : #networkstate#">
 			<div id="img_quality"></div>
+		</span>
+		<span class="reportModeVisible">#name_display# <span class="object_name">#object_name#</span></span>
+		<a href="#eqLink#" class="reportModeHidden" style="color:var(--eqTitle-color)!important;">#name_display# <span class="object_name">#object_name#</span></a>
+		<span class="cmd refresh pull-right cursor" data-cmd_id="#getstate_id#" onclick="jeedom.cmd.execute({id: #getstate_id#});">
+			<i class="fas fa-sync" style="color:var(--eqTitle-color)!important;"></i>
 		</span>
 		<script>
 			$('#img_quality').empty();
@@ -17,7 +20,7 @@
 			$('#img_quality').append(img);
 		</script>
 	</div>
-	
+
 	<div class="container-fluid">
 		
 		<div class="col-sm-12" id="column" style="width: 260px">
@@ -44,8 +47,8 @@
 				<div class="col-sm-12" id="actions">
 					<button class="btn cmd action" data-cmd_id="#armed_id#" title="Mode Total" onclick="jeedom.cmd.execute({id: #armed_id#});"><i class="fas fa-lock"></i></button>
 					<button class="btn cmd action" data-cmd_id="#released_id#" title="Désactivation" onclick="jeedom.cmd.execute({id: #released_id#});"><i class="fas fa-lock-open"></i></button>
-					<button class="btn cmd action" data-cmd_id="#getstate_id#" title="Rafraichir" onclick="jeedom.cmd.execute({id: #getstate_id#});"><i class="fas fa-sync"></i></button>
-					<div></div>
+					<!-- <button class="btn cmd action" data-cmd_id="#getstate_id#" title="Rafraichir" onclick="jeedom.cmd.execute({id: #getstate_id#});"><i class="fas fa-sync"></i></button>
+					<div></div> -->
 					<button id="btn_night_#id#" class="btn cmd action" data-cmd_id="#armed_night_id#" title="Mode Nuit" onclick="jeedom.cmd.execute({id: #armed_night_id#});"><i class="fas fa-moon"></i></button>
 					<button id="btn_day_#id#"  class="btn cmd action" data-cmd_id="#armed_day_id#" title="Mode Jour" onclick="jeedom.cmd.execute({id: #armed_day_id#});"><i class="fas fa-sun"></i></button>
 					<button id="btn_ext_#id#" class="btn cmd action" data-cmd_id="#armed_ext_id#" title="Mode Extérieur" onclick="jeedom.cmd.execute({id: #armed_ext_id#});"><i class="fas fa-home"></i></button>
@@ -89,25 +92,13 @@
 		}
 
 		if ( #getpictures_visible# == 1 )  {
-			if ( #armed_night_visible# == 0 && #armed_day_visible# == 0 && #armed_ext_visible# == 0 )  {
-				$('.verisure_widget_#id#').css('min-height', 415 - 32);
-				$('.verisure_widget_#id#').css('max-height', 415 - 32);
-			}
-			else  {
-				$('.verisure_widget_#id#').css('min-height', 415);
-				$('.verisure_widget_#id#').css('max-height', 415);
-			}
+			$('.verisure_widget_#id#').css('min-height', 383);
+			$('.verisure_widget_#id#').css('max-height', 383);
 		}
 		else if ( #getpictures_visible# == 0 )  {
 			$('#zone_image_#id#').hide();
-			if ( #armed_night_visible# == 0 && #armed_day_visible# == 0 && #armed_ext_visible# == 0)  {
-				$('.verisure_widget_#id#').css('min-height', 415 - 92 - 32);
-				$('.verisure_widget_#id#').css('max-height', 291 - 92 - 32);
-			}
-			else  {
-				$('.verisure_widget_#id#').css('min-height', 415 - 92);
-				$('.verisure_widget_#id#').css('max-height', 415 - 92);
-			}
+			$('.verisure_widget_#id#').css('min-height', 383 - 92);
+			$('.verisure_widget_#id#').css('max-height', 383 - 92);
 		}
 		
 		jeedom.cmd.update['#enable_id#'] = function(_options) {
