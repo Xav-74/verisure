@@ -476,7 +476,7 @@ class verisure extends eqLogic {
 						log::add('verisure', 'debug', 'Création de la commande '.$cmdDeviceTemp->getName().' (LogicalId : '.$cmdDeviceTemp->getLogicalId().')');
 					}
 				
-					if ($device_array['smartplugModel'.$j] == "SMOKE3")   {
+					if ($device_array['smartplugModel'.$j] == "Détecteur de fumée")   {
 						$cmdDeviceHumidity = $this->getCmd(null, $device_array['smartplugID'.$j].'::Humidity');
 						if ( ! is_object($cmdDeviceHumidity)) {
 							$cmdDeviceHumidity = new verisureCmd();

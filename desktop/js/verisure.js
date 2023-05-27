@@ -246,7 +246,7 @@ $('#bt_Authentication_2FA').on('click',function() {
 								nbcams++;
 							}
 							else if (data.result['res'][j]['gui']['deviceGroup'] == "SMOKE") {
-								tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="Détecteur De fumée" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugModel'+j+'">';
+								tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="Détecteur de fumée" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugModel'+j+'">';
 								tr += '</td>';
 								tr += '<td>';					
 								tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="climateDevice" style="display : none;" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugType'+j+'">';
@@ -463,7 +463,7 @@ function validateDevice(alarmtype, numinstall, username, pwd, code, country, sms
 							nbcams++;
 						}
 						else if (data.result['res'][j]['gui']['deviceGroup'] == "SMOKE") {
-							tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="Détecteur De fumée" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugModel'+j+'">';
+							tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="Détecteur de fumée" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugModel'+j+'">';
 							tr += '</td>';
 							tr += '<td>';					
 							tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="climateDevice" style="display : none;" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugType'+j+'">';
