@@ -159,15 +159,17 @@ $eqLogics = eqLogic::byType($plugin->getId());
 									
 								<div id="div_pwd" class="form-group">		
 									<label class="col-sm-6 control-label">{{Mot de passe}}</label>
-									<div class="col-sm-6">
-										<input type="password" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="password" placeholder="Mot de passe utilisé pour vous connecter à votre compte Verisure"/>
+									<div class="col-sm-6 pass_show">
+										<input type="password" id="pwd" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="password" placeholder="Mot de passe utilisé pour vous connecter à votre compte Verisure" style="margin-bottom:0px !important"/>
+										<span class="eye fa fa-fw fa-eye toggle-pwd"></span>
 									</div>
 								</div>
 								
 								<div id="div_code" class="form-group">		
 									<label class="col-sm-6 control-label">{{Code Alarme}}</label>
-									<div class="col-sm-6">
-										<input type="password" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="code" placeholder="Code à 4 ou 6 digits de votre alarme"/>
+									<div class="col-sm-6 pass_show">
+										<input type="password" id="code" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="code" placeholder="Code à 4 ou 6 digits de votre alarme" style="margin-bottom:0px !important"/>
+										<span class="eye fa fa-fw fa-eye toggle-code"></span>
 									</div>
 								</div>
 								
@@ -321,10 +323,47 @@ $eqLogics = eqLogic::byType($plugin->getId());
 					$('#div_code').show();
 					$('#div_country').hide();
 				}
-				
+			});
+
+			$('body').off('click', '.toggle-pwd').on('click', '.toggle-pwd', function () {
+				$(this).toggleClass("fa-eye fa-eye-slash");
+				var input = $("#pwd");
+				if (input.attr("type") === "password") {
+				input.attr("type", "text");
+				} else {
+				input.attr("type", "password");
+				}
+			});
+
+			$('body').off('click', '.toggle-code').on('click', '.toggle-code', function () {
+				$(this).toggleClass("fa-eye fa-eye-slash");
+				var input = $("#code");
+				if (input.attr("type") === "password") {
+				input.attr("type", "text");
+				} else {
+				input.attr("type", "password");
+				}
 			});
 			
-			</script>			
+			</script>
+			
+			<style>
+				
+				.pass_show {
+					position: relative
+				}
+
+				.pass_show .eye {
+					position: absolute;
+					top: 60% !important;
+					right: 20px;
+					z-index: 1;
+					margin-top: -10px;
+					cursor: pointer;
+					transition: .3s ease all;
+				}
+
+			</style>
 			
 			
 			<div role="tabpanel" class="tab-pane" id="notificationsVerisure">
