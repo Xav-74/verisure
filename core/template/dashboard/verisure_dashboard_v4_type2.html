@@ -77,13 +77,13 @@
       	var nbsp = #nb_climate# + #nb_doorsensor# + #nb_device#;
 		
 		if ( #getpictures_visible# == 1)  {
-			$('.verisure_widget_#id#').css('min-height', 449 + nbsp * 20);
-			$('.verisure_widget_#id#').css('max-height', 449 + nbsp * 20);
+			$('.verisure_widget_#id#').css('min-height', 448 + nbsp * 20);
+			$('.verisure_widget_#id#').css('max-height', 448 + nbsp * 20);
 		}		
 		else if ( #getpictures_visible# == 0)  {
 			$('#zone_image_#id#').hide();
-			$('.verisure_widget_#id#').css('min-height', 449 + nbsp * 20 - 92);
-			$('.verisure_widget_#id#').css('max-height', 449 + nbsp * 20 - 92);
+			$('.verisure_widget_#id#').css('min-height', 448 + nbsp * 20 - 92);
+			$('.verisure_widget_#id#').css('max-height', 448 + nbsp * 20 - 92);
 		}
 		
 		$.ajax({

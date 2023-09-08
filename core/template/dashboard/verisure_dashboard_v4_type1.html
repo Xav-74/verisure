@@ -92,13 +92,13 @@
 		}
 
 		if ( #getpictures_visible# == 1 )  {
-			$('.verisure_widget_#id#').css('min-height', 384);
-			$('.verisure_widget_#id#').css('max-height', 384);
+			$('.verisure_widget_#id#').css('min-height', 383);
+			$('.verisure_widget_#id#').css('max-height', 383);
 		}
 		else if ( #getpictures_visible# == 0 )  {
 			$('#zone_image_#id#').hide();
-			$('.verisure_widget_#id#').css('min-height', 384 - 92);
-			$('.verisure_widget_#id#').css('max-height', 384 - 92);
+			$('.verisure_widget_#id#').css('min-height', 383 - 92);
+			$('.verisure_widget_#id#').css('max-height', 383 - 92);
 		}
 		
 		jeedom.cmd.update['#enable_id#'] = function(_options) {
