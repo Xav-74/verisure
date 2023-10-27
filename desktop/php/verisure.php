@@ -13,22 +13,53 @@ $eqLogics = eqLogic::byType($plugin->getId());
 <div class="row row-overflow">
 
 	<div class="col-xs-12 eqLogicThumbnailDisplay">
-		<legend><i class="fas fa-cog"></i> {{Gestion}}</legend>
-		<div class="eqLogicThumbnailContainer">
+
+		<div class="row">
 			
-			<div class="cursor eqLogicAction logoPrimary" style="color:#FB0230" data-action="add">
-				<i class="fas fa-plus-circle"></i>
-				<br/>
-				<span>{{Ajouter}}</span>
+			<div class="col-xs-10">
+				<legend><i class="fas fa-cog"></i> {{Gestion}}</legend>
+				<div class="eqLogicThumbnailContainer">
+					
+					<div class="cursor eqLogicAction logoPrimary" style="color:#FB0230" data-action="add">
+						<i class="fas fa-plus-circle"></i>
+						<br/>
+						<span>{{Ajouter}}</span>
+					</div>
+					
+					<div class="cursor eqLogicAction logoSecondary" data-action="gotoPluginConf">
+						<i class="fas fa-wrench"></i>
+						<br/>
+						<span>{{Configuration}}</span>
+					</div>
+				
+				</div>
 			</div>
-			
-			<div class="cursor eqLogicAction logoSecondary" data-action="gotoPluginConf">
-				<i class="fas fa-wrench"></i>
-				<br/>
-				<span>{{Configuration}}</span>
+
+			<div class="col-xs-2">
+				<!--Bouton Community-->
+				<?php
+					// uniquement si on est en version 4.4 ou supérieur
+					$jeedomVersion  = jeedom::version() ?? '0';
+					$displayInfoValue = version_compare($jeedomVersion, '4.4.0', '>=');
+					if($displayInfoValue){
+				?>
+				<legend><i class=" fas fa-comments"></i> {{Community}}</legend>
+				<div class="eqLogicThumbnailContainer">
+					
+					<div class="cursor eqLogicAction logoSecondary" style="color:#FB0230" data-action="createCommunityPost">
+						<i class="fas fa-ambulance"></i>
+						<br>
+						<span>{{Créer un post Community}}</span>
+					</div>
+
+				</div>
+				<?php
+					}
+				?>
 			</div>
-		
+
 		</div>
+
 		
 		<legend><i class="fas fa-table"></i> {{Mes équipements}}</legend>
 		<div class="input-group" style="margin-bottom:5px;">
