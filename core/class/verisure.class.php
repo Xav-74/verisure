@@ -523,7 +523,7 @@ class verisure extends eqLogic {
 
     /*     * **********************Getteur Setteur*************************** */
 
-	public function Authentication_2FA($alarmtype,$numinstall,$username,$password,$code,$country)	{		//Type 1 & 2
+	public static function Authentication_2FA($alarmtype,$numinstall,$username,$password,$code,$country)	{		//Type 1 & 2
 		
 		if ( $alarmtype == 1 )   {
 			log::add('verisure', 'debug', '┌───────── Démarrage de l\'authentification 2FA ─────────');
@@ -602,7 +602,7 @@ class verisure extends eqLogic {
 		}
 	}
 
-	public function Send_OTP($alarmtype,$numinstall,$username,$password,$code,$country, $phone_id)	{		//Type 1 & 2
+	public static function Send_OTP($alarmtype,$numinstall,$username,$password,$code,$country, $phone_id)	{		//Type 1 & 2
 		
 		if ( $alarmtype == 1 )   {
 
@@ -619,7 +619,7 @@ class verisure extends eqLogic {
 		}
 	}
 
-	public function Validate_Device($alarmtype,$numinstall,$username,$password,$code,$country, $sms_code)	{		//Type 1 & 2
+	public static function Validate_Device($alarmtype,$numinstall,$username,$password,$code,$country, $sms_code)	{		//Type 1 & 2
 
 		if ( $alarmtype == 1 )   {
 
@@ -672,7 +672,7 @@ class verisure extends eqLogic {
 		}
 	}
 		
-	public function Reset_Token($alarmtype,$numinstall)	{		//Type 1 & 2
+	public static function Reset_Token($alarmtype,$numinstall)	{		//Type 1 & 2
 
 		if ( $alarmtype == 1 )   {
 			
@@ -1055,7 +1055,7 @@ class verisure extends eqLogic {
 		return $quality;
 	}
 	
-	public function SetEqLogic($numinstall)   {
+	public static function SetEqLogic($numinstall)   {
 	
 		foreach (eqLogic::byTypeAndSearhConfiguration('verisure', 'numinstall') as $verisure) {
 			if ($verisure->getConfiguration('numinstall') == $numinstall)   {
