@@ -136,7 +136,7 @@ $('#bt_Authentication_2FA').on('click',function() {
 			},
 		success: function (data) { 															
 			
-			if ($('.eqLogicAttr[data-l2key=alarmtype]').value() == 1)   {
+			if ($('.eqLogicAttr[data-l2key=alarmtype]').value() == 1 || $('.eqLogicAttr[data-l2key=alarmtype]').value() == 3 )   {
 				if (data.state != 'ok' || data.result == null) {
 					$('#div_alert').showAlert({message: '{{Erreur lors de l\'authentification 2FA}}', level: 'danger'});
 					return;
@@ -169,7 +169,7 @@ $('#bt_Authentication_2FA').on('click',function() {
 							tr += '<td>';
 							if (data.result['res'][j]['type'] == "MG") { tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="Détecteur de chocs et d\'ouverture" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugModel'+j+'">'; }
 							else if (data.result['res'][j]['type'] == "XP" || data.result['res'][j]['type'] == "XR" || data.result['res'][j]['type'] == "YR" || data.result['res'][j]['type'] == "QR") { tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="Détecteur de mouvements avec images" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugModel'+j+'">'; }
-							else if (data.result['res'][j]['type'] == "FR") { tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="Détecteur De fumée" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugModel'+j+'">'; }
+							else if (data.result['res'][j]['type'] == "FR") { tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="Détecteur de fumée" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugModel'+j+'">'; }
 							else if (data.result['res'][j]['type'] == "ZR") { tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="Sirène intérieure" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugModel'+j+'">'; }
 							else if (data.result['res'][j]['type'] == "TI" || data.result['res'][j]['type'] == "VV") { tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="Lecteur de badge" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugModel'+j+'">'; }
 							else if (data.result['res'][j]['type'] == "JX") { tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="Alarme Sentinel" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugModel'+j+'">'; }
@@ -381,7 +381,7 @@ function validateDevice(alarmtype, numinstall, username, pwd, code, country, sms
 			},
 		success: function (data) { 			
 			
-			if ($('.eqLogicAttr[data-l2key=alarmtype]').value() == 1)   {
+			if ($('.eqLogicAttr[data-l2key=alarmtype]').value() == 1 || $('.eqLogicAttr[data-l2key=alarmtype]').value() == 3)   {
 			
 				if (data.state != 'ok' || data.result == null) {
 					$('#div_alert').showAlert({message: '{{Erreur lors de l\'authentification 2FA}}', level: 'danger'});
@@ -402,7 +402,7 @@ function validateDevice(alarmtype, numinstall, username, pwd, code, country, sms
 						tr += '<td>';
 						if (data.result['res'][j]['type'] == "MG") { tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="Détecteur de chocs et d\'ouverture" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugModel'+j+'">'; }
 						else if (data.result['res'][j]['type'] == "XP" || data.result['res'][j]['type'] == "XR" || data.result['res'][j]['type'] == "YR" || data.result['res'][j]['type'] == "QR") { tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="Détecteur de mouvements avec images" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugModel'+j+'">'; }
-						else if (data.result['res'][j]['type'] == "FR") { tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="Détecteur De fumée" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugModel'+j+'">'; }
+						else if (data.result['res'][j]['type'] == "FR") { tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="Détecteur de fumée" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugModel'+j+'">'; }
 						else if (data.result['res'][j]['type'] == "ZR") { tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="Sirène intérieure" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugModel'+j+'">'; }
 						else if (data.result['res'][j]['type'] == "TI" || data.result['res'][j]['type'] == "VV") { tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="Lecteur de badge" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugModel'+j+'">'; }
 						else if (data.result['res'][j]['type'] == "JX") { tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="Alarme Sentinel" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugModel'+j+'">'; }

@@ -22,7 +22,7 @@
     
 	$eqLogic = eqLogic::byId(init('eqLogic_id'));
 		
-	if ($eqLogic->getConfiguration('alarmtype') == 1 )   {
+	if ($eqLogic->getConfiguration('alarmtype') == 1 || $eqLogic->getConfiguration('alarmtype') == 3)   {
 		
 		$path = "plugins/verisure/data/".date("Ymd_His")."_smartplugID_".init('device').".jpg";	
 		$img = $eqLogic->GetPhotosRequest(init('device'));

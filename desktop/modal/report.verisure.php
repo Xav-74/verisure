@@ -45,7 +45,7 @@
 					</thead>
 					<tbody>
 						<?php
-							if ( $eqLogic->getConfiguration('alarmtype') == 1 )  {
+							if ( $eqLogic->getConfiguration('alarmtype') == 1 || $eqLogic->getConfiguration('alarmtype') == 3 )  {
 								
 								$i = 1;
 								foreach ($report['reg'] as $reg)  {
