@@ -2,7 +2,7 @@
 	
 	<div class="text-center widget-name" style="padding-left: 0px; margin-bottom: 0px;">
 		<span class="pull-left" style="padding-left: 3px;" title="Qualité du réseau : #networkstate#">
-			<div id="img_quality"></div>
+			<div id="img_quality_#id#"></div>
 		</span>
 		<span class="reportModeVisible">#name_display# <span class="object_name">#object_name#</span></span>
 		<a href="#eqLink#" class="reportModeHidden" style="color:var(--eqTitle-color)!important;">#name_display# <span class="object_name">#object_name#</span></a>
@@ -10,14 +10,14 @@
 			<i class="fas fa-sync" style="color:var(--eqTitle-color)!important;"></i>
 		</span>
 		<script>
-			$('#img_quality').empty();
+			$('#img_quality_#id#').empty();
 			if ( #networkstate# == 0 )  { var img ='<img src="plugins/verisure/core/img/signal_0.png" height="14"/>'; } 
 			if ( #networkstate# > 0 && #networkstate# < 0.30 )  { var img ='<img src="plugins/verisure/core/img/signal_1.png" height="14"/>'; }
 			if ( #networkstate# >= 0.30 && #networkstate# < 0.70 )  { var img ='<img src="plugins/verisure/core/img/signal_2.png" height="14"/>'; }
 			if ( #networkstate# >= 0.70 && #networkstate# < 0.90 )  { var img ='<img src="plugins/verisure/core/img/signal_3.png" height="14"/>'; }
 			if ( #networkstate# >= 0.90 && #networkstate# < 1 )  { var img ='<img src="plugins/verisure/core/img/signal_4.png" height="14"/>'; }
 			if ( #networkstate# == 1 )  { var img ='<img src="plugins/verisure/core/img/signal_5.png" height="14"/>'; } 
-			$('#img_quality').append(img);
+			$('#img_quality_#id#').append(img);
 		</script>
 	</div>
 
