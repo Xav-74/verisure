@@ -46,154 +46,156 @@
 					<tbody>
 						<?php
 							if ( $eqLogic->getConfiguration('alarmtype') == 1 || $eqLogic->getConfiguration('alarmtype') == 3 )  {
-								
 								$i = 1;
 								foreach ($report['reg'] as $reg)  {
-									echo '<tr>';
-									echo '<td>';
-									echo $i;
-									echo '</td>';
-									echo '<td>';
-									echo $reg['time'];
-									echo '</td>';
-									switch ($reg['type'])  {
-										case 1:
-											echo '<td>';
-											echo '<img src="plugins/verisure/core/img/logo_entree.png" height="35" width="35"/>';
-											echo '</td>';
-											echo '<td>';
-											echo $reg['alias'];
-											echo '<br/>';
-											if ( $reg['source'] != " " )  { echo 'User : '. $reg['source'].' - '.$reg['myVerisureUser']; }
-											else { echo 'User : '. $reg['myVerisureUser']; }
-											echo '</td>';
-										break;
-										case 2:
-											echo '<td>';
-											echo '<img src="plugins/verisure/core/img/logo_sortie.png" height="35" width="35"/>';
-											echo '</td>';
-											echo '<td>';
-											echo $reg['alias'];
-											echo '<br/>';
-											if ( $reg['source'] != " " )  { echo 'User : '. $reg['source'].' - '.$reg['myVerisureUser']; }
-											else { echo 'User : '. $reg['myVerisureUser']; }
-											echo '</td>';
-										break;
-										case 13:
-										case 24:
-											echo '<td>';
-											echo '<img src="plugins/verisure/core/img/logo_alerte.png" height="35" width="35"/>';
-											echo '</td>';
-											echo '<td>';
-											echo $reg['alias'];
-											echo '<br/>';
-											echo 'Smartplug : '. $reg['device'];
-											echo '</td>';
-										break;
-										case 16:
-											echo '<td>';
-											echo '<img src="plugins/verisure/core/img/logo_photos.png" height="35" width="35"/>';
-											echo '</td>';
-											echo '<td>';
-											echo $reg['alias'];
-											echo '<br/>';
-											echo 'Smartplug : '. $reg['device'];
-											echo '<br/>';
-											if ( $reg['source'] != " " )  { echo 'User : '. $reg['source'].' - '.$reg['myVerisureUser']; }
-											else { echo 'User : '. $reg['myVerisureUser']; }
-											echo '</td>';
-										break;
-										case 25:
-											echo '<td>';
-											echo '<img src="plugins/verisure/core/img/logo_def_elec.png" height="35" width="35"/>';
-											echo '</td>';
-											echo '<td>';
-											echo $reg['alias'];
-											echo '<br/>';
-											echo 'Source : Centrale';
-											echo '</td>';
-										break;
-										case 26:
-											echo '<td>';
-											echo '<img src="plugins/verisure/core/img/logo_ret_elec.png" height="35" width="35"/>';
-											echo '</td>';
-											echo '<td>';
-											echo $reg['alias'];
-											echo '<br/>';
-											echo 'Source : Centrale';
-											echo '</td>';
-										break;
-										case 29:
-											echo '<td>';
-											echo '<img src="plugins/verisure/core/img/logo_sos.png" height="35" width="35"/>';
-											echo '</td>';
-											echo '<td>';
-											echo $reg['alias'];
-											echo '<br/>';
-											echo 'Source : Centrale';
-											echo '</td>';
-										break;
-										case 31:
-											echo '<td>';
-											echo '<img src="plugins/verisure/core/img/logo_total.png" height="35" width="35"/>';
-											echo '</td>';
-											echo '<td>';
-											echo $reg['alias'];
-											echo '<br/>';
-											if ( $reg['source'] != " " )  { echo 'User : '. $reg['source'].' - '.$reg['myVerisureUser']; }
-											else { echo 'User : '. $reg['myVerisureUser']; }
-											echo '</td>';
-										break;
-										case 32:
-											echo '<td>';
-											echo '<img src="plugins/verisure/core/img/logo_desactive.png" height="35" width="35"/>';
-											echo '</td>';
-											echo '<td>';
-											echo $reg['alias'];
-											echo '<br/>';
-											if ( $reg['source'] != " " )  { echo 'User : '. $reg['source'].' - '.$reg['myVerisureUser']; }
-											else { echo 'User : '. $reg['myVerisureUser']; }
-											echo '</td>';
-										break;
-										case 46:
-										case 203:
-											echo '<td>';
-											echo '<img src="plugins/verisure/core/img/logo_nuit.png" height="35" width="35"/>';
-											echo '</td>';
-											echo '<td>';
-											echo $reg['alias'];
-											echo '<br/>';
-											if ( $reg['source'] != " " )  { echo 'User : '. $reg['source'].' - '.$reg['myVerisureUser']; }
-											else { echo 'User : '. $reg['myVerisureUser']; }
-											echo '</td>';
-										break;
-										case 202:
-										case 311:
-											echo '<td>';
-											echo '<img src="plugins/verisure/core/img/logo_jour.png" height="35" width="35"/>';
-											echo '</td>';
-											echo '<td>';
-											echo $reg['alias'];
-											echo '<br/>';
-											if ( $reg['source'] != " " )  { echo 'User : '. $reg['source'].' - '.$reg['myVerisureUser']; }
-											else { echo 'User : '. $reg['myVerisureUser']; }
-											echo '</td>';
-										break;
-										case 40:
-										case 204:
-											echo '<td>';
-											echo '<img src="plugins/verisure/core/img/logo_ext.png" height="35" width="35"/>';
-											echo '</td>';
-											echo '<td>';
-											echo $reg['alias'];
-											echo '<br/>';
-											if ( $reg['source'] != " " )  { echo 'User : '. $reg['source'].' - '.$reg['myVerisureUser']; }
-											else { echo 'User : '. $reg['myVerisureUser']; }
-											echo '</td>';
-										break;
-									}		
-									echo '</tr>';
-									$i++;
+									if ( $reg['type'] == '16' && $reg['source'] == " " && $reg['myVerisureUser'] == null)  { continue; }
+									else {
+										echo '<tr>';
+										echo '<td>';
+										echo $i;
+										echo '</td>';
+										echo '<td>';
+										echo $reg['time'];
+										echo '</td>';
+										switch ($reg['type'])  {
+											case 1:
+												echo '<td>';
+												echo '<img src="plugins/verisure/core/img/logo_entree.png" height="35" width="35"/>';
+												echo '</td>';
+												echo '<td>';
+												echo $reg['alias'];
+												echo '<br/>';
+												if ( $reg['source'] != " " )  { echo 'User : '. $reg['source'].' - '.$reg['myVerisureUser']; }
+												else { echo 'User : '. $reg['myVerisureUser']; }
+												echo '</td>';
+											break;
+											case 2:
+												echo '<td>';
+												echo '<img src="plugins/verisure/core/img/logo_sortie.png" height="35" width="35"/>';
+												echo '</td>';
+												echo '<td>';
+												echo $reg['alias'];
+												echo '<br/>';
+												if ( $reg['source'] != " " )  { echo 'User : '. $reg['source'].' - '.$reg['myVerisureUser']; }
+												else { echo 'User : '. $reg['myVerisureUser']; }
+												echo '</td>';
+											break;
+											case 13:
+											case 24:
+												echo '<td>';
+												echo '<img src="plugins/verisure/core/img/logo_alerte.png" height="35" width="35"/>';
+												echo '</td>';
+												echo '<td>';
+												echo $reg['alias'];
+												echo '<br/>';
+												echo 'Smartplug : '. $reg['device'];
+												echo '</td>';
+											break;
+											case 16:
+												echo '<td>';
+												echo '<img src="plugins/verisure/core/img/logo_photos.png" height="35" width="35"/>';
+												echo '</td>';
+												echo '<td>';
+												echo $reg['alias'];
+												echo '<br/>';
+												echo 'Smartplug : '. $reg['device'];
+												echo '<br/>';
+												if ( $reg['source'] != " " )  { echo 'User : '. $reg['source'].' - '.$reg['myVerisureUser']; }
+												else { echo 'User : '. $reg['myVerisureUser']; }
+												echo '</td>';
+											break;
+											case 25:
+												echo '<td>';
+												echo '<img src="plugins/verisure/core/img/logo_def_elec.png" height="35" width="35"/>';
+												echo '</td>';
+												echo '<td>';
+												echo $reg['alias'];
+												echo '<br/>';
+												echo 'Source : Centrale';
+												echo '</td>';
+											break;
+											case 26:
+												echo '<td>';
+												echo '<img src="plugins/verisure/core/img/logo_ret_elec.png" height="35" width="35"/>';
+												echo '</td>';
+												echo '<td>';
+												echo $reg['alias'];
+												echo '<br/>';
+												echo 'Source : Centrale';
+												echo '</td>';
+											break;
+											case 29:
+												echo '<td>';
+												echo '<img src="plugins/verisure/core/img/logo_sos.png" height="35" width="35"/>';
+												echo '</td>';
+												echo '<td>';
+												echo $reg['alias'];
+												echo '<br/>';
+												echo 'Source : Centrale';
+												echo '</td>';
+											break;
+											case 31:
+												echo '<td>';
+												echo '<img src="plugins/verisure/core/img/logo_total.png" height="35" width="35"/>';
+												echo '</td>';
+												echo '<td>';
+												echo $reg['alias'];
+												echo '<br/>';
+												if ( $reg['source'] != " " )  { echo 'User : '. $reg['source'].' - '.$reg['myVerisureUser']; }
+												else { echo 'User : '. $reg['myVerisureUser']; }
+												echo '</td>';
+											break;
+											case 32:
+												echo '<td>';
+												echo '<img src="plugins/verisure/core/img/logo_desactive.png" height="35" width="35"/>';
+												echo '</td>';
+												echo '<td>';
+												echo $reg['alias'];
+												echo '<br/>';
+												if ( $reg['source'] != " " )  { echo 'User : '. $reg['source'].' - '.$reg['myVerisureUser']; }
+												else { echo 'User : '. $reg['myVerisureUser']; }
+												echo '</td>';
+											break;
+											case 46:
+											case 203:
+												echo '<td>';
+												echo '<img src="plugins/verisure/core/img/logo_nuit.png" height="35" width="35"/>';
+												echo '</td>';
+												echo '<td>';
+												echo $reg['alias'];
+												echo '<br/>';
+												if ( $reg['source'] != " " )  { echo 'User : '. $reg['source'].' - '.$reg['myVerisureUser']; }
+												else { echo 'User : '. $reg['myVerisureUser']; }
+												echo '</td>';
+											break;
+											case 202:
+											case 311:
+												echo '<td>';
+												echo '<img src="plugins/verisure/core/img/logo_jour.png" height="35" width="35"/>';
+												echo '</td>';
+												echo '<td>';
+												echo $reg['alias'];
+												echo '<br/>';
+												if ( $reg['source'] != " " )  { echo 'User : '. $reg['source'].' - '.$reg['myVerisureUser']; }
+												else { echo 'User : '. $reg['myVerisureUser']; }
+												echo '</td>';
+											break;
+											case 40:
+											case 204:
+												echo '<td>';
+												echo '<img src="plugins/verisure/core/img/logo_ext.png" height="35" width="35"/>';
+												echo '</td>';
+												echo '<td>';
+												echo $reg['alias'];
+												echo '<br/>';
+												if ( $reg['source'] != " " )  { echo 'User : '. $reg['source'].' - '.$reg['myVerisureUser']; }
+												else { echo 'User : '. $reg['myVerisureUser']; }
+												echo '</td>';
+											break;
+										}		
+										echo '</tr>';
+										$i++;
+									}
 								}
 							}
 							
