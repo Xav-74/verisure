@@ -46,8 +46,9 @@
 				<div class="col-xs-12 label">Actions</div>
 				<div class="col-xs-12" id="actions">
 					<button class="btn cmd action" data-cmd_id="#armed_id#" title="Mode Total" onclick="jeedom.cmd.execute({id: #armed_id#});"><i class="fas fa-lock"></i></button>
-					<button id="btn_day_#id#"  class="btn cmd action" data-cmd_id="#armed_day_id#" title="Mode Partiel" onclick="jeedom.cmd.execute({id: #armed_day_id#});"><i class="fas fa-home"></i></button>
 					<button class="btn cmd action" data-cmd_id="#released_id#" title="Désactivation" onclick="jeedom.cmd.execute({id: #released_id#});"><i class="fas fa-lock-open"></i></button>
+					<button id="btn_day_#id#"  class="btn cmd action" data-cmd_id="#armed_day_id#" title="Mode Partiel" onclick="jeedom.cmd.execute({id: #armed_day_id#});"><i class="fas fa-shield-alt"></i></button>
+					<button id="btn_ext_#id#" class="btn cmd action" data-cmd_id="#armed_ext_id#" title="Mode Extérieur" onclick="jeedom.cmd.execute({id: #armed_ext_id#});"><i class="fas fa-home"></i></button>
 				</div>
 			</div>
 		</div>
@@ -79,6 +80,10 @@
         
 		if ( #armed_day_visible# == 0 )  {
 			$('#btn_day_#id#').hide();
+		}
+
+		if ( #armed_ext_visible# == 0 )  {
+			$('#btn_ext_#id#').hide();
 		}
 		
 		if ( #getpictures_visible# == 1 )  {

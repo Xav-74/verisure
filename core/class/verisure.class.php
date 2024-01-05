@@ -529,11 +529,25 @@ class verisure extends eqLogic {
 				log::add('verisure', 'debug', 'Création de la commande '.$cmdArmedDay->getName().' (LogicalId : '.$cmdArmedDay->getLogicalId().')');
 			}
 			$this->setConfiguration('SetModePresent',$cmdArmedDay->getId()."|"."Partiel");			//Compatibilité Homebridge - Mode Présent / Domicile
-								
+			
+			$cmdArmedExt = $this->getCmd(null, 'armed_ext');
+			if (!is_object($cmdArmedExt)) {
+				$cmdArmedExt = new verisureCmd();
+				$cmdArmedExt->setOrder(8);
+				$cmdArmedExt->setName('Mode Extérieur');
+				$cmdArmedExt->setEqLogic_id($this->getId());
+				$cmdArmedExt->setLogicalId('armed_ext');
+				$cmdArmedExt->setType('action');
+				$cmdArmedExt->setSubType('other');
+				$cmdArmedExt->setIsVisible(0);
+				$cmdArmedExt->save();
+				log::add('verisure', 'debug', 'Création de la commande '.$cmdArmedExt->getName().' (LogicalId : '.$cmdArmedExt->getLogicalId().')');
+			}
+
 			$cmdPictures = $this->getCmd(null, 'getpictures');
 			if ( ! is_object($cmdPictures)) {
 				$cmdPictures = new verisureCmd();
-				$cmdPictures->setOrder(8);
+				$cmdPictures->setOrder(9);
 				$cmdPictures->setName('Demande Images');
 				$cmdPictures->setEqLogic_id($this->getId());
 				$cmdPictures->setLogicalId('getpictures');
@@ -555,7 +569,7 @@ class verisure extends eqLogic {
 			$cmdNetworkState = $this->getCmd(null, 'networkstate');
 			if ( ! is_object($cmdNetworkState)) {
 				$cmdNetworkState = new verisureCmd();
-				$cmdNetworkState->setOrder(9);
+				$cmdNetworkState->setOrder(10);
 				$cmdNetworkState->setName('Qualité Réseau');
 				$cmdNetworkState->setEqLogic_id($this->getId());
 				$cmdNetworkState->setLogicalId('networkstate');
@@ -910,7 +924,7 @@ class verisure extends eqLogic {
 		return $res;
 	}
 	
-	public function ArmExtAlarm()	{	//Type 1
+	public function ArmExtAlarm()	{	//Type 1 & 3
 		
 		log::add('verisure', 'debug', '┌───────── Demande activation mode extérieur ─────────');
 		log::add('verisure', 'debug', '│ Equipement '.$this->getHumanName().' - Alarme type '.$this->getConfiguration('alarmtype'));
