@@ -1,10 +1,10 @@
 {
 	"id" : "verisure",
 	"name" : "Alarme Verisure",
-	"description" : "Ce plugin vous permet d'interagir avec votre alarme Verisure au même titre que l’application officielle “My Verisure”. Il est compatible avec 2 générations de matériels Verisure. Voir la documentation ! Vous retrouverez les principales fonctionnalités de l'application : détail de votre installation / journal d'activité / activation de l'alarme (avec les différents modes : total, jour, nuit, partiel et extérieur) / désactivation de l'alarme / demande d'images. Ce plugin est également compatible avec le plugin Homebridge afin de piloter votre alarme depuis l'application Home d'Apple et/ou depuis Siri.",
+	"description" : "Ce plugin vous permet d'interagir avec votre alarme Verisure au même titre que l’application officielle “My Verisure”. Il est compatible avec 3 générations de matériels Verisure. Voir la documentation ! Vous retrouverez les principales fonctionnalités de l'application : détail de votre installation / journal d'activité / activation de l'alarme (avec les différents modes : total, jour, nuit, partiel et extérieur) / désactivation de l'alarme / demande d'images. Ce plugin est également compatible avec le plugin Homebridge afin de piloter votre alarme depuis l'application Home d'Apple et/ou depuis Siri.",
 	"licence" : "AGPL",
 	"author" : "Xav-74",
-	"require" : "3.2",
+	"require" : "4.0",
 	"category" : "security",
 	"hasDependency" : false,
 	"hasOwnDeamon" : false,

@@ -86,7 +86,7 @@ class verisure extends eqLogic {
      * dans la base de données pour une mise à jour d'une entrée */
     public function preUpdate() {
 		
-		if ( $this->getConfiguration('alarmtype') == 1 )   {
+		if ( $this->getConfiguration('alarmtype') == 1 || $this->getConfiguration('alarmtype') == 3 )   {
 			if (empty($this->getConfiguration('numinstall'))) {
 				throw new Exception('Le numéro d\'installation ne peut pas être vide');
 			}
@@ -171,14 +171,10 @@ class verisure extends eqLogic {
 		}
 			
 		// On definit le template à appliquer par rapport à la version Jeedom utilisée
-		if (version_compare(jeedom::version(), '4.0.0') >= 0) {
-			if ( $this->getConfiguration('alarmtype') == 1 ) { $template = 'verisure_dashboard_v4_type1'; }
-			if ( $this->getConfiguration('alarmtype') == 2 ) { $template = 'verisure_dashboard_v4_type2'; }
-		}
-		else {
-			if ( $this->getConfiguration('alarmtype') == 1 ) { $template = 'verisure_dashboard_v3_type1'; }
-			if ( $this->getConfiguration('alarmtype') == 2 ) { $template = 'verisure_dashboard_v3_type2'; }
-		}
+		//if (version_compare(jeedom::version(), '4.0.0') >= 0) { }
+		if ( $this->getConfiguration('alarmtype') == 1 ) { $template = 'verisure_dashboard_v4_type1'; }
+		if ( $this->getConfiguration('alarmtype') == 2 ) { $template = 'verisure_dashboard_v4_type2'; }
+		if ( $this->getConfiguration('alarmtype') == 3 ) { $template = 'verisure_dashboard_v4_type3'; }
 		$replace['#template#'] = $template;
 
 		return $this->postToHtml($_version, template_replace($replace, getTemplate('core', $version, $template, 'verisure')));
@@ -517,15 +513,82 @@ class verisure extends eqLogic {
 			}
 		}
 		
+		if ( $this->getConfiguration('alarmtype') == 3 )   { 
+		
+			$cmdArmedDay = $this->getCmd(null, 'armed_day');
+			if (!is_object($cmdArmedDay)) {
+				$cmdArmedDay = new verisureCmd();
+				$cmdArmedDay->setOrder(7);
+				$cmdArmedDay->setName('Mode Partiel');
+				$cmdArmedDay->setEqLogic_id($this->getId());
+				$cmdArmedDay->setLogicalId('armed_day');
+				$cmdArmedDay->setType('action');
+				$cmdArmedDay->setSubType('other');
+				$cmdArmedDay->setDisplay('generic_type', 'ALARM_SET_MODE');
+				$cmdArmedDay->save();
+				log::add('verisure', 'debug', 'Création de la commande '.$cmdArmedDay->getName().' (LogicalId : '.$cmdArmedDay->getLogicalId().')');
+			}
+			$this->setConfiguration('SetModePresent',$cmdArmedDay->getId()."|"."Partiel");			//Compatibilité Homebridge - Mode Présent / Domicile
+			
+			$cmdArmedExt = $this->getCmd(null, 'armed_ext');
+			if (!is_object($cmdArmedExt)) {
+				$cmdArmedExt = new verisureCmd();
+				$cmdArmedExt->setOrder(8);
+				$cmdArmedExt->setName('Mode Extérieur');
+				$cmdArmedExt->setEqLogic_id($this->getId());
+				$cmdArmedExt->setLogicalId('armed_ext');
+				$cmdArmedExt->setType('action');
+				$cmdArmedExt->setSubType('other');
+				$cmdArmedExt->setIsVisible(0);
+				$cmdArmedExt->save();
+				log::add('verisure', 'debug', 'Création de la commande '.$cmdArmedExt->getName().' (LogicalId : '.$cmdArmedExt->getLogicalId().')');
+			}
+
+			$cmdPictures = $this->getCmd(null, 'getpictures');
+			if ( ! is_object($cmdPictures)) {
+				$cmdPictures = new verisureCmd();
+				$cmdPictures->setOrder(9);
+				$cmdPictures->setName('Demande Images');
+				$cmdPictures->setEqLogic_id($this->getId());
+				$cmdPictures->setLogicalId('getpictures');
+				$cmdPictures->setType('action');
+				$cmdPictures->setSubType('select');
+				log::add('verisure', 'debug', 'Création de la commande '.$cmdPictures->getName().' (LogicalId : '.$cmdPictures->getLogicalId().')');
+			}	
+			$device_array = $this->getConfiguration('devices');
+			for ($j = 0; $j < $this->getConfiguration('nb_smartplug'); $j++)  {
+				if ($device_array['smartplugType'.$j] == "YR" || $device_array['smartplugType'.$j] == "XR" || $device_array['smartplugType'.$j] == "XP" || $device_array['smartplugType'.$j] == "QR")  {
+					if (isset($listValue))  { $listValue = $listValue .';'. $device_array['smartplugID'.$j].'|'.$device_array['smartplugName'.$j];  }
+					else  { $listValue = $device_array['smartplugID'.$j].'|'.$device_array['smartplugName'.$j];  }
+				}
+			}
+			log::add('verisure', 'debug', $this->getHumanName().' - Mise à jour liste smartplugs compatibles images : '.var_export($listValue, true));
+			$cmdPictures->setConfiguration('listValue', $listValue);
+			$cmdPictures->save();
+			
+			$cmdNetworkState = $this->getCmd(null, 'networkstate');
+			if ( ! is_object($cmdNetworkState)) {
+				$cmdNetworkState = new verisureCmd();
+				$cmdNetworkState->setOrder(10);
+				$cmdNetworkState->setName('Qualité Réseau');
+				$cmdNetworkState->setEqLogic_id($this->getId());
+				$cmdNetworkState->setLogicalId('networkstate');
+				$cmdNetworkState->setType('info');
+				$cmdNetworkState->setSubType('numeric');
+				$cmdNetworkState->save();
+				log::add('verisure', 'debug', 'Création de la commande '.$cmdNetworkState->getName().' (LogicalId : '.$cmdNetworkState->getLogicalId().')');
+			}
+		}
+
 		$this->save(true);		//paramètre "true" -> ne lance pas le postsave()
 	}
 	 
 
     /*     * **********************Getteur Setteur*************************** */
 
-	public static function Authentication_2FA($alarmtype,$numinstall,$username,$password,$code,$country)	{		//Type 1 & 2
+	public static function Authentication_2FA($alarmtype,$numinstall,$username,$password,$code,$country)	{		//Type 1 2 & 3
 		
-		if ( $alarmtype == 1 )   {
+		if ( $alarmtype == 1 || $alarmtype == 3 )   {
 			log::add('verisure', 'debug', '┌───────── Démarrage de l\'authentification 2FA ─────────');
 			log::add('verisure', 'debug', '│ Alarme type '.$alarmtype);
 			$MyAlarm = new verisureAPI($numinstall,$username,$password,$country);
@@ -602,9 +665,9 @@ class verisure extends eqLogic {
 		}
 	}
 
-	public static function Send_OTP($alarmtype,$numinstall,$username,$password,$code,$country, $phone_id)	{		//Type 1 & 2
+	public static function Send_OTP($alarmtype,$numinstall,$username,$password,$code,$country, $phone_id)	{		//Type 1 2 & 3
 		
-		if ( $alarmtype == 1 )   {
+		if ( $alarmtype == 1 || $alarmtype == 3 )   {
 
 			$MyAlarm = new verisureAPI($numinstall,$username,$password,$country);
 			$result_SendOTP = $MyAlarm->SendOTP($phone_id);
@@ -619,9 +682,9 @@ class verisure extends eqLogic {
 		}
 	}
 
-	public static function Validate_Device($alarmtype,$numinstall,$username,$password,$code,$country, $sms_code)	{		//Type 1 & 2
+	public static function Validate_Device($alarmtype,$numinstall,$username,$password,$code,$country, $sms_code)	{		//Type 1 2 & 3
 
-		if ( $alarmtype == 1 )   {
+		if ( $alarmtype == 1 || $alarmtype == 3 )   {
 
 			$MyAlarm = new verisureAPI($numinstall,$username,$password,$country);
 			$result_ValidateDevice = $MyAlarm->ValidateDevice($sms_code);
@@ -672,9 +735,9 @@ class verisure extends eqLogic {
 		}
 	}
 		
-	public static function Reset_Token($alarmtype,$numinstall)	{		//Type 1 & 2
+	public static function Reset_Token($alarmtype,$numinstall)	{		//Type 1 2 & 3
 
-		if ( $alarmtype == 1 )   {
+		if ( $alarmtype == 1 || $alarmtype == 3 )   {
 			
 			$filename = __PLGBASE__.'/data/'.'device_'.$numinstall.'.json';
 			if ( file_exists($filename) === true ) {
@@ -707,9 +770,9 @@ class verisure extends eqLogic {
 		}
 	}
 	
-	public function GetStateAlarm()	{	//Type 1 & 2
+	public function GetStateAlarm()	{	//Type 1 2 & 3
 		
-		if ( $this->getConfiguration('alarmtype') == 1 )   { 
+		if ( $this->getConfiguration('alarmtype') == 1  || $this->getConfiguration('alarmtype') == 3 )   { 
 			log::add('verisure', 'debug', '┌───────── Demande de statut ─────────');
 			log::add('verisure', 'debug', '│ Equipement '.$this->getHumanName().' - Alarme type '.$this->getConfiguration('alarmtype'));
 			$MyAlarm = new verisureAPI($this->getConfiguration('numinstall'),$this->getConfiguration('username'),$this->getConfiguration('password'),$this->getConfiguration('country'));
@@ -779,9 +842,9 @@ class verisure extends eqLogic {
 		}
 	}
 	
-	public function ArmTotalAlarm()	{	//Type 1 & 2
+	public function ArmTotalAlarm()	{	//Type 1 2 & 3
 		
-		if ( $this->getConfiguration('alarmtype') == 1 )   { 
+		if ( $this->getConfiguration('alarmtype') == 1 || $this->getConfiguration('alarmtype') == 3 )   { 
 			log::add('verisure', 'debug', '┌───────── Demande activation mode total ─────────');
 			log::add('verisure', 'debug', '│ Equipement '.$this->getHumanName().' - Alarme type '.$this->getConfiguration('alarmtype'));
 			$MyAlarm = new verisureAPI($this->getConfiguration('numinstall'),$this->getConfiguration('username'),$this->getConfiguration('password'),$this->getConfiguration('country'));
@@ -839,19 +902,21 @@ class verisure extends eqLogic {
 		return $res;
 	}
 	
-	public function ArmDayAlarm()	{	//Type 1
-		
-		log::add('verisure', 'debug', '┌───────── Demande activation mode jour ─────────');
+	public function ArmDayAlarm()	{	//Type 1 & 3
+				
+		if ( $this->getConfiguration('alarmtype') == 1 ) { log::add('verisure', 'debug', '┌───────── Demande activation mode jour ─────────'); }
+		if ( $this->getConfiguration('alarmtype') == 3 ) { log::add('verisure', 'debug', '┌───────── Demande activation mode partiel ─────────'); }
 		log::add('verisure', 'debug', '│ Equipement '.$this->getHumanName().' - Alarme type '.$this->getConfiguration('alarmtype'));
 		$MyAlarm = new verisureAPI($this->getConfiguration('numinstall'),$this->getConfiguration('username'),$this->getConfiguration('password'),$this->getConfiguration('country'));
 		$result_Login = $MyAlarm->Login();
-        $result_ArmAlarm = $MyAlarm->ArmAlarm("ARMDAY1", $this->GetAlarmStatus());
+		$result_ArmAlarm = $MyAlarm->ArmAlarm("ARMDAY1", $this->GetAlarmStatus());
 		$response_ArmAlarm = json_decode($result_ArmAlarm[3], true);
 		$result_Logout = $MyAlarm->Logout();
-        
+		
 		if ( $result_ArmAlarm[2] == 200 && $response_ArmAlarm['data']['xSArmStatus']['res'] == "OK" )  {
 			$res = $response_ArmAlarm['data']['xSArmStatus']['protomResponse'];
-			log::add('verisure', 'debug', '└───────── Activation mode jour OK ─────────');
+			if ( $this->getConfiguration('alarmtype') == 1 ) { log::add('verisure', 'debug', '└───────── Activation mode jour OK ─────────'); }
+			if ( $this->getConfiguration('alarmtype') == 3 ) { log::add('verisure', 'debug', '└───────── Activation mode partiel OK ─────────'); }
 		}
 		else  {
 			$res = "Erreur commande Verisure";
@@ -859,7 +924,7 @@ class verisure extends eqLogic {
 		return $res;
 	}
 	
-	public function ArmExtAlarm()	{	//Type 1
+	public function ArmExtAlarm()	{	//Type 1 & 3
 		
 		log::add('verisure', 'debug', '┌───────── Demande activation mode extérieur ─────────');
 		log::add('verisure', 'debug', '│ Equipement '.$this->getHumanName().' - Alarme type '.$this->getConfiguration('alarmtype'));
@@ -895,12 +960,13 @@ class verisure extends eqLogic {
 		else  {
 			$res = "Erreur commande Verisure";
 		}
-		return $res;		
+		return $res;
+	
 	}
 	
-	public function DisarmAlarm()	{	//Type 1 & 2
+	public function DisarmAlarm()	{	//Type 1 2 & 3
 		
-		if ( $this->getConfiguration('alarmtype') == 1 )   { 
+		if ( $this->getConfiguration('alarmtype') == 1 || $this->getConfiguration('alarmtype') == 3 )   { 
 			log::add('verisure', 'debug', '┌───────── Demande désactivation ─────────');
 			log::add('verisure', 'debug', '│ Equipement '.$this->getHumanName().' - Alarme type '.$this->getConfiguration('alarmtype'));
 			$MyAlarm = new verisureAPI($this->getConfiguration('numinstall'),$this->getConfiguration('username'),$this->getConfiguration('password'),$this->getConfiguration('country'));
@@ -938,9 +1004,9 @@ class verisure extends eqLogic {
 		}
 	}
 	
-	public function GetReportAlarm()	{		//Type 1 & 2
+	public function GetReportAlarm()	{		//Type 1 2 & 3
 		
-		if ( $this->getConfiguration('alarmtype') == 1 )   {
+		if ( $this->getConfiguration('alarmtype') == 1 || $this->getConfiguration('alarmtype') == 3 )   {
 			
 			log::add('verisure', 'debug', '┌───────── Demande du journal d\'activité ─────────');
 			log::add('verisure', 'debug', '│ Equipement '.$this->getHumanName().' - Alarme type '.$this->getConfiguration('alarmtype'));
@@ -987,9 +1053,9 @@ class verisure extends eqLogic {
 		}
 	}
 
-	public function GetPhotosRequest($device)	{		//Type 1 & 2
+	public function GetPhotosRequest($device)	{		//Type 1 2 & 3
 
-		if ( $this->getConfiguration('alarmtype') == 1 )   { 
+		if ( $this->getConfiguration('alarmtype') == 1 || $this->getConfiguration('alarmtype') == 3 )   { 
 			log::add('verisure', 'debug', '┌───────── Demande de photos ─────────');
 			log::add('verisure', 'debug', '│ Equipement '.$this->getHumanName().' - Alarme type '.$this->getConfiguration('alarmtype'));
 			$MyAlarm = new verisureAPI($this->getConfiguration('numinstall'),$this->getConfiguration('username'),$this->getConfiguration('password'),$this->getConfiguration('country'));
@@ -1030,9 +1096,13 @@ class verisure extends eqLogic {
 			}
 			return $res;
 		}
+
+		if ( $this->getConfiguration('alarmtype') == 3 )   { 
+		
+		}
 	}
 	
-	public function SetNetworkState($result)  {		//Type 1
+	public function SetNetworkState($result)  {		//Type 1 & 3
 		
 		$quality = 0;
 		$networkstate = array();
@@ -1137,13 +1207,13 @@ class verisure extends eqLogic {
 		}
 	}
 
-	public function GetAlarmStatus() {		//Type1
+	public function GetAlarmStatus() {		//Type 1 & 3
 
 		$mode = $this->getCmd(null, 'mode');
 		if ( $mode == "Désactivée" ) { return "D"; }
 		elseif ( $mode == "Total" ) { return "T"; }
 		elseif ( $mode == "Nuit" ) { return "Q"; }
-		elseif ( $mode == "Jour" ) { return "P"; }
+		elseif ( $mode == "Jour" || $mode =="Partiel" ) { return "P"; }
 		elseif ( $mode == "Extérieur" || $mode == "Total + Ext" || $mode == "Nuit + Ext" || $mode == "Jour + Ext" ) { return "E"; }
 		else { return "D"; }
 	}
@@ -1171,7 +1241,7 @@ class verisureCmd extends cmd {
 		$eqlogic = $this->getEqLogic(); 										// On récupère l'éqlogic de la commande $this
 		$logical = $this->getLogicalId();
 		
-		if ( $eqlogic->getConfiguration('alarmtype') == 1 )   { 	
+		if ( $eqlogic->getConfiguration('alarmtype') == 1 || $eqlogic->getConfiguration('alarmtype') == 3 )   { 	
 			switch ($logical) {													// On vérifie le logicalid de la commande 			
 				case 'getstate': 												// LogicalId de la commande
 					$state = $eqlogic->GetStateAlarm(); 						// On lance la fonction GetStatusAlarm() pour récupérer le statut de l'alarme et on le stocke dans la variable $state
@@ -1194,7 +1264,8 @@ class verisureCmd extends cmd {
 						break;
 						case 'P':
 							$eqlogic->checkAndUpdateCmd('enable', "1");
-							$eqlogic->checkAndUpdateCmd('mode', "Jour");
+							if ( $eqlogic->getConfiguration('alarmtype') == 1 ) { $eqlogic->checkAndUpdateCmd('mode', "Jour"); }
+							if ( $eqlogic->getConfiguration('alarmtype') == 3 ) { $eqlogic->checkAndUpdateCmd('mode', "Partiel"); }
 							$eqlogic->checkAndUpdateCmd('networkstate', $eqlogic->SetNetworkState(1));
 						break;
 						case 'E':
@@ -1273,7 +1344,8 @@ class verisureCmd extends cmd {
 					switch ($state)  {
 						case 'P':
 							$eqlogic->checkAndUpdateCmd('enable', "1");
-							$eqlogic->checkAndUpdateCmd('mode', "Jour");
+							if ( $eqlogic->getConfiguration('alarmtype') == 1 ) { $eqlogic->checkAndUpdateCmd('mode', "Jour"); }
+							if ( $eqlogic->getConfiguration('alarmtype') == 3 ) { $eqlogic->checkAndUpdateCmd('mode', "Partiel"); }
 							$eqlogic->checkAndUpdateCmd('networkstate', $eqlogic->SetNetworkState(1));
 						break;
 						case 'B':
@@ -1281,9 +1353,10 @@ class verisureCmd extends cmd {
 							$eqlogic->checkAndUpdateCmd('mode', "Jour + Ext");
 							$eqlogic->checkAndUpdateCmd('networkstate', $eqlogic->SetNetworkState(1));
 						break;
-						case 'Erreur de commande Verisure':
+						case 'Erreur commande Verisure':
 							log::add('verisure', 'debug', '│ /!\ Erreur commande Verisure ArmDayAlarm()');
-							log::add('verisure', 'debug', '└───────── Activation mode jour NOK ─────────');
+							if ( $eqlogic->getConfiguration('alarmtype') == 1 ) { log::add('verisure', 'debug', '└───────── Activation mode jour NOK ─────────'); }
+							if ( $eqlogic->getConfiguration('alarmtype') == 3 ) { log::add('verisure', 'debug', '└───────── Activation mode partiel NOK ─────────'); }
 							$eqlogic->checkAndUpdateCmd('networkstate', $eqlogic->SetNetworkState(0));
 						break;
 					}

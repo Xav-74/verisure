@@ -400,7 +400,10 @@ class verisureAPI {
 					'variables' => array(
 						'numinst' => $this->numinstall,
 						'panel' => $this->panel,
-						'devices' => array( (int)$data1 )
+						'devices' => array( (int)$data1 ),
+						'mediaType' => 1,
+						'resolution' => 0,
+						'deviceType' => 106
 					),
 					'query' => 'mutation RequestImages($numinst: String!, $panel: String!, $devices: [Int]!, $mediaType: Int, $resolution: Int, $deviceType: Int) { xSRequestImages(numinst: $numinst, panel: $panel, devices: $devices, mediaType: $mediaType, resolution: $resolution, deviceType: $deviceType) { res msg referenceId } }',
 				);

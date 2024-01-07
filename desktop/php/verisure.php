@@ -170,6 +170,7 @@ $eqLogics = eqLogic::byType($plugin->getId());
 											<option value="" disabled selected hidden>{{Choisir dans la liste}}</option>
 											<option value="1">{{Alarme type 1}}</option>
 											<option value="2">{{Alarme type 2}}</option>
+											<option value="3">{{Alarme type 3}}</option>
 										</select>
 									</div>
 								</div>   
@@ -245,9 +246,9 @@ $eqLogics = eqLogic::byType($plugin->getId());
 								<div class="form-group">		
 									<label class="col-sm-3 control-label" style="margin-left:-10px;">{{Informations}}</label>
 									<div class="col-sm-9">
-										Ce plugin est compatible avec 2 générations de matériels Verisure. Sélectionnez le type d'alarme correspondant à vos matériels (voir image associée).<br/>
+										Ce plugin est compatible avec 3 générations de matériels Verisure. Sélectionnez le type d'alarme correspondant à vos matériels (voir image associée).<br/>
 										Les informations de connexion demandées sont celles utilisées pour vous connecter sur le portail web Verisure ou via l'application mobile My Verisure.<br/>
-										Le plugin ne vous demandera jamais les mots de passe utilisés pour vous identifier auprès du personnel Securitas Direct lors du déclenchement de votre alarme.<br/>
+										<b>Le plugin ne vous demandera jamais les mots de passe utilisés pour vous identifier auprès du personnel Securitas Direct lors du déclenchement de votre alarme.</b><br/>
 									</div>
 								</div>
 
@@ -310,18 +311,8 @@ $eqLogics = eqLogic::byType($plugin->getId());
 				
 				if ($('.eqLogicAttr[data-l2key=alarmtype]').value() == "1") {
 					$('#div_img').empty();
-					var img ='<img src="plugins/verisure/core/img/alarm_verisure.png" height="170" width="385" />';
+					var img ='<img src="plugins/verisure/core/img/alarm_verisure.png" height="170" />';
 					$('#div_img').append(img);
-					
-					/*$('#sel_country').empty();
-					var country = '<option value="" disabled selected hidden>{{Choisir dans la liste}}</option>';
-					country += '<option value="1">FR</option>';
-					country += '<option value="2">ES</option>';
-					country += '<option value="3">GB</option>';
-					country += '<option value="4">IT</option>';
-					country += '<option value="5">PT</option>';
-					$('#sel_country').append(country);*/
-										
 					$('#div_numinstall').show();
 					$('#div_user').show();
 					$('#div_pwd').show();
@@ -331,28 +322,24 @@ $eqLogics = eqLogic::byType($plugin->getId());
 
 				if ($('.eqLogicAttr[data-l2key=alarmtype]').value() == "2") {
 					$('#div_img').empty();
-					var img ='<img src="plugins/verisure/core/img/alarm_verisure_2.png" height="130" width="295" />';
+					var img ='<img src="plugins/verisure/core/img/alarm_verisure_2.png" height="130" />';
 					$('#div_img').append(img);
-					
-					/*$('#sel_country').empty();
-					var country = '<option value="" disabled selected hidden>{{Choisir dans la liste}}</option>';
-					country += '<option value="1">FR</option>';
-					country += '<option value="2">BE (fr)</option>';
-					country += '<option value="3">BE (nl)</option>';
-					country += '<option value="4">NL</option>';
-					country += '<option value="5">UK</option>';
-					country += '<option value="6">DK</option>';
-					country += '<option value="7">FI</option>';
-					country += '<option value="8">NO</option>';
-					country += '<option value="9">SE</option>';
-					country += '<option value="10">DE</option>';
-					$('#sel_country').append(country);*/
-					
 					$('#div_numinstall').hide();
 					$('#div_user').show();
 					$('#div_pwd').show();
 					$('#div_code').show();
 					$('#div_country').hide();
+				}
+
+				if ($('.eqLogicAttr[data-l2key=alarmtype]').value() == "3") {
+					$('#div_img').empty();
+					var img ='<img src="plugins/verisure/core/img/alarm_verisure_3.png" height="170" />';
+					$('#div_img').append(img);
+					$('#div_numinstall').show();
+					$('#div_user').show();
+					$('#div_pwd').show();
+					$('#div_code').hide();
+					$('#div_country').show();
 				}
 			});
 
