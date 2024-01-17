@@ -609,9 +609,8 @@ class verisure extends eqLogic {
 
 			if ( $response_Login['data']['xSLoginToken']['needDeviceAuthorization'] == false) {
 				$result_ListInstallations = $MyAlarm->ListInstallations();
-          		$result_ListDevices = $MyAlarm->ListDevices();
-          		$response_ListDevices = json_decode($result_ListDevices[1], true);
-				
+				$result_ListDevices = $MyAlarm->ListDevices();
+				$response_ListDevices = json_decode($result_ListDevices[1], true);
 				$result_Logout = $MyAlarm->Logout();
           		log::add('verisure', 'debug', '└───────── Authentification 2FA terminée avec succès ─────────');
 				
@@ -777,7 +776,7 @@ class verisure extends eqLogic {
 			log::add('verisure', 'debug', '│ Equipement '.$this->getHumanName().' - Alarme type '.$this->getConfiguration('alarmtype'));
 			$MyAlarm = new verisureAPI($this->getConfiguration('numinstall'),$this->getConfiguration('username'),$this->getConfiguration('password'),$this->getConfiguration('country'));
 			$result_Login = $MyAlarm->Login();
-          	$result_GetStateAlarm = $MyAlarm->GetStateAlarm();
+			$result_GetStateAlarm = $MyAlarm->GetStateAlarm();
 			$response_GetStateAlarm = json_decode($result_GetStateAlarm[3], true);
 			$result_Logout = $MyAlarm->Logout();
           	

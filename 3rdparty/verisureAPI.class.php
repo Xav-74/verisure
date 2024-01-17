@@ -37,14 +37,16 @@ class verisureAPI {
 	private $auth_otp_code;
 	private $auth_token;
 	private $refresh_token;
+
+	private $capabilities;
 	
 	// Device specific configuration for the API
 	const DEVICE_BRAND = "apple";
 	const DEVICE_NAME = "iPhone14,7";
-	const DEVICE_OS_VERSION = "16.3";
+	const DEVICE_OS_VERSION = "17.2";
 	const DEVICE_RESOLUTION = "";
 	const DEVICE_TYPE = "";
-	const DEVICE_VERSION = "10.82.0";
+	const DEVICE_VERSION = "10.102.0";
 	const CALLBY = "OWI_10";
 		
 	
@@ -89,6 +91,7 @@ class verisureAPI {
 		$this->auth_otp_challenge = false;
 		$this->auth_otp_code = "";
 		$this->refresh_token = "";
+		$this->capabilities = "";
 				
 		if (file_exists(dirname(__FILE__).'/../data/device_'.$this->numinstall.'.json')) {
             $this->loadDevice();
@@ -173,9 +176,12 @@ class verisureAPI {
 				'country' => $this->country,
 				'lang' => $this->language,
 				'callby' => $this::CALLBY,
-				'hash' => $this->auth_token
+				'hash' => $this->auth_token,
 			);
 			$headers[] = 'auth: '.json_encode($auth);
+			$headers[] = 'numinst: '.strval($this->numinstall);
+			$headers[] = 'panel: '.$this->panel;
+			$headers[] = 'x-capabilities: '.$this->capabilities;
 		}
 
 		//log::add('verisure', 'debug', '| Headers = '.str_replace('\\','',json_encode($headers)));
@@ -276,9 +282,10 @@ class verisureAPI {
 				$content = array(
 					'operationName' =>  "Srv",
 					'variables' => array(
-						'numinst' => $this->numinstall
+						'numinst' => $this->numinstall,
+						'uuid' => $this->uuid,
 					),
-					'query' => 'query Srv($numinst: String!, $uuid: String) { xSSrv(numinst: $numinst, uuid: $uuid) { res msg language installation { id alarm due tracker numinst parentNuminst alias panel line aliasInst name surname address city postcode province email phone sim instIbs timebox dtmf oper services { id idService active visible bde isPremium codOper totalDevice request multipleReq numDevicesMr secretWord minWrapperVersion description loc unprotectActive unprotectDeviceStatus devices { id code numDevices cost type name } camerasArlo { id model connectedToInstallation usedForAlarmVerification offer name locationHint batteryLevel connectivity createdDate modifiedDate latestThumbnailUri } attributes {name attributes { name value active } } listdiy { type idMant state idZone canBeResent guide tutorial name alias intime steps { pos img advice text } } listprompt { idNot text type } } configRepoUser { hasCode pinCodeConf { pinCodeLength } alarmPartitions { id enterStates leaveStates } } } } }',
+					'query' => 'query Srv($numinst: String!, $uuid: String) { xSSrv(numinst: $numinst, uuid: $uuid) { res msg language installation { id numinst alias status panel sim instIbs services { id idService active visible bde isPremium codOper totalDevice request multipleReq numDevicesMr secretWord minWrapperVersion description unprotectActive unprotectDeviceStatus instDate genericConfig { total attributes { key value } } devices { id code numDevices cost type name } camerasArlo { id model connectedToInstallation usedForAlarmVerification offer name locationHint batteryLevel connectivity createdDate modifiedDate latestThumbnailUri } attributes { name attributes { name value active } } listdiy { idMant state } listprompt { idNot text type customParam alias } } configRepoUser { alarmPartitions { id enterStates leaveStates } } capabilities } } }',
 				);
 			break;
 			
@@ -470,6 +477,7 @@ class verisureAPI {
 		$this->auth_token = $array['auth_token'];
 		$this->refresh_token = $array['refresh_token'];
 		$this->panel = $array['panel'];
+		$this->capabilities = $array['capabilities'];
 		//log::add('verisure', 'debug', '| Device file loaded');
 	}
 
@@ -483,7 +491,8 @@ class verisureAPI {
 			'auth_opt_token' => $this->auth_otp_token,
 			'auth_token' => $this->auth_token,
 			'refresh_token' => $this->refresh_token,
-			'panel' => $this->panel
+			'panel' => $this->panel,
+			'capabilities' => $this->capabilities
 		);
 		file_put_contents(dirname(__FILE__).'/../data/device_'.$this->numinstall.'.json', json_encode($array));
 		//log::add('verisure', 'debug', '| Device file saved');
@@ -523,6 +532,7 @@ class verisureAPI {
 		if ( $res['data']['xSLoginToken']['needDeviceAuthorization'] == false ) {
 			$this->auth_token = $res['data']['xSLoginToken']['hash'];
 			$this->refresh_token = $res['data']['xSLoginToken']['refreshToken'];
+			$this->Overview();
 			$this->saveDevice();
 		}
 
@@ -630,6 +640,11 @@ class verisureAPI {
 		$httpRespCode = $result[0];
 		$response = $result[1];
 		log::add('verisure', 'debug', '│ Request Srv - httpRespCode => '.$httpRespCode.' - response => '.$response);
+
+		$res = json_decode($response, true);
+		if ( $res['data']['xSSrv']['installation']['capabilities'] != "" ) {
+			$this->capabilities = $res['data']['xSSrv']['installation']['capabilities'];
+		}
 
 		return array($httpRespCode, $response);
 	}
