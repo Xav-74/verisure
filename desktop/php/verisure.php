@@ -44,7 +44,7 @@ $eqLogics = eqLogic::byType($plugin->getId());
 							echo '</div>';
 						}
 					?>
-				
+				 
 				</div>
 			</div>
 
@@ -61,13 +61,16 @@ $eqLogics = eqLogic::byType($plugin->getId());
 		</div>	
 		<div class="eqLogicThumbnailContainer">
 			<?php
-			foreach ($eqLogics as $eqLogic)	{
-				$opacity = ($eqLogic->getIsEnable()) ? '' : 'disableCard';
-				echo '<div class="eqLogicDisplayCard cursor '.$opacity.'" data-eqLogic_id="' . $eqLogic->getId() . '">';
-				echo '<img src="' . $plugin->getPathImgIcon() . '"/>';
-				echo '<br/>';
-				echo '<span class="name">' . $eqLogic->getHumanName(true, true) . '</span>';
-				echo '</div>';
+				foreach ($eqLogics as $eqLogic)	{
+					$opacity = ($eqLogic->getIsEnable()) ? '' : 'disableCard';
+					echo '<div class="eqLogicDisplayCard cursor '.$opacity.'" data-eqLogic_id="' . $eqLogic->getId() . '">';
+					if ( $eqLogic->getConfiguration('alarmtype') == 1 ) { echo '<img id="img_eq" src="/plugins/verisure/core/img/alarm_verisure.png" style="transform:scale(80%); left:7px !important" />'; }
+					else if ( $eqLogic->getConfiguration('alarmtype') == 2 ) { echo '<img id="img_eq" src="/plugins/verisure/core/img/alarm_verisure_2.png" style="transform:scale(60%); left:0px !important" />'; }
+					else if ( $eqLogic->getConfiguration('alarmtype') == 3 ) { echo '<img id="img_eq" src="/plugins/verisure/core/img/alarm_verisure_3.png" style="transform:scale(80%); left:0px !important" />'; }
+					else { echo '<img id="img_eq" src="' . $plugin->getPathImgIcon() . '" style="left:20px !important" />'; }
+					echo '<br/>';
+					echo '<div class="name" style="line-height:20px !important">' . $eqLogic->getHumanName(true, true) . '</div>';
+					echo '</div>';
 				}
 			?>
 		</div>
