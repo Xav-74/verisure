@@ -16,7 +16,7 @@ $eqLogics = eqLogic::byType($plugin->getId());
 
 		<div class="row">
 			
-			<div class="col-xs-10">
+			<div class="col-xs-12">
 				<legend><i class="fas fa-cog"></i> {{Gestion}}</legend>
 				<div class="eqLogicThumbnailContainer">
 					
@@ -31,31 +31,21 @@ $eqLogics = eqLogic::byType($plugin->getId());
 						<br/>
 						<span>{{Configuration}}</span>
 					</div>
+
+					<!--Bouton Community-->
+					<?php
+						// uniquement si on est en version 4.4 ou supérieur
+						$jeedomVersion  = jeedom::version() ?? '0';
+						$displayInfoValue = version_compare($jeedomVersion, '4.4.0', '>=');
+						if ($displayInfoValue) {
+							echo '<div class="cursor eqLogicAction warning" data-action="createCommunityPost" title="{{Ouvrir une demande d\'aide sur le forum communautaire}}">';
+							echo '<i class="fas fa-ambulance"></i>';
+							echo '<span>{{Community}}</span>';
+							echo '</div>';
+						}
+					?>
 				
 				</div>
-			</div>
-
-			<div class="col-xs-2">
-				<!--Bouton Community-->
-				<?php
-					// uniquement si on est en version 4.4 ou supérieur
-					$jeedomVersion  = jeedom::version() ?? '0';
-					$displayInfoValue = version_compare($jeedomVersion, '4.4.0', '>=');
-					if($displayInfoValue){
-				?>
-				<legend><i class=" fas fa-comments"></i> {{Community}}</legend>
-				<div class="eqLogicThumbnailContainer">
-					
-					<div class="cursor eqLogicAction logoSecondary" style="color:#FB0230" data-action="createCommunityPost">
-						<i class="fas fa-ambulance"></i>
-						<br>
-						<span>{{Créer un post Community}}</span>
-					</div>
-
-				</div>
-				<?php
-					}
-				?>
 			</div>
 
 		</div>

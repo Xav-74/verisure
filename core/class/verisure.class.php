@@ -60,6 +60,17 @@ class verisure extends eqLogic {
 		}	
 	}
 
+	public static function getConfigForCommunity() {
+
+		$index = 1;
+		$CommunityInfo = "";
+		foreach (eqLogic::byType('verisure', true) as $verisure)  {
+			$CommunityInfo = $CommunityInfo . "Alarm #" . $index . " - Type : ". $verisure->getConfiguration('alarmtype') . "\n";
+			$index++;
+		}
+		return $CommunityInfo;
+	}	
+
     /*     * *********************Méthodes d'instance************************* */
 
     /* fonction appelée pendant la séquence de sauvegarde avant l'insertion 

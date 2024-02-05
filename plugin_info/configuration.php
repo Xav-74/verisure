@@ -29,23 +29,23 @@ if (!isConnect()) {
 	<fieldset>
 				
 		<div class="form-group">
-            <br />
-			<label class="col-lg-3 control-label">{{Information importante :}}</label>
-            <div class="col-lg-7">
-                Ce plugin utilise les API de Verisure Europe (Securitas Direct) pour obtenir les informations de votre alarme.<br />
-				NOTE : CE PLUGIN N'EST EN AUCUN CAS ASSOCIÉ OU LIÉ AUX SOCIÉTÉS DU GROUPE SECURITAS DIRECT - VERISURE.<br />
-				L'usage de ce plugin est destiné à des fins strictement personnelles et privées.<br />
-				Par conséquent, le développeur n'approuve ni ne tolère aucune utilisation inappropriée, et n'assume aucune responsabilité légale pour la fonctionnalité ou la sécurité de vos alarmes et appareils.<br />
-				<br />
-				Contributions :<br />
-				- Merci à Cebeerre pour les API Securitas Direct - Verisure     (https://github.com/Cebeerre/VerisureEUAPI)<br />
-				- Merci à Per Sandström pour les API Securitas Direct - Verisure     (https://github.com/persandstrom/python-verisure)<br />
-				- Merci à apages2 pour son aide     (https://github.com/apages2)<br />
-				- Merci à mguyard pour les exemples	    (https://github.com/mguyard)<br />
-				<br />
+            <br/>
+			<label class="col-xs-2 control-label">{{Information importante :}}</label>
+            <div class="col-xs-10">
+                Ce plugin utilise les API de Verisure Europe (Securitas Direct) pour obtenir les informations de votre alarme.<br/>
+				NOTE : CE PLUGIN N'EST EN AUCUN CAS ASSOCIÉ OU LIÉ AUX SOCIÉTÉS DU GROUPE SECURITAS DIRECT - VERISURE.<br/>
+				L'usage de ce plugin est destiné à des fins strictement personnelles et privées.<br/>
+				Par conséquent, le développeur n'approuve ni ne tolère aucune utilisation inappropriée, et n'assume aucune responsabilité légale pour la fonctionnalité ou la sécurité de vos alarmes et appareils.<br/> <br/>
 			</div>
         </div>
 		
     </fieldset>
 	
 </form>
+
+<script>
+    
+    var CommunityButton = document.querySelector('#createCommunityPost > span');
+    if(CommunityButton) {CommunityButton.innerHTML = "{{Community}}";}
+
+</script>
