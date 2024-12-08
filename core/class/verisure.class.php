@@ -63,11 +63,12 @@ class verisure extends eqLogic {
 	public static function getConfigForCommunity() {
 
 		$index = 1;
-		$CommunityInfo = "";
+		$CommunityInfo = "```\n";
 		foreach (eqLogic::byType('verisure', true) as $verisure)  {
 			$CommunityInfo = $CommunityInfo . "Alarm #" . $index . " - Type : ". $verisure->getConfiguration('alarmtype') . "\n";
 			$index++;
 		}
+		$CommunityInfo = $CommunityInfo . "```";
 		return $CommunityInfo;
 	}	
 

@@ -129,6 +129,7 @@ class verisureAPI {
       	$header = substr($result, 0, $header_size);
 		$body = substr($result, $header_size);
       	curl_close($curl);
+		unset($curl);
         
 		return array($httpRespCode, $body);
 	}
@@ -221,7 +222,7 @@ class verisureAPI {
 			case "Logout":
 				$content = array(
 					'operationName' => 'Logout',
-					'variables' => array(),
+					'variables' => (object)[],
 					'query' => 'mutation Logout { xSLogout }'
 				);
 			break;
