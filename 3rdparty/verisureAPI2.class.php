@@ -72,6 +72,7 @@ class verisureAPI2 {
       	$header = substr($result, 0, $header_size);
 		$body = substr($result, $header_size);
       	curl_close($curl);
+		unset($curl);
         
 		return array($httpRespCode, $body, $header);
 	}
