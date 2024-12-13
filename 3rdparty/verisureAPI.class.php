@@ -823,6 +823,8 @@ class verisureAPI {
 	
 	public function GetPhotosRequest($device)  {	// Photos request
 		
+		$now = date("Y-m-d H:i:s");
+		
 		$method = "POST";
 		$headers = $this->setHeaders("RequestImages");
 		$content = $this->setContent("RequestImages", $device, null, null);
@@ -856,7 +858,6 @@ class verisureAPI {
 
 			if ( $res2['data']['xSRequestImagesStatus']['res'] == "OK" ) {
 
-				$now = date("Y-m-d H:i:s");
 				$report_check = false;
 				$retry = 10;
 				While ( $retry > 0 && $report_check != true ) {
@@ -865,7 +866,7 @@ class verisureAPI {
 					$httpRespCode3 = $result3[0];
 					$response3 = $result3[1];
 					$res3 = json_decode($response3, true)['data']['xSActV2'];
-					if ( $now < $res3['reg'][0]['time'] )  {
+					if ( $now < $res3['reg'][0]['time'] && $res3['reg'][0]['img'] == 1 )  {
 						$report_check = true;
 						$idSignal = $res3['reg'][0]['idSignal'];
 					}
