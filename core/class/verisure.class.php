@@ -91,7 +91,69 @@ class verisure extends eqLogic {
 	/* fonction appelée après la fin de la séquence de sauvegarde */
     public function postSave() {
 		
-		$this->createCmd();
+		$this->createCmd('enable', 'Etat Activation', 1, 'info', 'binary', 1, 0, ['generic_type', 'ALARM_ENABLE_STATE'], [], ['dashboard', 'lock'], ['mobile', 'lock']);	//0 = désarmée - 1 = armée
+		$this->createCmd('state', 'Etat Alarme', 2, 'info', 'binary', 1, 0, ['generic_type', 'ALARM_STATE'], ['invertBinary', 1], ['dashboard', 'alert'], ['mobile', 'alert']);		//0 = normale - 1 = déclenchée
+		$this->createCmd('mode', 'Mode Alarme', 3, 'info', 'string', 1, 0, ['generic_type', 'ALARM_MODE'], [], ['dashboard', 'tile'], ['mobile', 'tile']);
+		$this->createCmd('armed', 'Mode Total', 4, 'action', 'other', 1, 0, ['generic_type', 'ALARM_ARMED'], [], [], []);
+		$this->createCmd('released', 'Désactiver', 5, 'action', 'other', 1, 0, ['generic_type', 'ALARM_RELEASED'], [], [], []);
+		$this->createCmd('getstate', 'Rafraichir', 6, 'action', 'other', 1, 0, [], [], [], []);			
+				
+		if ( $this->getConfiguration('alarmtype') == 1 )   { 
+		
+			$this->createCmd('armed_night', 'Mode Nuit', 7, 'action', 'other', 1, 0, ['generic_type', 'ALARM_SET_MODE'], [], [], []);
+			$this->createCmd('armed_day', 'Mode Jour', 8, 'action', 'other', 1, 0, ['generic_type', 'ALARM_SET_MODE'], [], [], []);
+			$this->createCmd('armed_ext', 'Mode Extérieur', 9, 'action', 'other', 1, 0, [], [], [], []);
+			$this->createCmd('getpictures', 'Demande Images', 10, 'action', 'select', 1, 0, [], [], [], []);
+			$this->createCmd('networkstate', 'Qualité Réseau', 11, 'info', 'numeric', 1, 0, [], [], [], []);
+		}
+		
+		if ( $this->getConfiguration('alarmtype') == 2 )   { 
+			
+			$this->createCmd('armed_home', 'Mode Partiel', 7, 'action', 'other', 1, 0, ['generic_type', 'ALARM_SET_MODE'], [], [], []);
+			$this->createCmd('getpictures', 'Demande Images', 8, 'action', 'select', 1, 0, [], [], [], []);
+			
+			$device_array = $this->getConfiguration('devices');
+			$order = 9;
+			//Création des 3 commandes des smartPlugs
+			for ($j = 0; $j < $this->getConfiguration('nb_smartplug'); $j++)  {
+				if ($device_array['smartplugType'.$j] == "smartPlugDevice")  {
+					$this->createCmd($device_array['smartplugID'.$j].'::State', 'Smartplug '.$device_array['smartplugName'.$j].' Etat', $order, 'info', 'binary', 0, 0, ['generic_type', 'ENERGY_STATE'], [], [], []);	
+					$order++;
+					$this->createCmd($device_array['smartplugID'.$j].'::On', 'Smartplug '.$device_array['smartplugName'.$j].' On', $order, 'action', 'other', 0, 0, ['generic_type', 'ENERGY_ON'], [], [], []);
+					$order++;
+					$this->createCmd($device_array['smartplugID'.$j].'::Off', 'Smartplug '.$device_array['smartplugName'.$j].' Off', $order, 'action', 'other', 0, 0, ['generic_type', 'ENERGY_OFF'], [], [], []);
+					$order++;	
+				}
+			}
+			//Création de la commande des Climates
+			for ($j = 0; $j < $this->getConfiguration('nb_smartplug'); $j++)  {
+				if ($device_array['smartplugType'.$j] == "climateDevice")  {
+					$this->createCmd($device_array['smartplugID'.$j].'::Temp', 'Température '.$device_array['smartplugName'.$j], $order, 'info', 'numeric', 0, 0, ['generic_type', 'TEMPERATURE'], [], [], []);	
+					$order++;
+					if ($device_array['smartplugModel'.$j] == "Détecteur de fumée")   {
+						$this->createCmd($device_array['smartplugID'.$j].'::Humidity', 'Humidité '.$device_array['smartplugName'.$j], $order, 'info', 'numeric', 0, 0, ['generic_type', 'HUMIDITY'], [], [], []);
+						$order++;
+					}
+				}
+			}
+			//Création de la commande des DoorWindow
+			for ($j = 0; $j < $this->getConfiguration('nb_smartplug'); $j++)  {
+				if ($device_array['smartplugType'.$j] == "doorWindowDevice")  {
+					$this->createCmd($device_array['smartplugID'.$j].'::State', 'Etat ouverture '.$device_array['smartplugName'.$j], $order, 'info', 'binary', 0, 0, ['generic_type', 'OPENING'], [], [], []);	
+					$order++;				
+				}
+			}
+		}
+		
+		if ( $this->getConfiguration('alarmtype') == 3 )   { 
+		
+			$this->createCmd('armed_day', 'Mode Partiel', 7, 'action', 'other', 1, 0, ['generic_type', 'ALARM_SET_MODE'], [], [], []);
+			$this->createCmd('armed_ext', 'Mode Extérieur', 8, 'action', 'other', 0, 0, [], [], [], []);
+			$this->createCmd('getpictures', 'Demande Images', 9, 'action', 'select', 1, 0, [], [], [], []);
+			$this->createCmd('networkstate', 'Qualité Réseau', 10, 'info', 'numeric', 1, 0, [], [], [], []);
+		}
+
+		$this->save(true);		//paramètre "true" -> ne lance pas le postsave()
 	}
 
 	/* fonction appelée pendant la séquence de sauvegarde avant l'insertion 
@@ -200,401 +262,83 @@ class verisure extends eqLogic {
     public static function preConfig_<Variable>() {
     } */
 	 
-	private function createCmd() {
-		
-		$infoArmed = $this->getCmd(null, 'enable');			//0 = désarmée - 1 = armée
-		if (!is_object($infoArmed)) {
-			$infoArmed = new verisureCmd();
-			$infoArmed->setOrder(1);
-			$infoArmed->setName('Etat Activation');
-			$infoArmed->setEqLogic_id($this->getId());
-			$infoArmed->setLogicalId('enable');
-			$infoArmed->setType('info');
-			$infoArmed->setSubType('binary');
-			$infoArmed->setDisplay('generic_type', 'ALARM_ENABLE_STATE');
-			$infoArmed->setTemplate('dashboard', 'lock');
-			$infoArmed->setTemplate('mobile', 'lock');
-			$infoArmed->save();
-			log::add('verisure', 'debug', 'Création de la commande '.$infoArmed->getName().' (LogicalId : '.$infoArmed->getLogicalId().')');
+	private function createCmd($commandName, $commandDescription, $order, $type, $subType, $isVisible, $isHistorized, $display1, $display2, $template1, $template2)
+	{	
+		$cmd = $this->getCmd(null, $commandName);
+        if (!is_object($cmd)) {
+            $cmd = new verisureCmd();
+            $cmd->setOrder($order);
+			$cmd->setName($commandDescription);
+			$cmd->setEqLogic_id($this->getId());
+			$cmd->setLogicalId($commandName);
+			$cmd->setType($type);
+			$cmd->setSubType($subType);
+			$cmd->setIsVisible($isVisible);
+			$cmd->setIsHistorized($isHistorized);
+			if (!empty($display1)) { $cmd->setDisplay($display1[0], $display1[1]); }
+			if (!empty($display2)) { $cmd->setDisplay($display2[0], $display2[1]); }
+			if (!empty($template1)) { $cmd->setTemplate($template1[0], $template1[1]); }
+			if (!empty($template2)) { $cmd->setTemplate($template2[0], $template2[1]); }
+			$cmd->save();
+			log::add('verisure', 'debug', 'Add command '.$cmd->getName().' (LogicalId : '.$cmd->getLogicalId().')');
 		}
-					
-		$infoState = $this->getCmd(null, 'state');			//0 = normale - 1 = déclenchée
-		if (!is_object($infoState)) {
-			$infoState = new verisureCmd();
-			$infoState->setOrder(2);
-			$infoState->setName('Etat Alarme');
-			$infoState->setEqLogic_id($this->getId());
-			$infoState->setLogicalId('state');
-			$infoState->setType('info');
-			$infoState->setSubType('binary');
-			$infoState->setDisplay('invertBinary', 1);
-			$infoState->setDisplay('generic_type', 'ALARM_STATE');
-			$infoState->setTemplate('dashboard', 'alert');
-			$infoState->setTemplate('mobile', 'alert');
-			$infoState->save();
-			log::add('verisure', 'debug', 'Création de la commande '.$infoState->getName().' (LogicalId : '.$infoState->getLogicalId().')');
-		}
-					
-		$infoMode = $this->getCmd(null, 'mode');
-		if (!is_object($infoMode)) {
-			$infoMode = new verisureCmd();
-			$infoMode->setOrder(3);
-			$infoMode->setName('Mode Alarme');
-			$infoMode->setEqLogic_id($this->getId());
-			$infoMode->setLogicalId('mode');
-			$infoMode->setType('info');
-			$infoMode->setSubType('string');
-			$infoMode->setDisplay('generic_type', 'ALARM_MODE');
-			$infoMode->setTemplate('dashboard', 'tile');
-			$infoMode->setTemplate('mobile', 'tile');
-			$infoMode->save();
-			log::add('verisure', 'debug', 'Création de la commande '.$infoMode->getName().' (LogicalId : '.$infoMode->getLogicalId().')');
-		}
-					
-		$cmdArmed = $this->getCmd(null, 'armed');
-		if (!is_object($cmdArmed)) {
-			$cmdArmed = new verisureCmd();
-			$cmdArmed->setOrder(4);
-			$cmdArmed->setName('Mode Total');
-			$cmdArmed->setEqLogic_id($this->getId());
-			$cmdArmed->setLogicalId('armed');
-			$cmdArmed->setType('action');
-			$cmdArmed->setSubType('other');
-			$cmdArmed->setDisplay('generic_type', 'ALARM_ARMED');
-			$cmdArmed->save();
-			log::add('verisure', 'debug', 'Création de la commande '.$cmdArmed->getName().' (LogicalId : '.$cmdArmed->getLogicalId().')');
-		}
-		$this->setConfiguration('SetModeAbsent',$cmdArmed->getId()."|"."Total");		//Compatibilité Homebridge  - Mode Absent / A distance
-					
-		$cmdReleased = $this->getCmd(null, 'released');
-		if (!is_object($cmdReleased)) {
-			$cmdReleased = new verisureCmd();
-			$cmdReleased->setOrder(5);
-			$cmdReleased->setName('Désactiver');
-			$cmdReleased->setEqLogic_id($this->getId());
-			$cmdReleased->setLogicalId('released');
-			$cmdReleased->setType('action');
-			$cmdReleased->setSubType('other');
-			$cmdReleased->setDisplay('generic_type', 'ALARM_RELEASED');
-			$cmdReleased->save();
-			log::add('verisure', 'debug', 'Création de la commande '.$cmdReleased->getName().' (LogicalId : '.$cmdReleased->getLogicalId().')');
-		}
-		
-		$cmdState = $this->getCmd(null, 'getstate');
-		if ( ! is_object($cmdState)) {
-			$cmdState = new verisureCmd();
-			$cmdState->setOrder(6);
-			$cmdState->setName('Rafraichir');
-			$cmdState->setEqLogic_id($this->getId());
-			$cmdState->setLogicalId('getstate');
-			$cmdState->setType('action');
-			$cmdState->setSubType('other');
-			$cmdState->save();
-			log::add('verisure', 'debug', 'Création de la commande '.$cmdState->getName().' (LogicalId : '.$cmdState->getLogicalId().')');
-		}
-		
-		if ( $this->getConfiguration('alarmtype') == 1 )   { 
-		
-			$cmdArmedNight = $this->getCmd(null, 'armed_night');
-			if (!is_object($cmdArmedNight)) {
-				$cmdArmedNight = new verisureCmd();
-				$cmdArmedNight->setOrder(7);
-				$cmdArmedNight->setName('Mode Nuit');
-				$cmdArmedNight->setEqLogic_id($this->getId());
-				$cmdArmedNight->setLogicalId('armed_night');
-				$cmdArmedNight->setType('action');
-				$cmdArmedNight->setSubType('other');
-				$cmdArmedNight->setDisplay('generic_type', 'ALARM_SET_MODE');
-				$cmdArmedNight->save();
-				log::add('verisure', 'debug', 'Création de la commande '.$cmdArmedNight->getName().' (LogicalId : '.$cmdArmedNight->getLogicalId().')');
-			}
-			$this->setConfiguration('SetModeNuit',$cmdArmedNight->getId()."|"."Nuit");			//Compatibilité Homebridge - Mode Nuit
-			
-			$cmdArmedDay = $this->getCmd(null, 'armed_day');
-			if (!is_object($cmdArmedDay)) {
-				$cmdArmedDay = new verisureCmd();
-				$cmdArmedDay->setOrder(8);
-				$cmdArmedDay->setName('Mode Jour');
-				$cmdArmedDay->setEqLogic_id($this->getId());
-				$cmdArmedDay->setLogicalId('armed_day');
-				$cmdArmedDay->setType('action');
-				$cmdArmedDay->setSubType('other');
-				$cmdArmedDay->setDisplay('generic_type', 'ALARM_SET_MODE');
-				$cmdArmedDay->save();
-				log::add('verisure', 'debug', 'Création de la commande '.$cmdArmedDay->getName().' (LogicalId : '.$cmdArmedDay->getLogicalId().')');
-			}
-			$this->setConfiguration('SetModePresent',$cmdArmedDay->getId()."|"."Jour");			//Compatibilité Homebridge - Mode Présent / Domicile
-			
-			$cmdArmedExt = $this->getCmd(null, 'armed_ext');
-			if (!is_object($cmdArmedExt)) {
-				$cmdArmedExt = new verisureCmd();
-				$cmdArmedExt->setOrder(9);
-				$cmdArmedExt->setName('Mode Extérieur');
-				$cmdArmedExt->setEqLogic_id($this->getId());
-				$cmdArmedExt->setLogicalId('armed_ext');
-				$cmdArmedExt->setType('action');
-				$cmdArmedExt->setSubType('other');
-				$cmdArmedExt->save();
-				log::add('verisure', 'debug', 'Création de la commande '.$cmdArmedExt->getName().' (LogicalId : '.$cmdArmedExt->getLogicalId().')');
-			}
-					
-			$cmdPictures = $this->getCmd(null, 'getpictures');
-			if ( ! is_object($cmdPictures)) {
-				$cmdPictures = new verisureCmd();
-				$cmdPictures->setOrder(10);
-				$cmdPictures->setName('Demande Images');
-				$cmdPictures->setEqLogic_id($this->getId());
-				$cmdPictures->setLogicalId('getpictures');
-				$cmdPictures->setType('action');
-				$cmdPictures->setSubType('select');
-				log::add('verisure', 'debug', 'Création de la commande '.$cmdPictures->getName().' (LogicalId : '.$cmdPictures->getLogicalId().')');
-			}	
-			$device_array = $this->getConfiguration('devices');
-			for ($j = 0; $j < $this->getConfiguration('nb_smartplug'); $j++)  {
-				if ($device_array['smartplugType'.$j] == "YR" || $device_array['smartplugType'.$j] == "XR" || $device_array['smartplugType'.$j] == "XP" || $device_array['smartplugType'.$j] == "QR")  {
-					if (isset($listValue))  { $listValue = $listValue .';'. $device_array['smartplugID'.$j].'|'.$device_array['smartplugName'.$j];  }
-					else  { $listValue = $device_array['smartplugID'.$j].'|'.$device_array['smartplugName'.$j];  }
-				}
-			}
-			log::add('verisure', 'debug', $this->getHumanName().' - Mise à jour liste smartplugs compatibles images : '.var_export($listValue, true));
-			$cmdPictures->setConfiguration('listValue', $listValue);
-			$cmdPictures->save();
-			
-			$cmdNetworkState = $this->getCmd(null, 'networkstate');
-			if ( ! is_object($cmdNetworkState)) {
-				$cmdNetworkState = new verisureCmd();
-				$cmdNetworkState->setOrder(11);
-				$cmdNetworkState->setName('Qualité Réseau');
-				$cmdNetworkState->setEqLogic_id($this->getId());
-				$cmdNetworkState->setLogicalId('networkstate');
-				$cmdNetworkState->setType('info');
-				$cmdNetworkState->setSubType('numeric');
-				$cmdNetworkState->save();
-				log::add('verisure', 'debug', 'Création de la commande '.$cmdNetworkState->getName().' (LogicalId : '.$cmdNetworkState->getLogicalId().')');
-			}
-		}
-		
-		if ( $this->getConfiguration('alarmtype') == 2 )   { 
-			
-			$cmdArmedHome = $this->getCmd(null, 'armed_home');
-			if (!is_object($cmdArmedHome)) {
-				$cmdArmedHome = new verisureCmd();
-				$cmdArmedHome->setOrder(7);
-				$cmdArmedHome->setName('Mode Partiel');
-				$cmdArmedHome->setEqLogic_id($this->getId());
-				$cmdArmedHome->setLogicalId('armed_home');
-				$cmdArmedHome->setType('action');
-				$cmdArmedHome->setSubType('other');
-				$cmdArmedHome->setDisplay('generic_type', 'ALARM_SET_MODE');
-				$cmdArmedHome->save();
-				log::add('verisure', 'debug', 'Création de la commande '.$cmdArmedHome->getName().' (LogicalId : '.$cmdArmedHome->getLogicalId().')');
-			}
-			$this->setConfiguration('SetModePresent',$cmdArmedHome->getId()."|"."Partiel");			//Compatibilité Homebridge - Mode Présent / Domicile
-			
-			$cmdPictures = $this->getCmd(null, 'getpictures');
-			if ( ! is_object($cmdPictures)) {
-				$cmdPictures = new verisureCmd();
-				$cmdPictures->setOrder(8);
-				$cmdPictures->setName('Demande Images');
-				$cmdPictures->setEqLogic_id($this->getId());
-				$cmdPictures->setLogicalId('getpictures');
-				$cmdPictures->setType('action');
-				$cmdPictures->setSubType('select');
-				log::add('verisure', 'debug', 'Création de la commande '.$cmdPictures->getName().' (LogicalId : '.$cmdPictures->getLogicalId().')');
-			}	
-			$device_array = $this->getConfiguration('devices');
-			for ($j = 0; $j < $this->getConfiguration('nb_smartplug'); $j++)  {
-				if ($device_array['smartplugType'.$j] == "cameraDevice")  {
-					$smartplugID = str_replace(" ","%20", $device_array['smartplugID'.$j]);
-					if (isset($listValue))  { $listValue = $listValue .';'.$smartplugID.'|'.$device_array['smartplugName'.$j];  }
-					else  { $listValue = $smartplugID.'|'.$device_array['smartplugName'.$j];  }
-				}
-			}
-			log::add('verisure', 'debug', $this->getHumanName().' - Mise à jour liste smartplugs compatibles images : '.var_export($listValue, true));
-			$cmdPictures->setConfiguration('listValue', $listValue);
-			$cmdPictures->save();
-			
-			//Création des 3 commandes des smartPlugs
-			for ($j = 0; $j < $this->getConfiguration('nb_smartplug'); $j++)  {
-				$i = 0;
-				if ($device_array['smartplugType'.$j] == "smartPlugDevice")  {
-					$cmdDeviceState = $this->getCmd(null, $device_array['smartplugID'.$j].'::State');
-					if ( ! is_object($cmdDeviceState)) {
-						$cmdDeviceState = new verisureCmd();
-						$cmdDeviceState->setOrder(9+3*$i);
-						$cmdDeviceState->setName('Smartplug '.$device_array['smartplugName'.$j].' Etat');
-						$cmdDeviceState->setEqLogic_id($this->getId());
-						$cmdDeviceState->setLogicalId($device_array['smartplugID'.$j].'::State');
-						$cmdDeviceState->setType('info');
-						$cmdDeviceState->setSubType('binary');
-						$cmdDeviceState->setDisplay('generic_type', 'ENERGY_STATE');
-						$cmdDeviceState->setIsVisible(0);
-						$cmdDeviceState->save();
-						log::add('verisure', 'debug', 'Création de la commande '.$cmdDeviceState->getName().' (LogicalId : '.$cmdDeviceState->getLogicalId().')');
-					}
-					
-					$cmdDeviceOn = $this->getCmd(null, $device_array['smartplugID'.$j].'::On');
-					if ( ! is_object($cmdDeviceOn)) {
-						$cmdDeviceOn = new verisureCmd();
-						$cmdDeviceOn->setOrder(10+3*$i);
-						$cmdDeviceOn->setName('Smartplug '.$device_array['smartplugName'.$j].' On');
-						$cmdDeviceOn->setEqLogic_id($this->getId());
-						$cmdDeviceOn->setLogicalId($device_array['smartplugID'.$j].'::On');
-						$cmdDeviceOn->setType('action');
-						$cmdDeviceOn->setSubType('other');
-						$cmdDeviceOn->setDisplay('generic_type', 'ENERGY_ON');
-						$cmdDeviceOn->setIsVisible(0);
-						$cmdDeviceOn->save();
-						log::add('verisure', 'debug', 'Création de la commande '.$cmdDeviceOn->getName().' (LogicalId : '.$cmdDeviceOn->getLogicalId().')');
-					}	
-					
-					$cmdDeviceOff = $this->getCmd(null, $device_array['smartplugID'.$j].'::Off');
-					if ( ! is_object($cmdDeviceOff)) {
-						$cmdDeviceOff = new verisureCmd();
-						$cmdDeviceOff->setOrder(11+3*$i);
-						$cmdDeviceOff->setName('Smartplug '.$device_array['smartplugName'.$j].' Off');
-						$cmdDeviceOff->setEqLogic_id($this->getId());
-						$cmdDeviceOff->setLogicalId($device_array['smartplugID'.$j].'::Off');
-						$cmdDeviceOff->setType('action');
-						$cmdDeviceOff->setSubType('other');
-						$cmdDeviceOff->setDisplay('generic_type', 'ENERGY_OFF');
-						$cmdDeviceOff->setIsVisible(0);
-						$cmdDeviceOff->save();
-						log::add('verisure', 'debug', 'Création de la commande '.$cmdDeviceOff->getName().' (LogicalId : '.$cmdDeviceOff->getLogicalId().')');
-					}
-					$i++;	
-				}
-			}
-			
-			//Création de la commande des Climates
-			for ($j = 0; $j < $this->getConfiguration('nb_smartplug'); $j++)  {
-				$i = 0;
-				if ($device_array['smartplugType'.$j] == "climateDevice")  {
-					$cmdDeviceTemp = $this->getCmd(null, $device_array['smartplugID'.$j].'::Temp');
-					if ( ! is_object($cmdDeviceTemp)) {
-						$cmdDeviceTemp = new verisureCmd();
-						$cmdDeviceTemp->setName('Temperature '.$device_array['smartplugName'.$j]);
-						$cmdDeviceTemp->setEqLogic_id($this->getId());
-						$cmdDeviceTemp->setLogicalId($device_array['smartplugID'.$j].'::Temp');
-						$cmdDeviceTemp->setType('info');
-						$cmdDeviceTemp->setSubType('numeric');
-						$cmdDeviceTemp->setDisplay('generic_type', 'TEMPERATURE');
-						$cmdDeviceTemp->setIsVisible(0);
-						$cmdDeviceTemp->save();
-						log::add('verisure', 'debug', 'Création de la commande '.$cmdDeviceTemp->getName().' (LogicalId : '.$cmdDeviceTemp->getLogicalId().')');
-					}
-				
-					if ($device_array['smartplugModel'.$j] == "Détecteur de fumée")   {
-						$cmdDeviceHumidity = $this->getCmd(null, $device_array['smartplugID'.$j].'::Humidity');
-						if ( ! is_object($cmdDeviceHumidity)) {
-							$cmdDeviceHumidity = new verisureCmd();
-							$cmdDeviceHumidity->setName('Humidite '.$device_array['smartplugName'.$j]);
-							$cmdDeviceHumidity->setEqLogic_id($this->getId());
-							$cmdDeviceHumidity->setLogicalId($device_array['smartplugID'.$j].'::Humidity');
-							$cmdDeviceHumidity->setType('info');
-							$cmdDeviceHumidity->setSubType('numeric');
-							$cmdDeviceHumidity->setDisplay('generic_type', 'HUMIDITY');
-							$cmdDeviceHumidity->setIsVisible(0);
-							$cmdDeviceHumidity->save();
-							log::add('verisure', 'debug', 'Création de la commande '.$cmdDeviceHumidity->getName().' (LogicalId : '.$cmdDeviceHumidity->getLogicalId().')');
-						}
-					}
-					$i++;
-				}
-			}
 
-			//Création de la commande des DoorWindow
-			for ($j = 0; $j < $this->getConfiguration('nb_smartplug'); $j++)  {
-				$i = 0;
-				if ($device_array['smartplugType'.$j] == "doorWindowDevice")  {
-					$cmdDeviceDoor = $this->getCmd(null, $device_array['smartplugID'.$j].'::State');
-					if ( ! is_object($cmdDeviceDoor)) {
-						$cmdDeviceDoor = new verisureCmd();
-						$cmdDeviceDoor->setName('Etat ouverture '.$device_array['smartplugName'.$j]);
-						$cmdDeviceDoor->setEqLogic_id($this->getId());
-						$cmdDeviceDoor->setLogicalId($device_array['smartplugID'.$j].'::State');
-						$cmdDeviceDoor->setType('info');
-						$cmdDeviceDoor->setSubType('binary');
-						$cmdDeviceDoor->setDisplay('generic_type', 'OPENING');
-						$cmdDeviceDoor->setIsVisible(0);
-						$cmdDeviceDoor->save();
-						log::add('verisure', 'debug', 'Création de la commande '.$cmdDeviceDoor->getName().' (LogicalId : '.$cmdDeviceDoor->getLogicalId().')');
-					}
-					$i++;					
-				}
-			}
-		}
-		
-		if ( $this->getConfiguration('alarmtype') == 3 )   { 
-		
-			$cmdArmedDay = $this->getCmd(null, 'armed_day');
-			if (!is_object($cmdArmedDay)) {
-				$cmdArmedDay = new verisureCmd();
-				$cmdArmedDay->setOrder(7);
-				$cmdArmedDay->setName('Mode Partiel');
-				$cmdArmedDay->setEqLogic_id($this->getId());
-				$cmdArmedDay->setLogicalId('armed_day');
-				$cmdArmedDay->setType('action');
-				$cmdArmedDay->setSubType('other');
-				$cmdArmedDay->setDisplay('generic_type', 'ALARM_SET_MODE');
-				$cmdArmedDay->save();
-				log::add('verisure', 'debug', 'Création de la commande '.$cmdArmedDay->getName().' (LogicalId : '.$cmdArmedDay->getLogicalId().')');
-			}
-			$this->setConfiguration('SetModePresent',$cmdArmedDay->getId()."|"."Partiel");			//Compatibilité Homebridge - Mode Présent / Domicile
-			
-			$cmdArmedExt = $this->getCmd(null, 'armed_ext');
-			if (!is_object($cmdArmedExt)) {
-				$cmdArmedExt = new verisureCmd();
-				$cmdArmedExt->setOrder(8);
-				$cmdArmedExt->setName('Mode Extérieur');
-				$cmdArmedExt->setEqLogic_id($this->getId());
-				$cmdArmedExt->setLogicalId('armed_ext');
-				$cmdArmedExt->setType('action');
-				$cmdArmedExt->setSubType('other');
-				$cmdArmedExt->setIsVisible(0);
-				$cmdArmedExt->save();
-				log::add('verisure', 'debug', 'Création de la commande '.$cmdArmedExt->getName().' (LogicalId : '.$cmdArmedExt->getLogicalId().')');
-			}
+		if ( $commandName == 'armed' ) { $this->setConfiguration('SetModeAbsent', $cmd->getId()."|"."Total"); }		//Compatibilité Homebridge - Mode Absent / A distance
 
-			$cmdPictures = $this->getCmd(null, 'getpictures');
-			if ( ! is_object($cmdPictures)) {
-				$cmdPictures = new verisureCmd();
-				$cmdPictures->setOrder(9);
-				$cmdPictures->setName('Demande Images');
-				$cmdPictures->setEqLogic_id($this->getId());
-				$cmdPictures->setLogicalId('getpictures');
-				$cmdPictures->setType('action');
-				$cmdPictures->setSubType('select');
-				log::add('verisure', 'debug', 'Création de la commande '.$cmdPictures->getName().' (LogicalId : '.$cmdPictures->getLogicalId().')');
-			}	
-			$device_array = $this->getConfiguration('devices');
-			for ($j = 0; $j < $this->getConfiguration('nb_smartplug'); $j++)  {
-				if ($device_array['smartplugType'.$j] == "YR" || $device_array['smartplugType'.$j] == "XR" || $device_array['smartplugType'.$j] == "XP" || $device_array['smartplugType'.$j] == "QR")  {
-					if (isset($listValue))  { $listValue = $listValue .';'. $device_array['smartplugID'.$j].'|'.$device_array['smartplugName'.$j];  }
-					else  { $listValue = $device_array['smartplugID'.$j].'|'.$device_array['smartplugName'.$j];  }
+		if ( $this->getConfiguration('alarmtype') == 1 ) {
+
+			if ( $commandName == 'armed_night' ) { $this->setConfiguration('SetModeNuit', $cmd->getId()."|"."Nuit"); }		//Compatibilité Homebridge - Mode Nuit
+			if ( $commandName == 'armed_day' ) { $this->setConfiguration('SetModePresent', $cmd->getId()."|"."Jour"); }		//Compatibilité Homebridge - Mode Présent / Domicile
+			if ( $commandName == 'getpictures' ) {
+				$device_array = $this->getConfiguration('devices');
+				for ($j = 0; $j < $this->getConfiguration('nb_smartplug'); $j++)  {
+					if ($device_array['smartplugType'.$j] == "YR" || $device_array['smartplugType'.$j] == "XR" || $device_array['smartplugType'.$j] == "XP" || $device_array['smartplugType'.$j] == "QR")  {
+						if (isset($listValue))  { $listValue = $listValue .';'. $device_array['smartplugID'.$j].'|'.$device_array['smartplugName'.$j];  }
+						else  { $listValue = $device_array['smartplugID'.$j].'|'.$device_array['smartplugName'.$j];  }
+					}
 				}
-			}
-			log::add('verisure', 'debug', $this->getHumanName().' - Mise à jour liste smartplugs compatibles images : '.var_export($listValue, true));
-			$cmdPictures->setConfiguration('listValue', $listValue);
-			$cmdPictures->save();
-			
-			$cmdNetworkState = $this->getCmd(null, 'networkstate');
-			if ( ! is_object($cmdNetworkState)) {
-				$cmdNetworkState = new verisureCmd();
-				$cmdNetworkState->setOrder(10);
-				$cmdNetworkState->setName('Qualité Réseau');
-				$cmdNetworkState->setEqLogic_id($this->getId());
-				$cmdNetworkState->setLogicalId('networkstate');
-				$cmdNetworkState->setType('info');
-				$cmdNetworkState->setSubType('numeric');
-				$cmdNetworkState->save();
-				log::add('verisure', 'debug', 'Création de la commande '.$cmdNetworkState->getName().' (LogicalId : '.$cmdNetworkState->getLogicalId().')');
+				log::add('verisure', 'debug', $this->getHumanName().' - Mise à jour liste smartplugs compatibles images : '.var_export($listValue, true));
+				$cmd->setConfiguration('listValue', $listValue);
+				$cmd->save();
 			}
 		}
 
-		$this->save(true);		//paramètre "true" -> ne lance pas le postsave()
-	}
-	 
+		if ( $this->getConfiguration('alarmtype') == 2 ) {
+			
+			if ( $commandName == 'armed_home' ) { $this->setConfiguration('SetModePresent',$cmd->getId()."|"."Partiel"); }		//Compatibilité Homebridge - Mode Présent / Domicile
+			if ( $commandName == 'getpictures' ) {
+				$device_array = $this->getConfiguration('devices');
+				for ($j = 0; $j < $this->getConfiguration('nb_smartplug'); $j++)  {
+					if ($device_array['smartplugType'.$j] == "cameraDevice")  {
+						$smartplugID = str_replace(" ","%20", $device_array['smartplugID'.$j]);
+						if (isset($listValue))  { $listValue = $listValue .';'.$smartplugID.'|'.$device_array['smartplugName'.$j];  }
+						else  { $listValue = $smartplugID.'|'.$device_array['smartplugName'.$j];  }
+					}
+				}
+				log::add('verisure', 'debug', $this->getHumanName().' - Mise à jour liste smartplugs compatibles images : '.var_export($listValue, true));
+				$cmd->setConfiguration('listValue', $listValue);
+				$cmd->save();
+			}
+		}
+
+		if ( $this->getConfiguration('alarmtype') == 3 ) {
+			
+			if ( $commandName == 'armed_day' ) { $this->setConfiguration('SetModePresent',$cmd->getId()."|"."Partiel");	}		//Compatibilité Homebridge - Mode Présent / Domicile
+			if ( $commandName == 'getpictures' ) {
+				$device_array = $this->getConfiguration('devices');
+				for ($j = 0; $j < $this->getConfiguration('nb_smartplug'); $j++)  {
+					if ($device_array['smartplugType'.$j] == "YR" || $device_array['smartplugType'.$j] == "XR" || $device_array['smartplugType'.$j] == "XP" || $device_array['smartplugType'.$j] == "QR")  {
+						if (isset($listValue))  { $listValue = $listValue .';'. $device_array['smartplugID'.$j].'|'.$device_array['smartplugName'.$j];  }
+						else  { $listValue = $device_array['smartplugID'.$j].'|'.$device_array['smartplugName'.$j];  }
+					}
+				}
+				log::add('verisure', 'debug', $this->getHumanName().' - Mise à jour liste smartplugs compatibles images : '.var_export($listValue, true));
+				$cmd->setConfiguration('listValue', $listValue);
+				$cmd->save();
+			}
+		}
+    }
+
 
     /*     * **********************Getteur Setteur*************************** */
 
