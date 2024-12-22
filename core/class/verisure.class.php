@@ -147,10 +147,24 @@ class verisure extends eqLogic {
 		
 		if ( $this->getConfiguration('alarmtype') == 3 )   { 
 		
+			$this->setConfiguration('connectedLock', 0);
 			$this->createCmd('armed_day', 'Mode Partiel', 7, 'action', 'other', 1, 0, ['generic_type', 'ALARM_SET_MODE'], [], [], []);
 			$this->createCmd('armed_ext', 'Mode Extérieur', 8, 'action', 'other', 0, 0, [], [], [], []);
 			$this->createCmd('getpictures', 'Demande Images', 9, 'action', 'select', 1, 0, [], [], [], []);
 			$this->createCmd('networkstate', 'Qualité Réseau', 10, 'info', 'numeric', 1, 0, [], [], [], []);
+
+			$device_array = $this->getConfiguration('devices');
+			//Création des 3 commandes de la serrure connectée
+			for ($j = 0; $j < $this->getConfiguration('nb_smartplug'); $j++)  {
+				if ($device_array['smartplugType'.$j] == "DR")  {
+					$id = str_pad($device_array['smartplugID'.$j], 2, "0", STR_PAD_LEFT); 	//id sur 2 digits
+					$this->createCmd($id.'::connectedLockState', 'Etat serrure connectée', 11, 'info', 'binary', 1, 0, ['generic_type', 'LOCK_STATE'], [], ['dashboard', 'lock'], ['mobile', 'lock']);	
+					$this->createCmd($id.'::connectedLockOpen', 'Ouverture serrure connectée', 12, 'action', 'other', 1, 0, ['generic_type', 'LOCK_OPEN'], [], [], []);
+					$this->createCmd($id.'::connectedLockClose', 'Fermeture serrure connectée', 13, 'action', 'other', 1, 0, ['generic_type', 'LOCK_CLOSE'], [], [], []);
+					$this->setConfiguration('connectedLock', 1);
+					break;
+				}
+			}
 		}
 
 		$this->save(true);		//paramètre "true" -> ne lance pas le postsave()
@@ -218,21 +232,29 @@ class verisure extends eqLogic {
 			$replace['#nb_camera#'] = $this->getConfiguration('nb_camera');
 			$replace['#nb_device#'] = $this->getConfiguration('nb_device');
 		}
+		if ( $this->getConfiguration('alarmtype') == 3 )   { 
+			$replace['#connectedLock#'] = $this->getConfiguration('connectedLock');
+		}
 			
 		$this->emptyCacheWidget(); 		//vide le cache. Pratique pour le développement
 
 		// Traitement des commandes infos
 		foreach ($this->getCmd('info') as $cmd) {
-			$replace['#' . $cmd->getLogicalId() . '_id#'] = $cmd->getId();
-			$replace['#' . $cmd->getLogicalId() . '_name#'] = $cmd->getName();
-			$replace['#' . $cmd->getLogicalId() . '#'] = $cmd->execCmd();
-			$replace['#' . $cmd->getLogicalId() . '_visible#'] = $cmd->getIsVisible();
+			if ( strpos($cmd->getLogicalId(), 'connectedLockState') != false ) { $logicalId = 'connectedLockState'; }
+			else { $logicalId = $cmd->getLogicalId(); }
+			$replace['#' . $logicalId . '_id#'] = $cmd->getId();
+			$replace['#' . $logicalId . '_name#'] = $cmd->getName();
+			$replace['#' . $logicalId . '#'] = $cmd->execCmd();
+			$replace['#' . $logicalId . '_visible#'] = $cmd->getIsVisible();
 		}
 
 		// Traitement des commandes actions
 		foreach ($this->getCmd('action') as $cmd) {
-			$replace['#' . $cmd->getLogicalId() . '_id#'] = $cmd->getId();
-			$replace['#' . $cmd->getLogicalId() . '_visible#'] = $cmd->getIsVisible();
+			if ( strpos($cmd->getLogicalId(), 'connectedLockOpen') != false ) { $logicalId = 'connectedLockOpen'; }
+			else if ( strpos($cmd->getLogicalId(), 'connectedLockClose') != false ) { $logicalId = 'connectedLockClose'; }
+			else { $logicalId = $cmd->getLogicalId(); }
+			$replace['#' . $logicalId . '_id#'] = $cmd->getId();
+			$replace['#' . $logicalId . '_visible#'] = $cmd->getIsVisible();
 			if ($cmd->getSubType() == 'select') {
 				$listValue = "<option value>" . $cmd->getName() . "</option>";
 				$listValueArray = explode(';', $cmd->getConfiguration('listValue'));
@@ -240,7 +262,7 @@ class verisure extends eqLogic {
 					list($id, $name) = explode('|', $value);
 					$listValue = $listValue . "<option value=" . $id . ">" . $name . "</option>";
 				}
-				$replace['#' . $cmd->getLogicalId() . '_listValue#'] = $listValue;
+				$replace['#' . $logicalId . '_listValue#'] = $listValue;
 			}
 		}
 			
@@ -534,6 +556,20 @@ class verisure extends eqLogic {
 			$result_Login = $MyAlarm->Login();
 			$result_GetStateAlarm = $MyAlarm->GetStateAlarm();
 			$response_GetStateAlarm = json_decode($result_GetStateAlarm[3], true);
+			
+			//getStateLock
+			if ( $this->getConfiguration('connectedLock') == 1 ) {
+				$result_GetStateLock = $MyAlarm->GetStateLock();
+				$response_GetStateLock = json_decode($result_GetStateLock[1], true);
+						
+				if ( $result_GetStateLock[0] == 200 && $response_GetStateLock['data']['xSGetLockCurrentMode']['res'] == "OK" )  {
+					$device = $response_GetStateLock['data']['xSGetLockCurrentMode']['smartlockInfo'][0]['deviceId'];
+					$lockStatus = $response_GetStateLock['data']['xSGetLockCurrentMode']['smartlockInfo'][0]['lockStatus'];
+					if ( $lockStatus == 1 ) { $this->checkAndUpdateCmd($device.'::connectedLockState', 0); }
+					if ( $lockStatus == 2 ) { $this->checkAndUpdateCmd($device.'::connectedLockState', 1); }
+				}
+			}
+
 			$result_Logout = $MyAlarm->Logout();
           	
 			if ( $result_GetStateAlarm[2] == 200 && $response_GetStateAlarm['data']['xSCheckAlarmStatus']['res'] == "OK" )  {
@@ -851,12 +887,30 @@ class verisure extends eqLogic {
 			}
 			return $res;
 		}
-
-		if ( $this->getConfiguration('alarmtype') == 3 )   { 
-		
-		}
 	}
 	
+	public function SetStateLock($device, $lock)	{		//Type 3
+
+		log::add('verisure', 'debug', '┌───────── Demande set connectedLock ─────────');
+		log::add('verisure', 'debug', '│ Equipement '.$this->getHumanName().' - Alarme type '.$this->getConfiguration('alarmtype'));
+		$MyAlarm = new verisureAPI($this->getConfiguration('numinstall'),$this->getConfiguration('username'),$this->getConfiguration('password'),$this->getConfiguration('country'));
+		$result_Login = $MyAlarm->Login();
+		log::add('verisure', 'debug', '| connectedLock : '.$device.' - Commande envoyée : '.($lock?'Close':'Open'));
+        $result_SetStateLock = $MyAlarm->SetStateLock($device, $lock);
+		$result_Logout = $MyAlarm->Logout();
+		$response_SetStateLock = json_decode($result_SetStateLock[5], true);
+		
+		if ( $result_SetStateLock[4] == 200 && $response_SetStateLock['data']['xSGetSignals']['res'] == "OK" && $response_SetStateLock['data']['xSGetSignals']['status'] == "procesed")  {
+			$response = json_decode($result_SetStateLock[7], true);
+			$result = $response['data']['xSGetLockCurrentMode']['smartlockInfo'][0]['lockStatus'];
+			log::add('verisure', 'debug', '└───────── Demande set connectedLock OK ─────────');
+		}
+		else  {
+			$result = "Erreur commande Verisure";
+		}
+		return $result;
+	}
+
 	public function SetNetworkState($result)  {		//Type 1 & 3
 		
 		$quality = 0;
@@ -1267,6 +1321,49 @@ class verisureCmd extends cmd {
 						log::add('verisure', 'debug', '└───────── Activation mode total NOK ─────────');
 					break;
 				}	
+			}
+		}
+
+		if ( $eqlogic->getConfiguration('alarmtype') == 3 )   { 
+			
+			if  (strpos($logical, '::') !== false)   {
+				$command = explode('::', $logical);
+				$device = $command[0];
+				$lock = $command[1];
+				
+				switch ($lock)   {
+					case 'connectedLockOpen':
+						$state = $eqlogic->SetStateLock($device, false);
+						switch ($state)  {
+							case '1':
+								$eqlogic->checkAndUpdateCmd($device.'::connectedLockState', 0);	
+							break;
+							case '2':
+								$eqlogic->checkAndUpdateCmd($device.'::connectedLockState', 1);	
+							break;
+							case 'Erreur commande Verisure':
+								log::add('verisure', 'debug', '│ /!\ Erreur commande Verisure SetStateLock()');
+								log::add('verisure', 'debug', '└───────── Demande set connectedLock NOK ─────────');
+							break;
+						}
+					break;
+					
+					case 'connectedLockClose':
+						$state = $eqlogic->SetStateLock($device, true);
+						switch ($state)  {
+							case '1':
+								$eqlogic->checkAndUpdateCmd($device.'::connectedLockState', 0);	
+							break;
+							case '2':
+								$eqlogic->checkAndUpdateCmd($device.'::connectedLockState', 1);	
+							break;
+							case 'Erreur commande Verisure':
+								log::add('verisure', 'debug', '│ /!\ Erreur commande Verisure SetStateLock()');
+								log::add('verisure', 'debug', '└───────── Demande set connectedLock NOK ─────────');
+							break;
+						}
+					break;
+				}
 			}
 		}
 		

@@ -24,15 +24,19 @@
 	<div class="container-fluid">
 		
 		<div class="col-xs-12" id="column" style="width: 260px">
-			<div class="col-xs-6" id="tile" style="width: 120px; height: 75px;">
-				<div class="col-xs-12 label" style="text-align: center;">Etat Alarme</div>
+			<div class="col-xs-6 id_state_#id#" id="tile" style="width: 77px; height: 75px;">
+				<div class="col-xs-12 label" style="text-align: center;">Alarme</div>
 				<div class="col-xs-12" id="infos"><i class="iconCmd#state_id#"></i></div>
 			</div>
-			<div class="col-xs-6" id="tile" style="width: 120px; height: 75px;">
-				<div class="col-xs-12 label" style="text-align: center;">Etat Activation</div>
+			<div class="col-xs-6 id_enable_#id#" id="tile" style="width: 77px; height: 75px;">
+				<div class="col-xs-12 label" style="text-align: center;">Activation</div>
 				<div class="col-xs-12" id="infos"><i class="iconCmd#enable_id#"></i></div>
 			</div>
-        </div>
+			<div class="col-xs-6 id_lock_#id#" id="tile" style="width: 76px; height: 75px;">
+				<div class="col-xs-12 label" style="text-align: center;">Serrure</div>
+				<div class="col-xs-12" id="infos"><i class="iconCmd#connectedLockState_id#"></i></div>
+			</div>
+		</div>
 		
 		<div class="col-xs-12" id="column" style="width: 260px">
 			<div class="col-xs-12" id="tile" style="width: 250px; height: 75px;">
@@ -49,6 +53,8 @@
 					<button class="btn cmd action" data-cmd_id="#released_id#" title="Désactivation" onclick="jeedom.cmd.execute({id: #released_id#});"><i class="fas fa-lock-open"></i></button>
 					<button id="btn_day_#id#"  class="btn cmd action" data-cmd_id="#armed_day_id#" title="Mode Partiel" onclick="jeedom.cmd.execute({id: #armed_day_id#});"><i class="fas fa-shield-alt"></i></button>
 					<button id="btn_ext_#id#" class="btn cmd action" data-cmd_id="#armed_ext_id#" title="Mode Extérieur" onclick="jeedom.cmd.execute({id: #armed_ext_id#});"><i class="fas fa-home"></i></button>
+					<button id="btn_lock_open_#id#"  class="btn cmd action" data-cmd_id="#connectedLockOpen_id#" title="Ouverture serrure" onclick="jeedom.cmd.execute({id: #connectedLockOpen_id#});"><i class="fas fa-door-open"></i></button>
+					<button id="btn_lock_close_#id#" class="btn cmd action" data-cmd_id="#connectedLockClose_id#" title="Fermeture serrure" onclick="jeedom.cmd.execute({id: #connectedLockClose_id#});"><i class="fas fa-door-closed"></i></button>
 				</div>
 			</div>
 		</div>
@@ -73,11 +79,13 @@
 				</div>
 			</div>
 		</div>
-        
+
 	</div>
 	
 	<script>
         
+		$widget_height = 383;
+		
 		if ( #armed_day_visible# == 0 )  {
 			$('#btn_day_#id#').hide();
 		}
@@ -86,15 +94,21 @@
 			$('#btn_ext_#id#').hide();
 		}
 		
-		if ( #getpictures_visible# == 1 )  {
-			$('.verisure_widget_#id#').css('min-height', 383);
-			$('.verisure_widget_#id#').css('max-height', 383);
-		}
-		else if ( #getpictures_visible# == 0 )  {
+		if ( #getpictures_visible# == 0 )  {
 			$('#zone_image_#id#').hide();
-			$('.verisure_widget_#id#').css('min-height', 383 - 92);
-			$('.verisure_widget_#id#').css('max-height', 383 - 92);
+			$widget_height = $widget_height - 92;
 		}
+
+		if ( #connectedLock# == 0 )  {
+			$('.id_state_#id#').css('width', 120);
+			$('.id_enable_#id#').css('width', 120);
+			$('.id_lock_#id#').hide();
+			$('#btn_lock_open_#id#').hide();
+			$('#btn_lock_close_#id#').hide();
+		}
+
+		$('.verisure_widget_#id#').css('min-height', $widget_height);
+		$('.verisure_widget_#id#').css('max-height', $widget_height);
 		
 		jeedom.cmd.update['#enable_id#'] = function(_options) {
             if ( _options.display_value == 0)  {
@@ -122,6 +136,18 @@
            	$('.iconCmd#mode_id#').empty().append('<span>'+_options.display_value+'</span>');
         }
 		jeedom.cmd.update['#mode_id#']({display_value:'#mode#'});
+
+
+		jeedom.cmd.update['#connectedLockState_id#'] = function(_options) {
+            console.log('connectedLockState : '+_options.display_value);
+			if ( _options.display_value == 0)  {
+            	$('.iconCmd#connectedLockState_id#').empty().append('<i class="fas fa-2x fa-key icon_red" title="Déverrouillée"></i>');
+            }
+          	if ( _options.display_value == 1)  {
+              	$('.iconCmd#connectedLockState_id#').empty().append('<i class="fas fa-2x fa-key icon_green" title="Verrouillée"></i>');
+            }
+        }
+		jeedom.cmd.update['#connectedLockState_id#']({display_value:'#connectedLockState#'});
       
 	</script>
 

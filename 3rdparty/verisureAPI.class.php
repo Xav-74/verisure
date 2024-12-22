@@ -443,6 +443,59 @@ class verisureAPI {
 					'query' => 'query mkGetPhotoImages($numinst: String!, $idSignal: String!, $signalType: String!, $panel: String!) { xSGetPhotoImages(numinst: $numinst, idsignal: $idSignal, signaltype: $signalType, panel: $panel) { devices { id code name images { id image type } } } }',
 				);
 			break;
+
+			case "xSChangeSmartlockMode":
+				$content = array(
+					'operationName' =>  "xSChangeSmartlockMode",
+					'variables' => array(
+						'numinst' => $this->numinstall,
+						'panel' => $this->panel,
+						'deviceType' => "DR",
+						'deviceId' => $data1,
+						'lock' => $data2
+					),
+					'query' => 'mutation xSChangeSmartlockMode($numinst: String!, $panel: String!, $deviceId: String!, $deviceType: String!, $lock: Boolean!) { xSChangeSmartlockMode(numinst: $numinst, panel: $panel, deviceId: $deviceId, deviceType: $deviceType, lock: $lock) { res msg referenceId } }',
+				);
+			break;
+
+			case "xSChangeSmartlockModeStatus":
+				$content = array(
+					'operationName' =>  "xSChangeSmartlockModeStatus",
+					'variables' => array(
+						'numinst' => $this->numinstall,
+						'panel' => $this->panel,
+						'deviceId' => $data1,
+						'referenceId' => $data2,
+						'counter' => (int)$data3
+					),
+					'query' => 'query xSChangeSmartlockModeStatus($numinst: String!, $panel: String!, $referenceId: String!, $deviceId: String, $counter: Int) { xSChangeSmartlockModeStatus(numinst: $numinst, panel: $panel, referenceId: $referenceId, counter: $counter, deviceId: $deviceId) { res msg protomResponse status } }',
+				);
+			break;
+
+			case "xSGetSignals":
+				$content = array(
+					'operationName' =>  "xSGetSignals",
+					'variables' => array(
+						'numinst' => $this->numinstall,
+						'panel' => $this->panel,
+						'deviceId' => $data1,
+						'referenceId' => $data2,
+						'counter' => (int)$data3
+					),
+					'query' => 'query xSGetSignals($numinst: String!, $panel: String!, $referenceId: String!, $deviceId: String, $counter: Int!) { xSGetSignals(numinst: $numinst, panel: $panel, referenceId: $referenceId, deviceId: $deviceId, counter: $counter) { res status signalResponse } }',
+				);
+			break;
+
+			case "xSGetLockCurrentMode":
+				$content = array(
+					'operationName' =>  "xSGetLockCurrentMode",
+					'variables' => array(
+						'numinst' => $this->numinstall,
+					),
+					'query' => 'query xSGetLockCurrentMode($numinst: String!) { xSGetLockCurrentMode(numinst: $numinst) { res smartlockInfo { lockStatus deviceId } } }',
+				);
+			break;
+
 		}
 
 		//log::add('verisure', 'debug', '| Content = '.json_encode($content));
@@ -821,7 +874,7 @@ class verisureAPI {
 	}
 
 	
-	public function GetPhotosRequest($device)  {	// Photos request
+	public function GetPhotosRequest($device)  {			// Photos request
 		
 		$now = date("Y-m-d H:i:s");
 		
@@ -836,6 +889,7 @@ class verisureAPI {
 
 		$res = json_decode($response, true);
 		$referenceId = $res['data']['xSRequestImages']['referenceId'];
+		
 		if ( $res['data']['xSRequestImages']['res'] == "OK" ) {
 
 			$counter = 1;
@@ -889,6 +943,94 @@ class verisureAPI {
 
 		return array($httpRespCode, $response, $httpRespCode2, $response2, $httpRespCode3, $response3, $httpRespCode4, $response4, $img);
 	}
+
+
+	public function GetStateLock()  {			// Get the status of the connected lock
+
+		$method = "POST";
+		$headers = $this->setHeaders("xSGetLockCurrentMode");
+		$content = $this->setContent("xSGetLockCurrentMode", null, null, null);
+		
+		$result = $this->doRequest($content, $method, $headers);
+		$httpRespCode = $result[0];
+		$response = $result[1];
+		log::add('verisure', 'debug', '│ Request xSGetLockCurrentMode - httpRespCode => '.$httpRespCode.' - response => '.$response);
+		
+		return array($httpRespCode, $response);
+	}
+
+
+	public function SetStateLock($device, $lock)  {			// Open or close the connected lock
+		
+		$method = "POST";
+		$headers = $this->setHeaders("xSChangeSmartlockMode");
+		$content = $this->setContent("xSChangeSmartlockMode", $device, $lock, null);
+		
+		$result = $this->doRequest($content, $method, $headers);
+		$httpRespCode = $result[0];
+		$response = $result[1];
+		log::add('verisure', 'debug', '│ Request xSChangeSmartlockMode - httpRespCode => '.$httpRespCode.' - response => '.$response);
+
+		$res = json_decode($response, true);
+		$referenceId = $res['data']['xSChangeSmartlockMode']['referenceId'];
+		
+		if ( $res['data']['xSChangeSmartlockMode']['res'] == "OK" ) {
+
+			$counter = 1;
+			$wait = "WAIT";
+			While ($wait == "WAIT")  {
+				sleep(1);
+				$method2 = "POST";
+				$headers2 = $this->setHeaders("xSChangeSmartlockModeStatus");
+				$content2 = $this->setContent("xSChangeSmartlockModeStatus", $device, $referenceId, $counter);
+				
+				$result2 = $this->doRequest($content2, $method2, $headers2);
+				$httpRespCode2 = $result2[0];
+				$response2 = $result2[1];
+				
+				$res2 = json_decode($response2, true);
+				$wait = $res2['data']['xSChangeSmartlockModeStatus']['res'];
+				$counter++;
+			}
+			log::add('verisure', 'debug', '│ Request xSChangeSmartlockModeStatus - httpRespCode => '.$httpRespCode2.' - response => '.$response2);
+
+			if ( $res2['data']['xSChangeSmartlockModeStatus']['res'] == "OK" ) {
+
+				$counter = 1;
+				$wait = "WAIT";
+				While ($wait == "WAIT")  {
+					sleep(1);
+					$method3 = "POST";
+					$headers3 = $this->setHeaders("xSGetSignals");
+					$content3 = $this->setContent("xSGetSignals", $device, $referenceId, $counter);
+					
+					$result3 = $this->doRequest($content3, $method3, $headers3);
+					$httpRespCode3 = $result3[0];
+					$response3 = $result3[1];
+					
+					$res3 = json_decode($response3, true);
+					$wait = $res3['data']['xSGetSignals']['res'];
+					$counter++;
+				}
+				log::add('verisure', 'debug', '│ Request xSGetSignals - httpRespCode => '.$httpRespCode3.' - response => '.$response3);
+			
+				if ( $res3['data']['xSGetSignals']['res'] == "OK" ) {
+
+					$method4 = "POST";
+					$headers4 = $this->setHeaders("xSGetLockCurrentMode");
+					$content4 = $this->setContent("xSGetLockCurrentMode", null, null, null);
+					
+					$result4 = $this->doRequest($content4, $method4, $headers4);
+					$httpRespCode4 = $result4[0];
+					$response4 = $result4[1];
+					log::add('verisure', 'debug', '│ Request xSGetLockCurrentMode - httpRespCode => '.$httpRespCode4.' - response => '.$response4);
+				}			
+			}
+		}
+
+		return array($httpRespCode, $response, $httpRespCode2, $response2, $httpRespCode3, $response3, $httpRespCode4, $response4);
+	}
+
 }
 
 ?>
