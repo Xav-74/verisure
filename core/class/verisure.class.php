@@ -900,9 +900,8 @@ class verisure extends eqLogic {
 		$result_Logout = $MyAlarm->Logout();
 		$response_SetStateLock = json_decode($result_SetStateLock[5], true);
 		
-		if ( $result_SetStateLock[4] == 200 && $response_SetStateLock['data']['xSGetSignals']['res'] == "OK" && $response_SetStateLock['data']['xSGetSignals']['status'] == "procesed")  {
-			$response = json_decode($result_SetStateLock[7], true);
-			$result = $response['data']['xSGetLockCurrentMode']['smartlockInfo'][0]['lockStatus'];
+		if ( $result_SetStateLock[4] == 200 && $response_SetStateLock['data']['xSGetLockCurrentMode']['res'] == "OK")  {
+			$result = $response_SetStateLock['data']['xSGetLockCurrentMode']['smartlockInfo'][0]['lockStatus'];
 			log::add('verisure', 'debug', '└───────── Demande set connectedLock OK ─────────');
 		}
 		else  {

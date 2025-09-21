@@ -996,39 +996,38 @@ class verisureAPI {
 
 			if ( $res2['data']['xSChangeSmartlockModeStatus']['res'] == "OK" ) {
 
-				$counter = 1;
-				$wait = "WAIT";
-				While ($wait == "WAIT")  {
-					sleep(1);
-					$method3 = "POST";
-					$headers3 = $this->setHeaders("xSGetSignals");
-					$content3 = $this->setContent("xSGetSignals", $device, $referenceId, $counter);
+				$method3 = "POST";
+				$headers3 = $this->setHeaders("xSGetLockCurrentMode");
+				$content3 = $this->setContent("xSGetLockCurrentMode", null, null, null);
+						
+				$result3 = $this->doRequest($content3, $method3, $headers3);
+				$httpRespCode3 = $result3[0];
+				$response3 = $result3[1];
+				log::add('verisure', 'debug', '│ Request xSGetLockCurrentMode - httpRespCode => '.$httpRespCode3.' - response => '.$response3);
+
+				$res3 = json_decode($response3, true);
+				$state = $res3['data']['xSGetLockCurrentMode']['smartlockInfo'][0]['lockStatus'];
+				$retry = 10;
+
+				While ( $retry > 0 ) {
+					sleep(2);
 					
 					$result3 = $this->doRequest($content3, $method3, $headers3);
 					$httpRespCode3 = $result3[0];
 					$response3 = $result3[1];
-					
+					log::add('verisure', 'debug', '│ Request xSGetLockCurrentMode - httpRespCode => '.$httpRespCode3.' - response => '.$response3);
 					$res3 = json_decode($response3, true);
-					$wait = $res3['data']['xSGetSignals']['res'];
-					$counter++;
-				}
-				log::add('verisure', 'debug', '│ Request xSGetSignals - httpRespCode => '.$httpRespCode3.' - response => '.$response3);
-			
-				if ( $res3['data']['xSGetSignals']['res'] == "OK" ) {
+					$newState = $res3['data']['xSGetLockCurrentMode']['smartlockInfo'][0]['lockStatus'];
 
-					$method4 = "POST";
-					$headers4 = $this->setHeaders("xSGetLockCurrentMode");
-					$content4 = $this->setContent("xSGetLockCurrentMode", null, null, null);
-					
-					$result4 = $this->doRequest($content4, $method4, $headers4);
-					$httpRespCode4 = $result4[0];
-					$response4 = $result4[1];
-					log::add('verisure', 'debug', '│ Request xSGetLockCurrentMode - httpRespCode => '.$httpRespCode4.' - response => '.$response4);
+					if ($newState !== $state) {
+						break;
+					}
+					$retry--;
 				}			
 			}
 		}
 
-		return array($httpRespCode, $response, $httpRespCode2, $response2, $httpRespCode3, $response3, $httpRespCode4, $response4);
+		return array($httpRespCode, $response, $httpRespCode2, $response2, $httpRespCode3, $response3);
 	}
 
 }
