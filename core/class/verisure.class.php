@@ -674,10 +674,15 @@ class verisure extends eqLogic {
 
 			switch ($type) {
 				// Désactivation interne + externe
-				case 700:
 				case 822:
 					$internal = 'desactive';
 					$external = 'desactive';
+					break;
+                
+                // Désactivation interne
+                case 700:  
+                case 800:
+					$internal = 'desactive';
 					break;
 
 				// Activation interne total
