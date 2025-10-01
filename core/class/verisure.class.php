@@ -675,32 +675,32 @@ class verisure extends eqLogic {
 			switch ($type) {
 				// Désactivation interne + externe
 				case 822:
-					$internal = 'desactive';
-					$external = 'desactive';
+					if ($internal === 'unknown') { $internal = 'desactive'; }
+					if ($external === 'unknown') { $external = 'desactive'; }	
 					break;
                 
                 // Désactivation interne
                 case 700:  
                 case 800:
-					$internal = 'desactive';
+					if ($internal === 'unknown') { $internal = 'desactive'; }
 					break;
 
 				// Activation interne total
 				case 701:
 				case 801:
-					$internal = 'total';
+					if ($internal === 'unknown') { $internal = 'total'; }
 					break;
 
 				// Activation interne partiel
 				case 702:
 				case 802:
-					$internal = 'partiel';
+					if ($internal === 'unknown') { $internal = 'partiel'; }
 					break;
 
 				// Désactivation externe
 				case 720:
 				case 820:
-					$external = 'desactive';
+					if ($external === 'unknown') { $external = 'desactive'; }
 					break;
 
 				// Activation externe
@@ -711,14 +711,14 @@ class verisure extends eqLogic {
 
 				// Activation total + externe
 				case 823:
-					$internal = 'total';
-					$external = 'actif';
+					if ($internal === 'unknown') { $internal = 'total'; }
+					if ($external === 'unknown') { $external = 'actif'; }
 					break;
 				
 				// Activation partiel + externe
 				case 824:
-					$internal = 'partiel';
-					$external = 'actif';
+					if ($internal === 'unknown') { $internal = 'partiel'; }
+					if ($external === 'unknown') { $external = 'actif'; }
 					break;
 
 				default:
