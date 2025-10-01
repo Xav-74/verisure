@@ -387,6 +387,21 @@ class verisureAPI {
 				);
 			break;
 
+			case "ActV2Timeline":
+				$content = array(
+					'operationName' =>  "ActV2Timeline",
+					'variables' => array(
+						'numinst' => $this->numinstall,
+						'panel' => $this->panel,
+						'numRows' => 10,
+						'offset' => 0,
+						'hasLocksmithRequested' => false,
+						'singleActivityFilter' => $data1
+					),
+					'query' => 'query ActV2Timeline($numinst: String!, $numRows: Int, $offset: Int, $hasLocksmithRequested: Boolean, $singleActivityFilter: [Int], $panel: String) { xSActV2(numinst: $numinst, input: {timeFilter: LASTMONTH, numRows: $numRows, offset: $offset, hasLocksmithRequested: $hasLocksmithRequested, singleActivityFilter: $singleActivityFilter, panel: $panel}) { reg { alias type device source idSignal myVerisureUser time img signalType } } }',
+				);
+			break;
+
 			case "ActV2Home":
 				$content = array(
 					'operationName' =>  "ActV2Home",
@@ -780,6 +795,21 @@ class verisureAPI {
 		return array($httpRespCode, $response, $httpRespCode2, $response2);
 	}
 
+	public function GetStateAlarmFromHistory($filter)  {			// Get the information of last status of the alarm
+		// Filter status alarm
+		if ( $filter == null ) { $filter = [1,2,7,8,9,10,11,12,31,32,38,39,40,44,46,47,70,71,311,312,700,701,702,720,721,722,723,724,730,731,732,733,734,740,741,742,743,744,800,801,802,820,821,822,823,824,830,831,832,833,834,840,841,842,843,844]; }
+		$method = "POST";
+		$headers = $this->setHeaders("ActV2Timeline");
+		$content = $this->setContent("ActV2Timeline", $filter, null, null);
+		
+		$result = $this->doRequest($content, $method, $headers);
+		$httpRespCode = $result[0];
+		$response = $result[1];
+		log::add('verisure', 'debug', '│ Request ActV2Timeline - httpRespCode => '.$httpRespCode.' - response => '.$response);
+
+		return array($httpRespCode, $response);
+	}
+
 
 	public function ArmAlarm($mode, $currentStatus)  {			// Arm the alarm in mode total, day, night, peri
 
@@ -872,7 +902,6 @@ class verisureAPI {
 
 		return array($httpRespCode, $response);
 	}
-
 	
 	public function GetPhotosRequest($device)  {			// Photos request
 		
