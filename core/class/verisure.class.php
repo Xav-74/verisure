@@ -706,7 +706,7 @@ class verisure extends eqLogic {
 				// Activation externe
 				case 721:
 				case 821:
-					$external = 'actif';
+					if ($external === 'unknown') { $external = 'actif'; }
 					break;
 
 				// Activation total + externe
