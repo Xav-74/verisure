@@ -149,18 +149,30 @@ class verisure extends eqLogic {
 		
 			$this->setConfiguration('connectedLock', 0);
 			$this->createCmd('armed_day', 'Mode Partiel', 7, 'action', 'other', 1, 0, ['generic_type', 'ALARM_SET_MODE'], [], [], []);
-			$this->createCmd('armed_ext', 'Mode Extérieur', 8, 'action', 'other', 0, 0, [], [], [], []);
-			$this->createCmd('getpictures', 'Demande Images', 9, 'action', 'select', 1, 0, [], [], [], []);
-			$this->createCmd('networkstate', 'Qualité Réseau', 10, 'info', 'numeric', 1, 0, [], [], [], []);
-
+			$this->createCmd('getpictures', 'Demande Images', 8, 'action', 'select', 1, 0, [], [], [], []);
+			$this->createCmd('networkstate', 'Qualité Réseau', 9, 'info', 'numeric', 1, 0, [], [], [], []);
 			$device_array = $this->getConfiguration('devices');
+
+			$order = 10;
+			//Création de la commande mode Extérieur si détecteur de mouvement présent
+			for ($j = 0; $j < $this->getConfiguration('nb_smartplug'); $j++)  {
+				if ($device_array['smartplugType'.$j] == "QP")  {
+					$this->createCmd('armed_ext', 'Mode Extérieur', $order, 'action', 'other', 1, 0, [], [], [], []);
+					$order++;
+					break;
+				}
+			}
+			
 			//Création des 3 commandes de la serrure connectée
 			for ($j = 0; $j < $this->getConfiguration('nb_smartplug'); $j++)  {
 				if ($device_array['smartplugType'.$j] == "DR")  {
 					$id = str_pad($device_array['smartplugID'.$j], 2, "0", STR_PAD_LEFT); 	//id sur 2 digits
-					$this->createCmd($id.'::connectedLockState', 'Etat serrure connectée', 11, 'info', 'binary', 1, 0, ['generic_type', 'LOCK_STATE'], [], ['dashboard', 'lock'], ['mobile', 'lock']);	
-					$this->createCmd($id.'::connectedLockOpen', 'Ouverture serrure connectée', 12, 'action', 'other', 1, 0, ['generic_type', 'LOCK_OPEN'], [], [], []);
-					$this->createCmd($id.'::connectedLockClose', 'Fermeture serrure connectée', 13, 'action', 'other', 1, 0, ['generic_type', 'LOCK_CLOSE'], [], [], []);
+					$this->createCmd($id.'::connectedLockState', 'Etat serrure connectée', $order, 'info', 'binary', 1, 0, ['generic_type', 'LOCK_STATE'], [], ['dashboard', 'lock'], ['mobile', 'lock']);	
+					$order++;
+					$this->createCmd($id.'::connectedLockOpen', 'Ouverture serrure connectée', $order, 'action', 'other', 1, 0, ['generic_type', 'LOCK_OPEN'], [], [], []);
+					$order++;
+					$this->createCmd($id.'::connectedLockClose', 'Fermeture serrure connectée', $order, 'action', 'other', 1, 0, ['generic_type', 'LOCK_CLOSE'], [], [], []);
+					$order++;
 					$this->setConfiguration('connectedLock', 1);
 					break;
 				}
