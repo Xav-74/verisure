@@ -151,8 +151,8 @@ class verisure extends eqLogic {
 			$this->createCmd('armed_day', 'Mode Partiel', 7, 'action', 'other', 1, 0, ['generic_type', 'ALARM_SET_MODE'], [], [], []);
 			$this->createCmd('getpictures', 'Demande Images', 8, 'action', 'select', 1, 0, [], [], [], []);
 			$this->createCmd('networkstate', 'Qualité Réseau', 9, 'info', 'numeric', 1, 0, [], [], [], []);
+			
 			$device_array = $this->getConfiguration('devices');
-
 			$order = 10;
 			//Création de la commande mode Extérieur si détecteur de mouvement présent
 			for ($j = 0; $j < $this->getConfiguration('nb_smartplug'); $j++)  {
