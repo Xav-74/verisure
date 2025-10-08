@@ -366,8 +366,8 @@ class verisureAPI {
 					'variables' => array(
 						'numinst' => $this->numinstall,
 						'panel' => $this->panel,
-						'request' => "DARM1",
-						'currentStatus' => $data1
+						'request' => data1,
+						'currentStatus' => $data2
 					),
 					'query' => 'mutation xSDisarmPanel($numinst: String!, $request: DisarmCodeRequest!, $panel: String!) { xSDisarmPanel(numinst: $numinst, request: $request, panel: $panel) { res msg referenceId } }',
 				);
@@ -379,9 +379,9 @@ class verisureAPI {
 					'variables' => array(
 						'numinst' => $this->numinstall,
 						'panel' => $this->panel,
-						'request' => "DARM1",
-						'referenceId' => $data1,
-						'counter' => (int)$data2
+						'request' => $data1,
+						'referenceId' => $data2,
+						'counter' => (int)$data3
 					),
 					'query' => 'query DisarmStatus($numinst: String!, $panel: String!, $referenceId: String!, $counter: Int!, $request: DisarmCodeRequest) { xSDisarmStatus(numinst: $numinst, panel: $panel, referenceId: $referenceId, counter: $counter, request: $request) { res msg status protomResponse protomResponseDate numinst requestId error { code type allowForcing exceptionsNumber referenceId } } }',
 				);
@@ -819,11 +819,11 @@ class verisureAPI {
 	}
 
 
-	public function DisarmAlarm($currentStatus)  {			// Disarm the alarm (all mode)
+	public function DisarmAlarm($mode, $currentStatus)  {			// Disarm the alarm (all mode)
 
 		$method = "POST";
 		$headers = $this->setHeaders("xSDisarmPanel");
-		$content = $this->setContent("xSDisarmPanel", $currentStatus, null, null);
+		$content = $this->setContent("xSDisarmPanel", $mode, $currentStatus, null);
 		
 		$result = $this->doRequest($content, $method, $headers);
 		$httpRespCode = $result[0];
@@ -840,7 +840,7 @@ class verisureAPI {
 				sleep(1);
 				$method2 = "POST";
 				$headers2 = $this->setHeaders("DisarmStatus");
-				$content2 = $this->setContent("DisarmStatus", $referenceId, $counter, null);
+				$content2 = $this->setContent("DisarmStatus", $mode, $referenceId, $counter);
 				
 				$result2 = $this->doRequest($content2, $method2, $headers2);
 				$httpRespCode2 = $result2[0];
