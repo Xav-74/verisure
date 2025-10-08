@@ -366,7 +366,7 @@ class verisureAPI {
 					'variables' => array(
 						'numinst' => $this->numinstall,
 						'panel' => $this->panel,
-						'request' => data1,
+						'request' => $data1,
 						'currentStatus' => $data2
 					),
 					'query' => 'mutation xSDisarmPanel($numinst: String!, $request: DisarmCodeRequest!, $panel: String!) { xSDisarmPanel(numinst: $numinst, request: $request, panel: $panel) { res msg referenceId } }',
