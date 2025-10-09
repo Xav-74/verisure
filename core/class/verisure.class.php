@@ -93,7 +93,7 @@ class verisure extends eqLogic {
 		
 		$this->createCmd('enable', 'Etat Activation', 1, 'info', 'binary', 1, 0, ['generic_type', 'ALARM_ENABLE_STATE'], [], ['dashboard', 'lock'], ['mobile', 'lock']);	//0 = désarmée - 1 = armée
 		$this->createCmd('state', 'Etat Alarme', 2, 'info', 'binary', 1, 0, ['generic_type', 'ALARM_STATE'], ['invertBinary', 1], ['dashboard', 'alert'], ['mobile', 'alert']);		//0 = normale - 1 = déclenchée
-		$this->createCmd('mode', 'Mode Alarme', 3, 'info', 'string', 1, 0, ['generic_type', 'ALARM_MODE'], [], ['dashboard', 'tile'], ['mobile', 'tile']);
+		$this->createCmd('mode', 'Mode Alarme', 3, 'info', 'string', 1, 0, [], [], ['dashboard', 'tile'], ['mobile', 'tile']);
 		$this->createCmd('armed', 'Mode Total', 4, 'action', 'other', 1, 0, ['generic_type', 'ALARM_ARMED'], [], [], []);
 		$this->createCmd('released', 'Désactiver', 5, 'action', 'other', 1, 0, ['generic_type', 'ALARM_RELEASED'], [], [], []);
 		$this->createCmd('getstate', 'Rafraichir', 6, 'action', 'other', 1, 0, [], [], [], []);			
@@ -179,6 +179,8 @@ class verisure extends eqLogic {
 			}
 
 			$this->createCmd('getstatehisto', 'Rafraichir via historique', $order, 'action', 'other', 1, 0, [], [], [], []);
+			$order++;
+			$this->createCmd('mode_basic', 'Mode Basique', $order, 'info', 'string', 0, 0, ['generic_type', 'ALARM_MODE'], [], [], []); // création commande mode_basique pour homebridge
 		}
 
 		$this->save(true);		//paramètre "true" -> ne lance pas le postsave()
@@ -1196,43 +1198,49 @@ class verisureCmd extends cmd {
 							$eqlogic->checkAndUpdateCmd('state', "0");			// On met à jour la commande avec le LogicalId 'state' de l'eqlogic
 							$eqlogic->checkAndUpdateCmd('enable', "0");
 							$eqlogic->checkAndUpdateCmd('mode', "Désactivée");
+							$eqlogic->checkAndUpdateCmd('mode_basic', "Désactivée");
 							$eqlogic->checkAndUpdateCmd('networkstate', $eqlogic->SetNetworkState(1));
 						break;
 						case 'T':
 							$eqlogic->checkAndUpdateCmd('enable', "1");
 							$eqlogic->checkAndUpdateCmd('mode', "Total");
+							$eqlogic->checkAndUpdateCmd('mode_basic', "Total");
 							$eqlogic->checkAndUpdateCmd('networkstate', $eqlogic->SetNetworkState(1));
 						break;
 						case 'Q':
 							$eqlogic->checkAndUpdateCmd('enable', "1");
 							$eqlogic->checkAndUpdateCmd('mode', "Nuit");
+							$eqlogic->checkAndUpdateCmd('mode_basic', "Nuit");
 							$eqlogic->checkAndUpdateCmd('networkstate', $eqlogic->SetNetworkState(1));
 						break;
 						case 'P':
 							$eqlogic->checkAndUpdateCmd('enable', "1");
-							if ( $eqlogic->getConfiguration('alarmtype') == 1 ) { $eqlogic->checkAndUpdateCmd('mode', "Jour"); }
-							if ( $eqlogic->getConfiguration('alarmtype') == 3 ) { $eqlogic->checkAndUpdateCmd('mode', "Partiel"); }
+							if ( $eqlogic->getConfiguration('alarmtype') == 1 ) { $eqlogic->checkAndUpdateCmd('mode', "Jour"); $eqlogic->checkAndUpdateCmd('mode_basic', "Jour"); }
+							if ( $eqlogic->getConfiguration('alarmtype') == 3 ) { $eqlogic->checkAndUpdateCmd('mode', "Partiel"); $eqlogic->checkAndUpdateCmd('mode_basic', "Partiel"); }
 							$eqlogic->checkAndUpdateCmd('networkstate', $eqlogic->SetNetworkState(1));
 						break;
 						case 'E':
 							$eqlogic->checkAndUpdateCmd('enable', "1");
 							$eqlogic->checkAndUpdateCmd('mode', "Extérieur");
+							$eqlogic->checkAndUpdateCmd('mode_basic', "Extérieur");
 							$eqlogic->checkAndUpdateCmd('networkstate', $eqlogic->SetNetworkState(1));
 						break;
 						case 'A':
 							$eqlogic->checkAndUpdateCmd('enable', "1");
 							$eqlogic->checkAndUpdateCmd('mode', "Total + Ext");
+							$eqlogic->checkAndUpdateCmd('mode_basic', "Total");
 							$eqlogic->checkAndUpdateCmd('networkstate', $eqlogic->SetNetworkState(1));
 						break;
 						case 'C':
 							$eqlogic->checkAndUpdateCmd('enable', "1");
 							$eqlogic->checkAndUpdateCmd('mode', "Nuit + Ext");
+							$eqlogic->checkAndUpdateCmd('mode_basic', "Nuit");
 							$eqlogic->checkAndUpdateCmd('networkstate', $eqlogic->SetNetworkState(1));
 						break;
 						case 'B':
 							$eqlogic->checkAndUpdateCmd('enable', "1");
-							if ( $eqlogic->getConfiguration('alarmtype') == 1 ) { $eqlogic->checkAndUpdateCmd('mode', "Jour + Ext"); }
-							if ( $eqlogic->getConfiguration('alarmtype') == 3 ) { $eqlogic->checkAndUpdateCmd('mode', "Partiel + Ext"); }
+							if ( $eqlogic->getConfiguration('alarmtype') == 1 ) { $eqlogic->checkAndUpdateCmd('mode', "Jour + Ext"); $eqlogic->checkAndUpdateCmd('mode_basic', "Jour"); }
+							if ( $eqlogic->getConfiguration('alarmtype') == 3 ) { $eqlogic->checkAndUpdateCmd('mode', "Partiel + Ext"); $eqlogic->checkAndUpdateCmd('mode_basic', "Partiel"); }
 							$eqlogic->checkAndUpdateCmd('networkstate', $eqlogic->SetNetworkState(1));
 						break;
 						case 'Erreur commande Verisure':
@@ -1263,31 +1271,37 @@ class verisureCmd extends cmd {
 							$eqlogic->checkAndUpdateCmd('state', "0");			// On met à jour la commande avec le LogicalId 'state' de l'eqlogic
 							$eqlogic->checkAndUpdateCmd('enable', "0");
 							$eqlogic->checkAndUpdateCmd('mode', "Désactivée");
+							$eqlogic->checkAndUpdateCmd('mode_basic', "Désactivée");
 							$eqlogic->checkAndUpdateCmd('networkstate', $eqlogic->SetNetworkState(1));
 						break;
 						case 'T':
 							$eqlogic->checkAndUpdateCmd('enable', "1");
 							$eqlogic->checkAndUpdateCmd('mode', "Total");
+							$eqlogic->checkAndUpdateCmd('mode_basic', "Total");
 							$eqlogic->checkAndUpdateCmd('networkstate', $eqlogic->SetNetworkState(1));
 						break;
 						case 'P':
 							$eqlogic->checkAndUpdateCmd('enable', "1");
 							$eqlogic->checkAndUpdateCmd('mode', "Partiel");
+							$eqlogic->checkAndUpdateCmd('mode_basic', "Partiel");
 							$eqlogic->checkAndUpdateCmd('networkstate', $eqlogic->SetNetworkState(1));
 						break;
 						case 'E':
 							$eqlogic->checkAndUpdateCmd('enable', "1");
 							$eqlogic->checkAndUpdateCmd('mode', "Extérieur");
+							$eqlogic->checkAndUpdateCmd('mode_basic', "Extérieur");
 							$eqlogic->checkAndUpdateCmd('networkstate', $eqlogic->SetNetworkState(1));
 						break;
 						case 'A':
 							$eqlogic->checkAndUpdateCmd('enable', "1");
 							$eqlogic->checkAndUpdateCmd('mode', "Total + Ext");
+							$eqlogic->checkAndUpdateCmd('mode_basic', "Total");
 							$eqlogic->checkAndUpdateCmd('networkstate', $eqlogic->SetNetworkState(1));
 						break;
 						case 'B':
 							$eqlogic->checkAndUpdateCmd('enable', "1");
 							$eqlogic->checkAndUpdateCmd('mode', "Partiel + Ext");
+							$eqlogic->checkAndUpdateCmd('mode_basic', "Partiel");
 							$eqlogic->checkAndUpdateCmd('networkstate', $eqlogic->SetNetworkState(1));
 						break;
 						
@@ -1310,11 +1324,13 @@ class verisureCmd extends cmd {
 						case 'T':
 							$eqlogic->checkAndUpdateCmd('enable', "1");
 							$eqlogic->checkAndUpdateCmd('mode', "Total");
+							$eqlogic->checkAndUpdateCmd('mode_basic', "Total");
 							$eqlogic->checkAndUpdateCmd('networkstate', $eqlogic->SetNetworkState(1));
 						break;
 						case 'A':
 							$eqlogic->checkAndUpdateCmd('enable', "1");
 							$eqlogic->checkAndUpdateCmd('mode', "Total + Ext");
+							$eqlogic->checkAndUpdateCmd('mode_basic', "Total");
 							$eqlogic->checkAndUpdateCmd('networkstate', $eqlogic->SetNetworkState(1));
 						break;
 						case 'Erreur commande Verisure':
@@ -1331,11 +1347,13 @@ class verisureCmd extends cmd {
 						case 'Q':
 							$eqlogic->checkAndUpdateCmd('enable', "1");
 							$eqlogic->checkAndUpdateCmd('mode', "Nuit");
+							$eqlogic->checkAndUpdateCmd('mode_basic', "Nuit");
 							$eqlogic->checkAndUpdateCmd('networkstate', $eqlogic->SetNetworkState(1));
 						break;
 						case 'C':
 							$eqlogic->checkAndUpdateCmd('enable', "1");
 							$eqlogic->checkAndUpdateCmd('mode', "Nuit + Ext");
+							$eqlogic->checkAndUpdateCmd('mode_basic', "Nuit");
 							$eqlogic->checkAndUpdateCmd('networkstate', $eqlogic->SetNetworkState(1));
 						break;
 						case 'Erreur commande Verisure':
@@ -1355,14 +1373,14 @@ class verisureCmd extends cmd {
 					switch ($state)  {
 						case 'P':
 							$eqlogic->checkAndUpdateCmd('enable', "1");
-							if ( $eqlogic->getConfiguration('alarmtype') == 1 ) { $eqlogic->checkAndUpdateCmd('mode', "Jour"); }
-							if ( $eqlogic->getConfiguration('alarmtype') == 3 ) { $eqlogic->checkAndUpdateCmd('mode', "Partiel"); }
+							if ( $eqlogic->getConfiguration('alarmtype') == 1 ) { $eqlogic->checkAndUpdateCmd('mode', "Jour");	$eqlogic->checkAndUpdateCmd('mode_basic', "Jour"); }
+							if ( $eqlogic->getConfiguration('alarmtype') == 3 ) { $eqlogic->checkAndUpdateCmd('mode', "Partiel"); $eqlogic->checkAndUpdateCmd('mode_basic', "Partiel"); }
 							$eqlogic->checkAndUpdateCmd('networkstate', $eqlogic->SetNetworkState(1));
 						break;
 						case 'B':
 							$eqlogic->checkAndUpdateCmd('enable', "1");
-							if ( $eqlogic->getConfiguration('alarmtype') == 1 ) { $eqlogic->checkAndUpdateCmd('mode', "Jour + Ext"); }
-							if ( $eqlogic->getConfiguration('alarmtype') == 3 ) { $eqlogic->checkAndUpdateCmd('mode', "Partiel + Ext"); }
+							if ( $eqlogic->getConfiguration('alarmtype') == 1 ) { $eqlogic->checkAndUpdateCmd('mode', "Jour + Ext"); $eqlogic->checkAndUpdateCmd('mode_basic', "Jour"); }
+							if ( $eqlogic->getConfiguration('alarmtype') == 3 ) { $eqlogic->checkAndUpdateCmd('mode', "Partiel + Ext"); $eqlogic->checkAndUpdateCmd('mode_basic', "Partiel"); }
 							$eqlogic->checkAndUpdateCmd('networkstate', $eqlogic->SetNetworkState(1));
 						break;
 						case 'Erreur commande Verisure':
@@ -1380,22 +1398,25 @@ class verisureCmd extends cmd {
 						case 'E':
 							$eqlogic->checkAndUpdateCmd('enable', "1");
 							$eqlogic->checkAndUpdateCmd('mode', "Extérieur");
+							$eqlogic->checkAndUpdateCmd('mode_basic', "Extérieur");
 							$eqlogic->checkAndUpdateCmd('networkstate', $eqlogic->SetNetworkState(1));
 						break;
 						case 'A':
 							$eqlogic->checkAndUpdateCmd('enable', "1");
 							$eqlogic->checkAndUpdateCmd('mode', "Total + Ext");
+							$eqlogic->checkAndUpdateCmd('mode_basic', "Total");
 							$eqlogic->checkAndUpdateCmd('networkstate', $eqlogic->SetNetworkState(1));
 						break;
 						case 'C':
 							$eqlogic->checkAndUpdateCmd('enable', "1");
 							$eqlogic->checkAndUpdateCmd('mode', "Nuit + Ext");
+							$eqlogic->checkAndUpdateCmd('mode_basic', "Nuit");
 							$eqlogic->checkAndUpdateCmd('networkstate', $eqlogic->SetNetworkState(1));
 						break;
 						case 'B':
 							$eqlogic->checkAndUpdateCmd('enable', "1");
-							if ( $eqlogic->getConfiguration('alarmtype') == 1 ) { $eqlogic->checkAndUpdateCmd('mode', "Jour + Ext"); }
-							if ( $eqlogic->getConfiguration('alarmtype') == 3 ) { $eqlogic->checkAndUpdateCmd('mode', "Partiel + Ext"); }
+							if ( $eqlogic->getConfiguration('alarmtype') == 1 ) { $eqlogic->checkAndUpdateCmd('mode', "Jour + Ext"); $eqlogic->checkAndUpdateCmd('mode_basic', "Jour"); }
+							if ( $eqlogic->getConfiguration('alarmtype') == 3 ) { $eqlogic->checkAndUpdateCmd('mode', "Partiel + Ext"); $eqlogic->checkAndUpdateCmd('mode_basic', "Partiel"); }
 							$eqlogic->checkAndUpdateCmd('networkstate', $eqlogic->SetNetworkState(1));
 						break;
 						case 'Erreur commande Verisure':
@@ -1417,6 +1438,7 @@ class verisureCmd extends cmd {
 							$eqlogic->checkAndUpdateCmd('state', "0");	
 							$eqlogic->checkAndUpdateCmd('enable', "0");	
 							$eqlogic->checkAndUpdateCmd('mode', "Désactivée");
+							$eqlogic->checkAndUpdateCmd('mode_basic', "Désactivée");
 							$eqlogic->checkAndUpdateCmd('networkstate', $eqlogic->SetNetworkState(1));
 						break;
 						case 'Erreur commande Verisure':
@@ -1472,14 +1494,17 @@ class verisureCmd extends cmd {
 						$eqlogic->checkAndUpdateCmd('state', "0");
 						$eqlogic->checkAndUpdateCmd('enable', "0");
 						$eqlogic->checkAndUpdateCmd('mode', "Désactivée");
+						$eqlogic->checkAndUpdateCmd('mode_basic', "Désactivée");
 					break;
 					case 'ARMED_AWAY':
 						$eqlogic->checkAndUpdateCmd('enable', "1");
 						$eqlogic->checkAndUpdateCmd('mode', "Total");
+						$eqlogic->checkAndUpdateCmd('mode_basic', "Total");
 					break;
 					case 'ARMED_HOME':
 						$eqlogic->checkAndUpdateCmd('enable', "1");
 						$eqlogic->checkAndUpdateCmd('mode', "Partiel");
+						$eqlogic->checkAndUpdateCmd('mode_basic', "Partiel");
 					break;
 					case 'Erreur commande Verisure':
 						log::add('verisure', 'debug', '│ /!\ Erreur commande Verisure GetStateAlarm()');
@@ -1495,6 +1520,7 @@ class verisureCmd extends cmd {
 						$eqlogic->checkAndUpdateCmd('state', "0");	
 						$eqlogic->checkAndUpdateCmd('enable', "0");	
 						$eqlogic->checkAndUpdateCmd('mode', "Désactivée");
+						$eqlogic->checkAndUpdateCmd('mode_basic', "Désactivée");
 					break;
 					case 'Erreur commande Verisure':
 						log::add('verisure', 'debug', '│ /!\ Erreur commande Verisure DisarmAlarm()');
@@ -1509,6 +1535,7 @@ class verisureCmd extends cmd {
 					case 'ARMED_HOME':
 						$eqlogic->checkAndUpdateCmd('enable', "1");	
 						$eqlogic->checkAndUpdateCmd('mode', "Partiel");
+						$eqlogic->checkAndUpdateCmd('mode_basic', "Partiel");
 					break;
 					case 'Erreur commande Verisure':
 						log::add('verisure', 'debug', '│ /!\ Erreur commande Verisure ArmHomeAlarm()');
@@ -1523,6 +1550,7 @@ class verisureCmd extends cmd {
 					case 'ARMED_AWAY':
 						$eqlogic->checkAndUpdateCmd('enable', "1");	
 						$eqlogic->checkAndUpdateCmd('mode', "Total");
+						$eqlogic->checkAndUpdateCmd('mode_basic', "Total");
 					break;
 					case 'Erreur commande Verisure':
 						log::add('verisure', 'debug', '│ /!\ Erreur commande Verisure ArmTotalAlarm()');
