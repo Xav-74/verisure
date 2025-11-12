@@ -366,8 +366,8 @@ class verisureAPI {
 					'variables' => array(
 						'numinst' => $this->numinstall,
 						'panel' => $this->panel,
-						'request' => "DARM1",
-						'currentStatus' => $data1
+						'request' => $data1,
+						'currentStatus' => $data2
 					),
 					'query' => 'mutation xSDisarmPanel($numinst: String!, $request: DisarmCodeRequest!, $panel: String!) { xSDisarmPanel(numinst: $numinst, request: $request, panel: $panel) { res msg referenceId } }',
 				);
@@ -379,11 +379,26 @@ class verisureAPI {
 					'variables' => array(
 						'numinst' => $this->numinstall,
 						'panel' => $this->panel,
-						'request' => "DARM1",
-						'referenceId' => $data1,
-						'counter' => (int)$data2
+						'request' => $data1,
+						'referenceId' => $data2,
+						'counter' => (int)$data3
 					),
 					'query' => 'query DisarmStatus($numinst: String!, $panel: String!, $referenceId: String!, $counter: Int!, $request: DisarmCodeRequest) { xSDisarmStatus(numinst: $numinst, panel: $panel, referenceId: $referenceId, counter: $counter, request: $request) { res msg status protomResponse protomResponseDate numinst requestId error { code type allowForcing exceptionsNumber referenceId } } }',
+				);
+			break;
+
+			case "ActV2Timeline":
+				$content = array(
+					'operationName' =>  "ActV2Timeline",
+					'variables' => array(
+						'numinst' => $this->numinstall,
+						'panel' => $this->panel,
+						'numRows' => 10,
+						'offset' => 0,
+						'hasLocksmithRequested' => false,
+						'singleActivityFilter' => $data1
+					),
+					'query' => 'query ActV2Timeline($numinst: String!, $numRows: Int, $offset: Int, $hasLocksmithRequested: Boolean, $singleActivityFilter: [Int], $panel: String) { xSActV2(numinst: $numinst, input: {timeFilter: LASTMONTH, numRows: $numRows, offset: $offset, hasLocksmithRequested: $hasLocksmithRequested, singleActivityFilter: $singleActivityFilter, panel: $panel}) { reg { alias type device source idSignal myVerisureUser time img signalType } } }',
 				);
 			break;
 
@@ -780,6 +795,21 @@ class verisureAPI {
 		return array($httpRespCode, $response, $httpRespCode2, $response2);
 	}
 
+	public function GetStateAlarmFromHistory($filter)  {			// Get the information of last status of the alarm
+		// Filter status alarm
+		if ( $filter == null ) { $filter = [1,2,7,8,9,10,11,12,31,32,38,39,40,44,46,47,70,71,311,312,700,701,702,720,721,722,723,724,730,731,732,733,734,740,741,742,743,744,800,801,802,820,821,822,823,824,830,831,832,833,834,840,841,842,843,844]; }
+		$method = "POST";
+		$headers = $this->setHeaders("ActV2Timeline");
+		$content = $this->setContent("ActV2Timeline", $filter, null, null);
+		
+		$result = $this->doRequest($content, $method, $headers);
+		$httpRespCode = $result[0];
+		$response = $result[1];
+		log::add('verisure', 'debug', '│ Request ActV2Timeline - httpRespCode => '.$httpRespCode.' - response => '.$response);
+
+		return array($httpRespCode, $response);
+	}
+
 
 	public function ArmAlarm($mode, $currentStatus)  {			// Arm the alarm in mode total, day, night, peri
 
@@ -819,11 +849,11 @@ class verisureAPI {
 	}
 
 
-	public function DisarmAlarm($currentStatus)  {			// Disarm the alarm (all mode)
+	public function DisarmAlarm($mode, $currentStatus)  {			// Disarm the alarm (all mode)
 
 		$method = "POST";
 		$headers = $this->setHeaders("xSDisarmPanel");
-		$content = $this->setContent("xSDisarmPanel", $currentStatus, null, null);
+		$content = $this->setContent("xSDisarmPanel", $mode, $currentStatus, null);
 		
 		$result = $this->doRequest($content, $method, $headers);
 		$httpRespCode = $result[0];
@@ -840,7 +870,7 @@ class verisureAPI {
 				sleep(1);
 				$method2 = "POST";
 				$headers2 = $this->setHeaders("DisarmStatus");
-				$content2 = $this->setContent("DisarmStatus", $referenceId, $counter, null);
+				$content2 = $this->setContent("DisarmStatus", $mode, $referenceId, $counter);
 				
 				$result2 = $this->doRequest($content2, $method2, $headers2);
 				$httpRespCode2 = $result2[0];
@@ -872,7 +902,6 @@ class verisureAPI {
 
 		return array($httpRespCode, $response);
 	}
-
 	
 	public function GetPhotosRequest($device)  {			// Photos request
 		
