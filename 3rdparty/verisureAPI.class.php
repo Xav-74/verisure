@@ -426,7 +426,7 @@ class verisureAPI {
 						'devices' => array( (int)$data1 ),
 						'mediaType' => 1,
 						'resolution' => 0,
-						'deviceType' => 106
+						'deviceType' => (int)$data2
 					),
 					'query' => 'mutation RequestImages($numinst: String!, $panel: String!, $devices: [Int]!, $mediaType: Int, $resolution: Int, $deviceType: Int) { xSRequestImages(numinst: $numinst, panel: $panel, devices: $devices, mediaType: $mediaType, resolution: $resolution, deviceType: $deviceType) { res msg referenceId } }',
 				);
@@ -795,6 +795,7 @@ class verisureAPI {
 		return array($httpRespCode, $response, $httpRespCode2, $response2);
 	}
 
+	
 	public function GetStateAlarmFromHistory($filter)  {			// Get the information of last status of the alarm
 		// Filter status alarm
 		if ( $filter == null ) { $filter = [1,2,7,8,9,10,11,12,31,32,38,39,40,44,46,47,70,71,311,312,700,701,702,720,721,722,723,724,730,731,732,733,734,740,741,742,743,744,800,801,802,820,821,822,823,824,830,831,832,833,834,840,841,842,843,844]; }
@@ -903,13 +904,13 @@ class verisureAPI {
 		return array($httpRespCode, $response);
 	}
 	
-	public function GetPhotosRequest($device)  {			// Photos request
+	public function GetPhotosRequest($device, $code)  {			// Photos request
 		
 		$now = date("Y-m-d H:i:s");
 		
 		$method = "POST";
 		$headers = $this->setHeaders("RequestImages");
-		$content = $this->setContent("RequestImages", $device, null, null);
+		$content = $this->setContent("RequestImages", $device, $code, null);
 		
 		$result = $this->doRequest($content, $method, $headers);
 		$httpRespCode = $result[0];

@@ -331,8 +331,12 @@ class verisure extends eqLogic {
 				$device_array = $this->getConfiguration('devices');
 				for ($j = 0; $j < $this->getConfiguration('nb_smartplug'); $j++)  {
 					if ($device_array['smartplugType'.$j] == "YR" || $device_array['smartplugType'.$j] == "XR" || $device_array['smartplugType'.$j] == "XP" || $device_array['smartplugType'.$j] == "QR")  {
-						if (isset($listValue))  { $listValue = $listValue .';'. $device_array['smartplugID'.$j].'|'.$device_array['smartplugName'.$j];  }
-						else  { $listValue = $device_array['smartplugID'.$j].'|'.$device_array['smartplugName'.$j];  }
+						if (isset($listValue))  { $listValue = $listValue .';'. $device_array['smartplugID'.$j].'-106'.'|'.$device_array['smartplugName'.$j];  }
+						else  { $listValue = $device_array['smartplugID'.$j].'-106'.'|'.$device_array['smartplugName'.$j];  }
+					}
+					if ($device_array['smartplugType'.$j] == "QP")  {
+						if (isset($listValue))  { $listValue = $listValue .';'. $device_array['smartplugID'.$j].'-107'.'|'.$device_array['smartplugName'.$j];  }
+						else  { $listValue = $device_array['smartplugID'.$j].'-107'.'|'.$device_array['smartplugName'.$j];  }
 					}
 				}
 				log::add('verisure', 'debug', $this->getHumanName().' - Mise à jour liste smartplugs compatibles images : '.var_export($listValue, true));
@@ -366,8 +370,12 @@ class verisure extends eqLogic {
 				$device_array = $this->getConfiguration('devices');
 				for ($j = 0; $j < $this->getConfiguration('nb_smartplug'); $j++)  {
 					if ($device_array['smartplugType'.$j] == "YR" || $device_array['smartplugType'.$j] == "XR" || $device_array['smartplugType'.$j] == "XP" || $device_array['smartplugType'.$j] == "QR")  {
-						if (isset($listValue))  { $listValue = $listValue .';'. $device_array['smartplugID'.$j].'|'.$device_array['smartplugName'.$j];  }
-						else  { $listValue = $device_array['smartplugID'.$j].'|'.$device_array['smartplugName'.$j];  }
+						if (isset($listValue))  { $listValue = $listValue .';'. $device_array['smartplugID'.$j].'-106'.'|'.$device_array['smartplugName'.$j];  }
+						else  { $listValue = $device_array['smartplugID'.$j].'-106'.'|'.$device_array['smartplugName'.$j];  }
+					}
+					if ($device_array['smartplugType'.$j] == "QP")  {
+						if (isset($listValue))  { $listValue = $listValue .';'. $device_array['smartplugID'.$j].'-107'.'|'.$device_array['smartplugName'.$j];  }
+						else  { $listValue = $device_array['smartplugID'.$j].'-107'.'|'.$device_array['smartplugName'.$j];  }
 					}
 				}
 				log::add('verisure', 'debug', $this->getHumanName().' - Mise à jour liste smartplugs compatibles images : '.var_export($listValue, true));
@@ -971,14 +979,14 @@ class verisure extends eqLogic {
 		}
 	}
 
-	public function GetPhotosRequest($device)	{		//Type 1 2 & 3
+	public function GetPhotosRequest($device, $code = null)	{		//Type 1 2 & 3
 
 		if ( $this->getConfiguration('alarmtype') == 1 || $this->getConfiguration('alarmtype') == 3 )   { 
 			log::add('verisure', 'debug', '┌───────── Demande de photos ─────────');
 			log::add('verisure', 'debug', '│ Equipement '.$this->getHumanName().' - Alarme type '.$this->getConfiguration('alarmtype'));
 			$MyAlarm = new verisureAPI($this->getConfiguration('numinstall'),$this->getConfiguration('username'),$this->getConfiguration('password'),$this->getConfiguration('country'));
 			$result_Login = $MyAlarm->Login();
-          	$result_GetPhotosRequest = $MyAlarm->GetPhotosRequest($device);
+          	$result_GetPhotosRequest = $MyAlarm->GetPhotosRequest($device, $code);
 			$result_Logout = $MyAlarm->Logout();
 			
 			if ( $result_GetPhotosRequest[6] == 200 )  {
@@ -1253,7 +1261,7 @@ class verisureCmd extends cmd {
 				break;
 
 				case 'getstatehisto': 												// LogicalId de la commande
-					$statesHisto = $eqlogic->GetStateAlarmFromHistory(); 				// On lance la fonction GetStateAlarmFromHistory() pour récupérer l'historique des statuts de l'alarme
+					$statesHisto = $eqlogic->GetStateAlarmFromHistory(); 			// On lance la fonction GetStateAlarmFromHistory() pour récupérer l'historique des statuts de l'alarme
 
                     // On récupère uniquement les événements
                     $history = $statesHisto['reg'] ?? [];
