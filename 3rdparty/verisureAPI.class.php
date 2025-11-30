@@ -340,9 +340,10 @@ class verisureAPI {
 						'numinst' => $this->numinstall,
 						'panel' => $this->panel,
 						'request' => $data1,
-						'currentStatus' => $data2
+						'currentStatus' => $data2,
+						'armAndLock' => false
 					),
-					'query' => 'mutation xSArmPanel($numinst: String!, $request: ArmCodeRequest!, $panel: String!, $currentStatus: String) { xSArmPanel(numinst: $numinst, request: $request, panel: $panel, currentStatus: $currentStatus) { res msg referenceId } }',
+					'query' => 'mutation xSArmPanel($numinst: String!, $request: ArmCodeRequest!, $panel: String!, $currentStatus: String, $suid: String, $forceArmingRemoteId: String, $armAndLock: Boolean) { xSArmPanel(numinst: $numinst, request: $request, panel: $panel, currentStatus: $currentStatus, suid: $suid, forceArmingRemoteId: $forceArmingRemoteId, armAndLock: $armAndLock) { res msg referenceId pollingTime} }',
 				);
 			break;
 
@@ -354,9 +355,10 @@ class verisureAPI {
 						'panel' => $this->panel,
 						'request' => $data1,
 						'referenceId' => $data2,
-						'counter' => (int)$data3
+						'counter' => (int)$data3,
+						'armAndLock' => false
 					),
-					'query' => 'query ArmStatus($numinst: String!, $request: ArmCodeRequest, $panel: String!, $referenceId: String!, $counter: Int!) { xSArmStatus(numinst: $numinst, panel: $panel, referenceId: $referenceId, counter: $counter, request: $request) { res msg status protomResponse protomResponseDate numinst requestId error { code type allowForcing exceptionsNumber referenceId } } }',
+					'query' => 'query ArmStatus($numinst: String!, $request: ArmCodeRequest, $panel: String!, $referenceId: String!, $counter: Int!, $forceArmingRemoteId: String, $armAndLock: Boolean) { xSArmStatus(numinst: $numinst, panel: $panel, referenceId: $referenceId, counter: $counter, request: $request, forceArmingRemoteId: $forceArmingRemoteId, armAndLock: $armAndLock) { res msg status protomResponse protomResponseDate numinst requestId error { code type allowForcing exceptionsNumber referenceId suid } smartlockStatus { state deviceId updatedOnArm } } }',
 				);
 			break;
 
@@ -367,9 +369,9 @@ class verisureAPI {
 						'numinst' => $this->numinstall,
 						'panel' => $this->panel,
 						'request' => $data1,
-						'currentStatus' => $data2
+						//'currentStatus' => $data2
 					),
-					'query' => 'mutation xSDisarmPanel($numinst: String!, $request: DisarmCodeRequest!, $panel: String!) { xSDisarmPanel(numinst: $numinst, request: $request, panel: $panel) { res msg referenceId } }',
+					'query' => 'mutation xSDisarmPanel($numinst: String!, $request: DisarmCodeRequest!, $panel: String!) { xSDisarmPanel(numinst: $numinst, request: $request, panel: $panel) { res msg referenceId pollingTime} }',
 				);
 			break;
 
@@ -383,7 +385,7 @@ class verisureAPI {
 						'referenceId' => $data2,
 						'counter' => (int)$data3
 					),
-					'query' => 'query DisarmStatus($numinst: String!, $panel: String!, $referenceId: String!, $counter: Int!, $request: DisarmCodeRequest) { xSDisarmStatus(numinst: $numinst, panel: $panel, referenceId: $referenceId, counter: $counter, request: $request) { res msg status protomResponse protomResponseDate numinst requestId error { code type allowForcing exceptionsNumber referenceId } } }',
+					'query' => 'query DisarmStatus($numinst: String!, $panel: String!, $referenceId: String!, $counter: Int!, $request: DisarmCodeRequest) { xSDisarmStatus(numinst: $numinst, panel: $panel, referenceId: $referenceId, counter: $counter, request: $request) { res msg status protomResponse protomResponseDate numinst requestId error { code type allowForcing exceptionsNumber referenceId suid} } }',
 				);
 			break;
 
@@ -510,6 +512,20 @@ class verisureAPI {
 					'query' => 'query xSGetLockCurrentMode($numinst: String!) { xSGetLockCurrentMode(numinst: $numinst) { res smartlockInfo { lockStatus deviceId } } }',
 				);
 			break;
+
+			case "xSGetExceptions":
+				$content = array(
+					'operationName' =>  "xSGetExceptions",
+					'variables' => array(
+						'numinst' => $this->numinstall,
+						'panel' => $this->panel,
+						'referenceId' => $data1,
+						'suid' => $data2,
+						'counter' => (int)$data3						
+					),
+					'query' => 'query xSGetSignals($numinst: String!, $panel: String!, $referenceId: String!, $counter: Int!, $suid: String)  { xSGetExceptions(numinst: $numinst, panel: $panel, referenceId: $referenceId, counter: $counter, suid: $suid) { res msg exceptions { status deviceType alias } } }',
+				);
+			break; 
 
 		}
 

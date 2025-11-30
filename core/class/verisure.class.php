@@ -773,6 +773,7 @@ class verisure extends eqLogic {
 			$MyAlarm = new verisureAPI($this->getConfiguration('numinstall'),$this->getConfiguration('username'),$this->getConfiguration('password'),$this->getConfiguration('country'));
 			$result_Login = $MyAlarm->Login();
 			$mode = ( $armedExt ) ? "ARM1PERI1" : "ARM1";
+			log::add('verisure', 'debug', '│ Mode : '.$mode);
           	$result_ArmAlarm = $MyAlarm->ArmAlarm($mode, $this->GetAlarmStatus());
 			$response_ArmAlarm = json_decode($result_ArmAlarm[3], true);
 			$result_Logout = $MyAlarm->Logout();
@@ -812,6 +813,7 @@ class verisure extends eqLogic {
 		log::add('verisure', 'debug', '│ Equipement '.$this->getHumanName().' - Alarme type '.$this->getConfiguration('alarmtype'));
 		$MyAlarm = new verisureAPI($this->getConfiguration('numinstall'),$this->getConfiguration('username'),$this->getConfiguration('password'),$this->getConfiguration('country'));
 		$result_Login = $MyAlarm->Login();
+		log::add('verisure', 'debug', '│ Mode : ARMNIGHT1');
         $result_ArmAlarm = $MyAlarm->ArmAlarm("ARMNIGHT1", $this->GetAlarmStatus());
 		$response_ArmAlarm = json_decode($result_ArmAlarm[3], true);
 		$result_Logout = $MyAlarm->Logout();
@@ -834,6 +836,7 @@ class verisure extends eqLogic {
 		$MyAlarm = new verisureAPI($this->getConfiguration('numinstall'),$this->getConfiguration('username'),$this->getConfiguration('password'),$this->getConfiguration('country'));
 		$result_Login = $MyAlarm->Login();
 		$mode = ( $armedExt ) ? "ARMDAY1PERI1" : "ARMDAY1";
+		log::add('verisure', 'debug', '│ Mode : '.$mode);
 		$result_ArmAlarm = $MyAlarm->ArmAlarm($mode, $this->GetAlarmStatus());
 		$response_ArmAlarm = json_decode($result_ArmAlarm[3], true);
 		$result_Logout = $MyAlarm->Logout();
@@ -855,7 +858,8 @@ class verisure extends eqLogic {
 		log::add('verisure', 'debug', '│ Equipement '.$this->getHumanName().' - Alarme type '.$this->getConfiguration('alarmtype'));
 		$MyAlarm = new verisureAPI($this->getConfiguration('numinstall'),$this->getConfiguration('username'),$this->getConfiguration('password'),$this->getConfiguration('country'));
 		$result_Login = $MyAlarm->Login();
-        $result_ArmAlarm = $MyAlarm->ArmAlarm("PERI1", $this->GetAlarmStatus());
+        log::add('verisure', 'debug', '│ Mode : PERI1');
+		$result_ArmAlarm = $MyAlarm->ArmAlarm("PERI1", $this->GetAlarmStatus());
 		$response_ArmAlarm = json_decode($result_ArmAlarm[3], true);
 		$result_Logout = $MyAlarm->Logout();
         
@@ -897,7 +901,8 @@ class verisure extends eqLogic {
 			$MyAlarm = new verisureAPI($this->getConfiguration('numinstall'),$this->getConfiguration('username'),$this->getConfiguration('password'),$this->getConfiguration('country'));
 			$result_Login = $MyAlarm->Login();
 			$mode = $this->GetDisarmMode();
-          	$result_DisarmAlarm = $MyAlarm->DisarmAlarm($mode, $this->GetAlarmStatus());
+          	log::add('verisure', 'debug', '│ Mode : '.$mode);
+			$result_DisarmAlarm = $MyAlarm->DisarmAlarm($mode, $this->GetAlarmStatus());
 			$response_DisarmAlarm = json_decode($result_DisarmAlarm[3], true);
 			$result_Logout = $MyAlarm->Logout();
           	
@@ -1152,7 +1157,7 @@ class verisure extends eqLogic {
 
 	public function GetAlarmStatus() {		//Type 1 & 3
 
-		$mode = $this->getCmd(null, 'mode');
+		$mode = $this->getCmd(null, 'mode')->execCmd();
 		if ( $mode == "Désactivée" ) { return "D"; }
 		elseif ( $mode == "Total" ) { return "T"; }
 		elseif ( $mode == "Nuit" ) { return "Q"; }
@@ -1163,14 +1168,14 @@ class verisure extends eqLogic {
 	
 	public function GetDisarmMode() {		//Type 1 & 3
 
-		$mode = $this->getCmd(null, 'mode');
+		$mode = $this->getCmd(null, 'mode')->execCmd();
 		if ( $mode == "Désactivée" ) { return "DARM1"; }
 		elseif ( $mode == "Total" ) { return "DARM1"; }
 		elseif ( $mode == "Nuit" ) { return "DARM1"; }
 		elseif ( $mode == "Jour" || $mode =="Partiel" ) { return "DARM1"; }
 		elseif ( $mode == "Extérieur" ) { return "DARMPERI"; }
 		elseif ( $mode == "Total + Ext" || $mode == "Nuit + Ext" || $mode == "Jour + Ext" || $mode == "Partiel + Ext") { return "DARM1DARMPERI"; }
-		else { return "DARM1DARMPERI"; }
+		else { return "DARM1"; }
 
 		return $mode;
 	}
