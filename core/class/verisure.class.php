@@ -772,7 +772,8 @@ class verisure extends eqLogic {
 			log::add('verisure', 'debug', '│ Equipement '.$this->getHumanName().' - Alarme type '.$this->getConfiguration('alarmtype'));
 			$MyAlarm = new verisureAPI($this->getConfiguration('numinstall'),$this->getConfiguration('username'),$this->getConfiguration('password'),$this->getConfiguration('country'));
 			$result_Login = $MyAlarm->Login();
-			$mode = ( $armedExt ) ? "ARM1PERI1" : "ARM1";
+			$mode = ( $armedExt ) ? "ARM1" : "ARM1PERI1";
+			log::add('verisure', 'debug', '│ armedExt : '.$armedExt);
 			log::add('verisure', 'debug', '│ Mode : '.$mode);
           	$result_ArmAlarm = $MyAlarm->ArmAlarm($mode, $this->GetAlarmStatus());
 			$response_ArmAlarm = json_decode($result_ArmAlarm[3], true);
@@ -835,7 +836,7 @@ class verisure extends eqLogic {
 		log::add('verisure', 'debug', '│ Equipement '.$this->getHumanName().' - Alarme type '.$this->getConfiguration('alarmtype'));
 		$MyAlarm = new verisureAPI($this->getConfiguration('numinstall'),$this->getConfiguration('username'),$this->getConfiguration('password'),$this->getConfiguration('country'));
 		$result_Login = $MyAlarm->Login();
-		$mode = ( $armedExt ) ? "ARMDAY1PERI1" : "ARMDAY1";
+		$mode = ( $armedExt ) ? "ARMDAY1" : "ARMDAY1PERI1";
 		log::add('verisure', 'debug', '│ Mode : '.$mode);
 		$result_ArmAlarm = $MyAlarm->ArmAlarm($mode, $this->GetAlarmStatus());
 		$response_ArmAlarm = json_decode($result_ArmAlarm[3], true);
