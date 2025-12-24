@@ -727,7 +727,11 @@ class verisureAPI {
 		log::add('verisure', 'debug', '│ Request Srv - httpRespCode => '.$httpRespCode.' - response => '.$response);
 
 		$res = json_decode($response, true);
-		if ( $res['data']['xSSrv']['installation']['capabilities'] != "" ) {
+		if ( 
+			  is_array($res)
+    		  && isset($res['data']['xSSrv']['installation']['capabilities'])
+    		  && $res['data']['xSSrv']['installation']['capabilities'] != "" 
+		) {
 			$this->capabilities = $res['data']['xSSrv']['installation']['capabilities'];
 		}
 
