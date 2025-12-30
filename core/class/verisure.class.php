@@ -151,18 +151,15 @@ class verisure extends eqLogic {
 			$this->createCmd('armed_day', 'Mode Partiel', 7, 'action', 'other', 1, 0, ['generic_type', 'ALARM_SET_MODE'], [], [], []);
 			$this->createCmd('getpictures', 'Demande Images', 8, 'action', 'select', 1, 0, [], [], [], []);
 			$this->createCmd('networkstate', 'Qualité Réseau', 9, 'info', 'numeric', 1, 0, [], [], [], []);
-
-			$device_array = $this->getConfiguration('devices');
 			$order = 10;
-			//Création de la commande mode Extérieur si détecteur de mouvement présent
-			for ($j = 0; $j < $this->getConfiguration('nb_smartplug'); $j++)  {
-				if ($device_array['smartplugType'.$j] == "QP")  {
-					$this->createCmd('armed_ext', 'Mode Extérieur', $order, 'action', 'other', 1, 0, [], [], [], []);
-					$order++;
-					break;
-				}
+
+			//Création de la commande mode Extérieur si option activée
+			if ( $this->getConfiguration('externalAlarm') == true )  {
+				$this->createCmd('armed_ext', 'Mode Extérieur', $order, 'action', 'other', 1, 0, [], [], [], []);
+				$order++;
 			}
 			
+			$device_array = $this->getConfiguration('devices');
 			//Création des 3 commandes de la serrure connectée
 			for ($j = 0; $j < $this->getConfiguration('nb_smartplug'); $j++)  {
 				if ($device_array['smartplugType'.$j] == "DR")  {
@@ -658,7 +655,7 @@ class verisure extends eqLogic {
 	}
 
 	public function GetStateAlarmFromHistory()	{	//Type 3
-		//Heliospeed
+		
 		if	( $this->getConfiguration('alarmtype') == 3 )   {
 			log::add('verisure', 'debug', '┌───────── Demande de statut ─────────');
 			$MyAlarm = new verisureAPI($this->getConfiguration('numinstall'),$this->getConfiguration('username'),$this->getConfiguration('password'),$this->getConfiguration('country'));
@@ -683,10 +680,11 @@ class verisure extends eqLogic {
 	}
 
 	function ConvertVerisureToAlarmState(array $history, bool $armedExt = false) {
+		
 		// Analyse de l'historique des événements pour déterminer le statut actuel
-
 		$internal = 'unknown'; // total, partiel, desactive
-		$external = $armedExt ? 'unknown' : 'desactive'; // actif, desactive (s'il n'y a pas d'alarme extérieure, on la considère comme désactivée)
+		if ( $this->getConfiguration('externalAlarm') == true ) { $external = 'unknown'; }
+		else { $external = 'desactive'; } 	// actif, desactive (s'il n'y a pas d'alarme extérieure, on la considère comme désactivée)
 
 		// On limite à 10 événements max
 		$events = array_slice($history, 0, 10);
