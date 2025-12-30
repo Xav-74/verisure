@@ -211,6 +211,15 @@ $eqLogics = eqLogic::byType($plugin->getId());
 										</select>
 									</div>
 								</div>
+								
+								<div id="div_option" class="form-group">						
+									<label class="col-sm-6 control-label help" data-help="{{Attention concernant l'option Activation forcée ! Elle permet de forcer l'activation de l'alarme même si une porte ou une fenêtre est restée ouverte. A vos risques et périls !}}">{{Options}}</label>
+									<div class="col-sm-6">
+										<label class="checkbox-inline"><input type="checkbox" class="eqLogicAttr" data-l1key="configuration" data-l2key="externalAlarm"/>{{Présence alarme extérieure}}</label>
+										<br/>
+										<label class="checkbox-inline"><input type="checkbox" class="eqLogicAttr" data-l1key="configuration" data-l2key="allowForcing"/>{{Activation forcée}}</label>
+									</div>
+								</div>	
 							</fieldset>
 						</form>  
                     </div>								
@@ -311,6 +320,7 @@ $eqLogics = eqLogic::byType($plugin->getId());
 					$('#div_pwd').show();
 					$('#div_code').hide();
 					$('#div_country').show();
+					$('#div_option').hide();
 				}
 
 				if ($('.eqLogicAttr[data-l2key=alarmtype]').value() == "2") {
@@ -322,6 +332,7 @@ $eqLogics = eqLogic::byType($plugin->getId());
 					$('#div_pwd').show();
 					$('#div_code').show();
 					$('#div_country').hide();
+					$('#div_option').hide();
 				}
 
 				if ($('.eqLogicAttr[data-l2key=alarmtype]').value() == "3") {
@@ -333,6 +344,7 @@ $eqLogics = eqLogic::byType($plugin->getId());
 					$('#div_pwd').show();
 					$('#div_code').hide();
 					$('#div_country').show();
+					$('#div_option').show();
 				}
 			});
 

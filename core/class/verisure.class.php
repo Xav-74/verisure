@@ -765,17 +765,22 @@ class verisure extends eqLogic {
 		return null;
 	}
 	
-	public function ArmTotalAlarm(bool $armedExt = false)	{	//Type 1 2 & 3
+	public function ArmTotalAlarm()	{	//Type 1 2 & 3
 		
 		if ( $this->getConfiguration('alarmtype') == 1 || $this->getConfiguration('alarmtype') == 3 )   { 
 			log::add('verisure', 'debug', '┌───────── Demande activation mode total ─────────');
 			log::add('verisure', 'debug', '│ Equipement '.$this->getHumanName().' - Alarme type '.$this->getConfiguration('alarmtype'));
 			$MyAlarm = new verisureAPI($this->getConfiguration('numinstall'),$this->getConfiguration('username'),$this->getConfiguration('password'),$this->getConfiguration('country'));
 			$result_Login = $MyAlarm->Login();
-			$mode = ( $armedExt ) ? "ARM1" : "ARM1PERI1";
-			log::add('verisure', 'debug', '│ armedExt : '.$armedExt);
+			
+			if ( $this->getConfiguration('externalAlarm') == true ) { 
+				$mode = "ARM1PERI1";
+				log::add('verisure', 'debug', '│ Alarme extérieure présente');
+			}
+			else { $mode = "ARM1"; }
 			log::add('verisure', 'debug', '│ Mode : '.$mode);
-          	$result_ArmAlarm = $MyAlarm->ArmAlarm($mode, $this->GetAlarmStatus());
+
+			$result_ArmAlarm = $MyAlarm->ArmAlarm($mode, $this->GetAlarmStatus());
 			$response_ArmAlarm = json_decode($result_ArmAlarm[3], true);
 			$result_Logout = $MyAlarm->Logout();
           	
@@ -829,15 +834,21 @@ class verisure extends eqLogic {
 		return $res;
 	}
 	
-	public function ArmDayAlarm(bool $armedExt = false)	{	//Type 1 & 3
+	public function ArmDayAlarm()	{	//Type 1 & 3
 				
 		if ( $this->getConfiguration('alarmtype') == 1 ) { log::add('verisure', 'debug', '┌───────── Demande activation mode jour ─────────'); }
 		if ( $this->getConfiguration('alarmtype') == 3 ) { log::add('verisure', 'debug', '┌───────── Demande activation mode partiel ─────────'); }
 		log::add('verisure', 'debug', '│ Equipement '.$this->getHumanName().' - Alarme type '.$this->getConfiguration('alarmtype'));
 		$MyAlarm = new verisureAPI($this->getConfiguration('numinstall'),$this->getConfiguration('username'),$this->getConfiguration('password'),$this->getConfiguration('country'));
 		$result_Login = $MyAlarm->Login();
-		$mode = ( $armedExt ) ? "ARMDAY1" : "ARMDAY1PERI1";
+		
+		if ( $this->getConfiguration('externalAlarm') == true ) { 
+				$mode = "ARMDAY1PERI1";
+				log::add('verisure', 'debug', '│ Alarme extérieure présente');
+			}
+			else { $mode = "ARMDAY1"; }
 		log::add('verisure', 'debug', '│ Mode : '.$mode);
+		
 		$result_ArmAlarm = $MyAlarm->ArmAlarm($mode, $this->GetAlarmStatus());
 		$response_ArmAlarm = json_decode($result_ArmAlarm[3], true);
 		$result_Logout = $MyAlarm->Logout();
@@ -894,7 +905,7 @@ class verisure extends eqLogic {
 	
 	}
 	
-	public function DisarmAlarm(bool $armedExt = false)	{	//Type 1 2 & 3
+	public function DisarmAlarm()	{	//Type 1 2 & 3
 		
 		if ( $this->getConfiguration('alarmtype') == 1 || $this->getConfiguration('alarmtype') == 3 )   { 
 			log::add('verisure', 'debug', '┌───────── Demande désactivation ─────────');
@@ -1329,11 +1340,7 @@ class verisureCmd extends cmd {
 				break;
 					
 				case 'armed':
-					// On vérifie si la commande 'armed_ext' existe (présence de l'alarme extérieure)
-					$armedExtCmdExists = is_object($eqlogic->getCmd(null, 'armed_ext'));
-					log::add('verisure', 'debug', '│ Alarme Extérieure présente : ' . ($armedExtCmdExists ? 'oui' : 'non'));
-
-					$state = $eqlogic->ArmTotalAlarm($armedExtCmdExists);
+					$state = $eqlogic->ArmTotalAlarm();
 					switch ($state)  {
 						case 'T':
 							$eqlogic->checkAndUpdateCmd('enable', "1");
@@ -1379,11 +1386,7 @@ class verisureCmd extends cmd {
 				break;
 				
 				case 'armed_day':
-					// On vérifie si la commande 'armed_ext' existe (présence de l'alarme extérieure)
-					$armedExtCmdExists = is_object($eqlogic->getCmd(null, 'armed_ext'));
-					log::add('verisure', 'debug', '│ Alarme Extérieure présente : ' . ($armedExtCmdExists ? 'oui' : 'non'));
-
-					$state = $eqlogic->ArmDayAlarm($armedExtCmdExists);
+					$state = $eqlogic->ArmDayAlarm();
 					switch ($state)  {
 						case 'P':
 							$eqlogic->checkAndUpdateCmd('enable', "1");
@@ -1442,11 +1445,7 @@ class verisureCmd extends cmd {
 				break;	
 				
 				case 'released':
-					// On vérifie si la commande 'armed_ext' existe (présence de l'alarme extérieure)
-					$armedExtCmdExists = is_object($eqlogic->getCmd(null, 'armed_ext'));
-					log::add('verisure', 'debug', '│ Alarme Extérieure présente : ' . ($armedExtCmdExists ? 'oui' : 'non'));
-
-					$state = $eqlogic->DisarmAlarm($armedExtCmdExists);
+					$state = $eqlogic->DisarmAlarm();
 					switch ($state)  {
 						case 'D':
 							$eqlogic->checkAndUpdateCmd('state', "0");	
