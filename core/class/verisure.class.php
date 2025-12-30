@@ -774,6 +774,12 @@ class verisure extends eqLogic {
 			$MyAlarm = new verisureAPI($this->getConfiguration('numinstall'),$this->getConfiguration('username'),$this->getConfiguration('password'),$this->getConfiguration('country'));
 			$result_Login = $MyAlarm->Login();
 			
+			if ( $this->getConfiguration('allowForcing') == true ) { 
+				$allowForcing = true;
+				log::add('verisure', 'debug', '│ Armement forcé actif');
+			}
+			else { $allowForcing = false; }
+			
 			if ( $this->getConfiguration('externalAlarm') == true ) { 
 				$mode = "ARM1PERI1";
 				log::add('verisure', 'debug', '│ Alarme extérieure présente');
@@ -781,7 +787,7 @@ class verisure extends eqLogic {
 			else { $mode = "ARM1"; }
 			log::add('verisure', 'debug', '│ Mode : '.$mode);
 
-			$result_ArmAlarm = $MyAlarm->ArmAlarm($mode, $this->GetAlarmStatus());
+			$result_ArmAlarm = $MyAlarm->ArmAlarm($mode, $this->GetAlarmStatus(), $allowForcing);
 			$response_ArmAlarm = json_decode($result_ArmAlarm[3], true);
 			$result_Logout = $MyAlarm->Logout();
           	
@@ -843,6 +849,12 @@ class verisure extends eqLogic {
 		$MyAlarm = new verisureAPI($this->getConfiguration('numinstall'),$this->getConfiguration('username'),$this->getConfiguration('password'),$this->getConfiguration('country'));
 		$result_Login = $MyAlarm->Login();
 		
+		if ( $this->getConfiguration('allowForcing') == true ) { 
+			$allowForcing = true;
+			log::add('verisure', 'debug', '│ Armement forcé actif');
+		}
+		else { $allowForcing = false; }
+		
 		if ( $this->getConfiguration('externalAlarm') == true ) { 
 				$mode = "ARMDAY1PERI1";
 				log::add('verisure', 'debug', '│ Alarme extérieure présente');
@@ -850,7 +862,7 @@ class verisure extends eqLogic {
 			else { $mode = "ARMDAY1"; }
 		log::add('verisure', 'debug', '│ Mode : '.$mode);
 		
-		$result_ArmAlarm = $MyAlarm->ArmAlarm($mode, $this->GetAlarmStatus());
+		$result_ArmAlarm = $MyAlarm->ArmAlarm($mode, $this->GetAlarmStatus(), $allowForcing);
 		$response_ArmAlarm = json_decode($result_ArmAlarm[3], true);
 		$result_Logout = $MyAlarm->Logout();
 		

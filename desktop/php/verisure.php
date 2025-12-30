@@ -217,7 +217,7 @@ $eqLogics = eqLogic::byType($plugin->getId());
 									<div class="col-sm-6">
 										<label class="checkbox-inline"><input type="checkbox" class="eqLogicAttr" data-l1key="configuration" data-l2key="externalAlarm"/>{{Présence alarme extérieure}}</label>
 										<br/>
-										<label class="checkbox-inline"><input type="checkbox" class="eqLogicAttr" data-l1key="configuration" data-l2key="allowForcing"/>{{Activation forcée}}</label>
+										<label class="checkbox-inline"><input type="checkbox" class="eqLogicAttr" data-l1key="configuration" data-l2key="allowForcing"/>{{Armement forcé}}</label>
 									</div>
 								</div>	
 							</fieldset>
