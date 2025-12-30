@@ -679,11 +679,14 @@ class verisure extends eqLogic {
 		}
 	}
 
-	function ConvertVerisureToAlarmState(array $history, bool $armedExt = false) {
+	function ConvertVerisureToAlarmState(array $history) {
 		
 		// Analyse de l'historique des événements pour déterminer le statut actuel
 		$internal = 'unknown'; // total, partiel, desactive
-		if ( $this->getConfiguration('externalAlarm') == true ) { $external = 'unknown'; }
+		if ( $this->getConfiguration('externalAlarm') == true ) {
+			$external = 'unknown';
+			log::add('verisure', 'debug', '│ Alarme Extérieure présente');
+		 }
 		else { $external = 'desactive'; } 	// actif, desactive (s'il n'y a pas d'alarme extérieure, on la considère comme désactivée)
 
 		// On limite à 10 événements max
@@ -1281,12 +1284,8 @@ class verisureCmd extends cmd {
                     // On récupère uniquement les événements
                     $history = $statesHisto['reg'] ?? [];
 
-					// On vérifie si la commande 'armed_ext' existe (présence de l'alarme extérieure)
-					$armedExtCmdExists = is_object($eqlogic->getCmd(null, 'armed_ext'));
-                	log::add('verisure', 'debug', '│ Alarme Extérieure présente : ' . ($armedExtCmdExists ? 'oui' : 'non'));
-
-                    // Appel de ta fonction d’analyse
-                    $state = $eqlogic->ConvertVerisureToAlarmState($history, $armedExtCmdExists); // On le stocke le statut dans la variable $state
+					// Appel de ta fonction d’analyse
+                    $state = $eqlogic->ConvertVerisureToAlarmState($history);
 					log::add('verisure', 'debug', '│ Résultat analyse = ' . $state);
 
 					switch ($state)  {
