@@ -526,7 +526,7 @@ class verisureAPI {
 						'suid' => $data2,
 						'counter' => (int)$data3						
 					),
-					'query' => 'query xSGetSignals($numinst: String!, $panel: String!, $referenceId: String!, $counter: Int!, $suid: String)  { xSGetExceptions(numinst: $numinst, panel: $panel, referenceId: $referenceId, counter: $counter, suid: $suid) { res msg exceptions { status deviceType alias } } }',
+					'query' => 'query xSGetExceptions($numinst: String!, $panel: String!, $referenceId: String!, $counter: Int!, $suid: String)  { xSGetExceptions(numinst: $numinst, panel: $panel, referenceId: $referenceId, counter: $counter, suid: $suid) { res msg exceptions { status deviceType alias } } }',
 				);
 			break; 
 
@@ -869,24 +869,31 @@ class verisureAPI {
 			
 			log::add('verisure', 'debug', '│ Request ArmStatus - httpRespCode => '.$httpRespCode2.' - response => '.$response2);
 			$suid = $res2['data']['xSArmStatus']['error']['suid'];
+			
 			$counter = 1;
+			$wait = "WAIT";
+			While ($wait == "WAIT")  {
+				sleep(1);
+				$method3 = "POST";
+				$headers3 = $this->setHeaders("xSGetExceptions");
+				$content3 = $this->setContent("xSGetExceptions", $referenceId, $suid, $counter);
 
-			$method3 = "POST";
-			$headers3 = $this->setHeaders("xSGetExceptions");
-			$content3 = $this->setContent("xSGetExceptions", $referenceId, $suid, $counter);
-
-			$result3 = $this->doRequest($content3, $method3, $headers3);
-			$httpRespCode3 = $result3[0];
-			$response3 = $result3[1];
+				$result3 = $this->doRequest($content3, $method3, $headers3);
+				$httpRespCode3 = $result3[0];
+				$response3 = $result3[1];
+								
+				$res3 = json_decode($response3, true);
+				$wait = $res3['data']['xSGetExceptions']['res'];
+				$counter++;
+			}
 			log::add('verisure', 'debug', '│ Request xSGetExceptions - httpRespCode => '.$httpRespCode3.' - response => '.$response3);
-				
-			$res3 = json_decode($response3, true);
+
 			$forceArmingRemoteId = $referenceId;
 			if ( $res3['data']['xSGetExceptions']['res'] == "OK" ) {
 
 				$method4 = "POST";
 				$headers4 = $this->setHeaders("xSArmPanel");
-				$content4 = $this->setContent("xSArmPanel", $mode, $currentStatus, $armAndLock = true, $forceArmingRemoteId, $suid);
+				$content4 = $this->setContent("xSArmPanel", $mode, $currentStatus, $armAndLock = false, $forceArmingRemoteId, $suid);
 				
 				$result4 = $this->doRequest($content4, $method4, $headers4);
 				$httpRespCode4 = $result4[0];
