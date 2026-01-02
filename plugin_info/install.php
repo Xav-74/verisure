@@ -38,7 +38,14 @@ function verisure_update() {
 
 function verisure_remove() {
 
-	message::add('verisure', 'Le plugin Verisure a été correctement désinstallé. N\'hésitez pas à laisser un avis sur le Market Jeedom !');
+	// Suppression du cron si existant
+    $cron = cron::byClassAndFunction('verisure', 'pullHisto');
+    if (is_object($cron)) {
+        $cron->remove();
+        log::add('verisure', 'debug', 'Remove cron pullHisto');
+    }
+    
+    message::add('verisure', 'Le plugin Verisure a été correctement désinstallé. N\'hésitez pas à laisser un avis sur le Market Jeedom !');
 
 }
 

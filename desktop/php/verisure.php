@@ -213,11 +213,13 @@ $eqLogics = eqLogic::byType($plugin->getId());
 								</div>
 								
 								<div id="div_option" class="form-group">						
-									<label class="col-sm-6 control-label help" data-help="{{Attention concernant l'option Activation forcée ! Elle permet de forcer l'activation de l'alarme même si une porte ou une fenêtre est restée ouverte. A vos risques et périls !}}">{{Options}}</label>
+									<label class="col-sm-6 control-label">{{Options}}</label>
 									<div class="col-sm-6">
 										<label class="checkbox-inline"><input type="checkbox" class="eqLogicAttr" data-l1key="configuration" data-l2key="externalAlarm"/>{{Présence alarme extérieure}}</label>
 										<br/>
-										<label class="checkbox-inline"><input type="checkbox" class="eqLogicAttr" data-l1key="configuration" data-l2key="allowForcing"/>{{Armement forcé}}</label>
+										<label class="checkbox-inline help" data-help="{{Attention ! Cette option permet de forcer l'activation de l'alarme même si une porte ou une fenêtre est restée ouverte. A vos risques et périls !}}"><input type="checkbox" class="eqLogicAttr" data-l1key="configuration" data-l2key="allowForcing"/>{{Armement forcé}}</label>
+										<br/>
+										<label class="checkbox-inline help" data-help="{{Pensez à paramétrer et activer le cron personnalisé dans la configuration du plugin}}"><input type="checkbox" class="eqLogicAttr" data-l1key="configuration" data-l2key="refreshHisto"/>{{Raffraichissment via historique}}</label>
 									</div>
 								</div>	
 							</fieldset>

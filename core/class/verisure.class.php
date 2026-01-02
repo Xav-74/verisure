@@ -60,6 +60,53 @@ class verisure extends eqLogic {
 		}	
 	}
 
+	public static function pullHisto() {
+		
+		foreach (eqLogic::byType('verisure', true) as $verisure) {
+			if ( $verisure->getConfiguration('alarmtype') == 3 && $verisure->getConfiguration('refreshHisto') == true ) {
+				$cmdStateHisto = $verisure->getCmd(null, 'getstatehisto');		
+				if (!is_object($cmdStateHisto) ) {
+					continue; 
+				}
+				log::add('verisure', 'debug', 'Cron Histo '.config::byKey('cronPattern', 'verisure'));
+				$cmdStateHisto->execCmd();
+			}
+		}
+	}
+
+	public static function manageCron($action, $cronPattern = null) {
+
+		if ( $action === 'enable') {
+			$cron = cron::byClassAndFunction('verisure', 'pullHisto');
+			if (!is_object($cron)) {
+				$cron = new cron();
+				$cron->setClass('verisure');
+				$cron->setFunction('pullHisto');
+				$cron->setEnable(1);
+				$cron->setDeamon(0);
+				$cron->setSchedule($cronPattern);
+				$cron->setTimeout(5);
+				$cron->save();
+				log::add('verisure', 'debug', 'Create cron pullHisto - setSchedule : '.$cronPattern);
+			}
+			else {
+				$cron->setEnable(1);
+				$cron->setSchedule($cronPattern);
+				$cron->save();
+				log::add('verisure', 'debug', 'Enable cron pullHisto - setSchedule : '.$cronPattern);
+			}
+		}
+		
+		else if ( $action === 'disable') {
+			$cron = cron::byClassAndFunction('verisure', 'pullHisto');
+			if (is_object($cron)) {
+				$cron->setEnable(0);
+				$cron->save();
+				log::add('verisure', 'debug', 'Disable cron pullHisto');
+			}	
+		}	
+	}
+	
 	public static function getConfigForCommunity() {
 
 		$index = 1;
