@@ -67,17 +67,20 @@ if (!isConnect()) {
 
     /* Fonction permettant l'activation du cron */
     document.getElementById('bt_enable').addEventListener('click', function() {
+        document.getElementById('bt_savePluginConfig').click();
         enableCron();
     });
 
     /* Fonction permettant la désactivation du cron */
     document.getElementById('bt_disable').addEventListener('click', function() {
+        document.getElementById('bt_savePluginConfig').click();
         disableCron();
     });
 
     function enableCron()  {
         
-        var cronPattern = document.getElementById('cronPattern').value;
+        if ( document.getElementById('cronPattern').value == '' ) { var cronPattern = "*/5 * * * *"; }
+        else { var cronPattern = document.getElementById('cronPattern').value; }
         const cronRegex = /(^((\*\/)?([0-5]?[0-9])((\,|\-|\/)([0-5]?[0-9]))*|\*) ((\*\/)?((2[0-3]|1[0-9]|[0-9]|00))((\,|\-|\/)(2[0-3]|1[0-9]|[0-9]|00))*|\*) ((\*\/)?([1-9]|[12][0-9]|3[01])((\,|\-|\/)([1-9]|[12][0-9]|3[01]))*|\*) ((\*\/)?([1-9]|1[0-2])((\,|\-|\/)([1-9]|1[0-2]))*|\*|(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|des)) ((\*\/)?[0-6]((\,|\-|\/)[0-6])*|\*|00|(sun|mon|tue|wed|thu|fri|sat))\s*$)|@(annually|yearly|monthly|weekly|daily|hourly|reboot)/; 
         
         if ( cronRegex.test(cronPattern) == true ) {
