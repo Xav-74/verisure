@@ -708,21 +708,31 @@ class verisure extends eqLogic {
 			$MyAlarm = new verisureAPI($this->getConfiguration('numinstall'),$this->getConfiguration('username'),$this->getConfiguration('password'),$this->getConfiguration('country'));
 			$result_Login = $MyAlarm->Login();
           	$result_GetHistory = $MyAlarm->GetStateAlarmFromHistory(null);
-			$response_GetHistory = json_decode($result_GetHistory[1], true);
 			$result_Logout = $MyAlarm->Logout();
-			          
-          	if ( $result_GetHistory[0] == 200 )  {
-				$res = $response_GetHistory['data']['xSActV2'];
-
-				log::add('verisure', 'debug', '└───────── Historique statut OK ─────────');
-			}
-			else  {
-				$res = null;
-				log::add('verisure', 'debug', '│ /!\ Erreur commande Verisure GetStateAlarmFromHistory()');
-				log::add('verisure', 'debug', '└───────── Historique statut NOK ─────────');
-			}
-			
-          	return $res;
+          
+            if ( !is_array($result_GetHistory) || !isset($result_GetHistory[0], $result_GetHistory[1])) {
+                log::add('verisure', 'debug', '│ /!\ Erreur commande Verisure GetStateAlarmFromHistory() - Réponse API invalide (structure)');
+                log::add('verisure', 'debug', '└───────── Historique statut NOK ─────────');
+                return null;
+            }
+          
+            if ($result_GetHistory[0] != 200) {
+                log::add('verisure', 'debug', '│ /!\ Erreur HTTP Verisure : ' . $result_GetHistory[0]);
+                log::add('verisure', 'debug', '└───────── Historique statut NOK ─────────');
+                return null;
+            }
+          
+          	$response_GetHistory = json_decode($result_GetHistory[1], true);
+          
+          	if ( !is_array($response_GetHistory) || !isset($response_GetHistory['data']['xSActV2'])) {
+                log::add('verisure', 'debug', '│ /!\ Erreur commande Verisure GetStateAlarmFromHistory() - Historique vide ou structure inattendue');
+                log::add('verisure', 'debug', '└───────── Historique statut NOK ─────────');
+                return null;
+            }
+            
+          	log::add('verisure', 'debug', '└───────── Historique statut OK ─────────');
+          
+          	return $response_GetHistory['data']['xSActV2'];
 		}
 	}
 
