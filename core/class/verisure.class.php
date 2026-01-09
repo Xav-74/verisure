@@ -63,7 +63,7 @@ class verisure extends eqLogic {
 	public static function pullHisto() {
 		
 		foreach (eqLogic::byType('verisure', true) as $verisure) {
-			if ( $verisure->getConfiguration('alarmtype') == 3 && $verisure->getConfiguration('refreshHisto') == true ) {
+			if ( ($verisure->getConfiguration('alarmtype') == 1 || $verisure->getConfiguration('alarmtype') == 3) && $verisure->getConfiguration('refreshHisto') == true ) {
 				$cmdStateHisto = $verisure->getCmd(null, 'getstatehisto');		
 				if (!is_object($cmdStateHisto) ) {
 					continue; 
@@ -701,10 +701,10 @@ class verisure extends eqLogic {
 		}
 	}
 
-	public function GetStateAlarmFromHistory()	{	//Type 3
+	public function GetStateAlarmFromHistory()	{	//Type 1 & 3
 		
-		if	( $this->getConfiguration('alarmtype') == 3 )   {
-			log::add('verisure', 'debug', '┌───────── Demande de statut ─────────');
+		if	( $this->getConfiguration('alarmtype') == 1  || $this->getConfiguration('alarmtype') == 3 )   {
+			log::add('verisure', 'debug', '┌───────── Demande de statut via historique ─────────');
 			$MyAlarm = new verisureAPI($this->getConfiguration('numinstall'),$this->getConfiguration('username'),$this->getConfiguration('password'),$this->getConfiguration('country'));
 			$result_Login = $MyAlarm->Login();
           	$result_GetHistory = $MyAlarm->GetStateAlarmFromHistory(null);
@@ -713,20 +713,19 @@ class verisure extends eqLogic {
 			          
           	if ( $result_GetHistory[0] == 200 )  {
 				$res = $response_GetHistory['data']['xSActV2'];
-
-				log::add('verisure', 'debug', '└───────── Historique statut OK ─────────');
+				//log::add('verisure', 'debug', '└───────── Mise à jour statut via historique OK ─────────');
 			}
 			else  {
 				$res = null;
-				log::add('verisure', 'debug', '│ /!\ Erreur commande Verisure GetStateAlarmFromHistory()');
-				log::add('verisure', 'debug', '└───────── Historique statut NOK ─────────');
+				//log::add('verisure', 'debug', '│ /!\ Erreur commande Verisure GetStateAlarmFromHistory()');
+				//log::add('verisure', 'debug', '└───────── Mise à jour statut via historique statut NOK ─────────');
 			}
 			
           	return $res;
 		}
 	}
 
-	function ConvertVerisureToAlarmState(array $history) {
+	public function ConvertVerisureToAlarmState(array $history) {
 		
 		// Analyse de l'historique des événements pour déterminer le statut actuel
 		$internal = 'unknown'; // total, partiel, desactive
@@ -744,6 +743,8 @@ class verisure extends eqLogic {
 
 			switch ($type) {
 				// Désactivation interne + externe
+				case 1;
+				case 32;
 				case 822:
 					if ($internal === 'unknown') { $internal = 'desactive'; }
 					if ($external === 'unknown') { $external = 'desactive'; }	
@@ -756,6 +757,8 @@ class verisure extends eqLogic {
 					break;
 
 				// Activation interne total
+				case 2;
+				case 31;
 				case 701:
 				case 801:
 					if ($internal === 'unknown') { $internal = 'total'; }
@@ -767,6 +770,18 @@ class verisure extends eqLogic {
 					if ($internal === 'unknown') { $internal = 'partiel'; }
 					break;
 
+				// Activation interne jour
+				case 202:
+				case 311:
+					if ($internal === 'unknown') { $internal = 'jour'; }
+					break;
+
+				// Activation interne nuit
+				case 46:
+				case 203:
+					if ($internal === 'unknown') { $internal = 'nuit'; }
+					break;
+
 				// Désactivation externe
 				case 720:
 				case 820:
@@ -774,6 +789,8 @@ class verisure extends eqLogic {
 					break;
 
 				// Activation externe
+				case 40;
+				case 204;
 				case 721:
 				case 821:
 					if ($external === 'unknown') { $external = 'actif'; }
@@ -805,10 +822,14 @@ class verisure extends eqLogic {
 		if ($internal === 'desactive' && $external === 'desactive') return "D";
 		if ($internal === 'desactive' && $external === 'actif') return "E"; // extérieur activé
 		if ($internal === 'partiel' && $external === 'desactive') return "P";
+		if ($internal === 'jour' && $external === 'desactive') return "P";
+		if ($internal === 'nuit' && $external === 'desactive') return "Q";
 		if ($internal === 'partiel' && $external === 'actif') return "B"; // partiel + extérieur
+		if ($internal === 'jour' && $external === 'actif') return "B"; // jour + extérieur
+		if ($internal === 'nuit' && $external === 'actif') return "C"; // nuit + extérieur
 		if ($internal === 'total' && $external === 'desactive') return "T";
 		if ($internal === 'total' && $external === 'actif') return "A";   // total + extérieur
-
+		
 		// Si on n'a pas assez d'infos dans l'historique
 		return null;
 	}
@@ -1353,43 +1374,62 @@ class verisureCmd extends cmd {
 							$eqlogic->checkAndUpdateCmd('enable', "0");
 							$eqlogic->checkAndUpdateCmd('mode', "Désactivée");
 							$eqlogic->checkAndUpdateCmd('mode_basic', "Désactivée");
+							log::add('verisure', 'debug', '└───────── Mise à jour statut via historique OK ─────────');
 							$eqlogic->checkAndUpdateCmd('networkstate', $eqlogic->SetNetworkState(1));
 						break;
 						case 'T':
 							$eqlogic->checkAndUpdateCmd('enable', "1");
 							$eqlogic->checkAndUpdateCmd('mode', "Total");
 							$eqlogic->checkAndUpdateCmd('mode_basic', "Total");
+							log::add('verisure', 'debug', '└───────── Mise à jour statut via historique OK ─────────');
+							$eqlogic->checkAndUpdateCmd('networkstate', $eqlogic->SetNetworkState(1));
+						break;
+						case 'Q':
+							$eqlogic->checkAndUpdateCmd('enable', "1");
+							$eqlogic->checkAndUpdateCmd('mode', "Nuit");
+							$eqlogic->checkAndUpdateCmd('mode_basic', "Nuit");
+							log::add('verisure', 'debug', '└───────── Mise à jour statut via historique OK ─────────');
 							$eqlogic->checkAndUpdateCmd('networkstate', $eqlogic->SetNetworkState(1));
 						break;
 						case 'P':
 							$eqlogic->checkAndUpdateCmd('enable', "1");
-							$eqlogic->checkAndUpdateCmd('mode', "Partiel");
-							$eqlogic->checkAndUpdateCmd('mode_basic', "Partiel");
+							if ( $eqlogic->getConfiguration('alarmtype') == 1 ) { $eqlogic->checkAndUpdateCmd('mode', "Jour"); $eqlogic->checkAndUpdateCmd('mode_basic', "Jour"); }
+							if ( $eqlogic->getConfiguration('alarmtype') == 3 ) { $eqlogic->checkAndUpdateCmd('mode', "Partiel"); $eqlogic->checkAndUpdateCmd('mode_basic', "Partiel"); }
+							log::add('verisure', 'debug', '└───────── Mise à jour statut via historique OK ─────────');
 							$eqlogic->checkAndUpdateCmd('networkstate', $eqlogic->SetNetworkState(1));
 						break;
 						case 'E':
 							$eqlogic->checkAndUpdateCmd('enable', "1");
 							$eqlogic->checkAndUpdateCmd('mode', "Extérieur");
 							$eqlogic->checkAndUpdateCmd('mode_basic', "Extérieur");
+							log::add('verisure', 'debug', '└───────── Mise à jour statut via historique OK ─────────');
 							$eqlogic->checkAndUpdateCmd('networkstate', $eqlogic->SetNetworkState(1));
 						break;
 						case 'A':
 							$eqlogic->checkAndUpdateCmd('enable', "1");
 							$eqlogic->checkAndUpdateCmd('mode', "Total + Ext");
 							$eqlogic->checkAndUpdateCmd('mode_basic', "Total");
+							log::add('verisure', 'debug', '└───────── Mise à jour statut via historique OK ─────────');
+							$eqlogic->checkAndUpdateCmd('networkstate', $eqlogic->SetNetworkState(1));
+						break;
+						case 'C':
+							$eqlogic->checkAndUpdateCmd('enable', "1");
+							$eqlogic->checkAndUpdateCmd('mode', "Nuit + Ext");
+							$eqlogic->checkAndUpdateCmd('mode_basic', "Nuit");
+							log::add('verisure', 'debug', '└───────── Mise à jour statut via historique OK ─────────');
 							$eqlogic->checkAndUpdateCmd('networkstate', $eqlogic->SetNetworkState(1));
 						break;
 						case 'B':
 							$eqlogic->checkAndUpdateCmd('enable', "1");
-							$eqlogic->checkAndUpdateCmd('mode', "Partiel + Ext");
-							$eqlogic->checkAndUpdateCmd('mode_basic', "Partiel");
+							if ( $eqlogic->getConfiguration('alarmtype') == 1 ) { $eqlogic->checkAndUpdateCmd('mode', "Jour + Ext"); $eqlogic->checkAndUpdateCmd('mode_basic', "Jour"); }
+							if ( $eqlogic->getConfiguration('alarmtype') == 3 ) { $eqlogic->checkAndUpdateCmd('mode', "Partiel + Ext"); $eqlogic->checkAndUpdateCmd('mode_basic', "Partiel"); }
+							log::add('verisure', 'debug', '└───────── Mise à jour statut via historique OK ─────────');
 							$eqlogic->checkAndUpdateCmd('networkstate', $eqlogic->SetNetworkState(1));
 						break;
-						
 						default:
 							//throw new Exception($state);
 							log::add('verisure', 'debug', '│ /!\ Erreur commande Verisure GetStateAlarmFromHistory()');
-							log::add('verisure', 'debug', '└───────── Mise à jour statut NOK ─────────');
+							log::add('verisure', 'debug', '└───────── Mise à jour statut via historique NOK ─────────');
 							$eqlogic->checkAndUpdateCmd('networkstate', $eqlogic->SetNetworkState(0));
 							break;
 					}

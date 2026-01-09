@@ -817,7 +817,7 @@ class verisureAPI {
 	
 	public function GetStateAlarmFromHistory($filter)  {			// Get the information of last status of the alarm
 		// Filter status alarm
-		if ( $filter == null ) { $filter = [1,2,7,8,9,10,11,12,31,32,38,39,40,44,46,47,70,71,311,312,700,701,702,720,721,722,723,724,730,731,732,733,734,740,741,742,743,744,800,801,802,820,821,822,823,824,830,831,832,833,834,840,841,842,843,844]; }
+		if ( $filter == null ) { $filter = [1,2,7,8,9,10,11,12,31,32,38,39,40,44,46,47,70,71,202,203,204,311,312,700,701,702,720,721,722,723,724,730,731,732,733,734,740,741,742,743,744,800,801,802,820,821,822,823,824,830,831,832,833,834,840,841,842,843,844]; }
 		$method = "POST";
 		$headers = $this->setHeaders("ActV2Timeline");
 		$content = $this->setContent("ActV2Timeline", $filter);
