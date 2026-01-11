@@ -152,6 +152,7 @@ class verisure extends eqLogic {
 			$this->createCmd('armed_ext', 'Mode Extérieur', 9, 'action', 'other', 1, 0, [], [], [], []);
 			$this->createCmd('getpictures', 'Demande Images', 10, 'action', 'select', 1, 0, [], [], [], []);
 			$this->createCmd('networkstate', 'Qualité Réseau', 11, 'info', 'numeric', 1, 0, [], [], [], []);
+			$this->createCmd('getstatehisto', 'Rafraichir via historique', 12, 'action', 'other', 1, 0, [], [], [], []);
 		}
 		
 		if ( $this->getConfiguration('alarmtype') == 2 )   { 

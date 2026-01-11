@@ -38,7 +38,7 @@ if (!isConnect()) {
 			</div>
         </div>
 
-        <legend><i class="fas fa-wrench"></i> {{ Paramètre d'auto-actualisation via historique (Alarme type 3 uniquement)}}</legend>
+        <legend><i class="fas fa-wrench"></i> {{ Paramètre d'auto-actualisation via historique (Alarme type 1 & 3 uniquement)}}</legend>
         <div class="form-group pull_class">
             <label class="col-sm-2 control-label" >{{Cron personnalisé}}
                 <sup><i class="fas fa-question-circle tooltips" title="{{Fréquence de rafraîchissement du statut de l'alarme via l'historique Verisure}}"></i></sup>
