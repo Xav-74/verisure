@@ -256,6 +256,15 @@ $('#bt_Authentication_2FA').on('click',function() {
 								tr += '</tr>';
 								nbclimate++;
 							}
+							else if (data.result['res'][j]['gui']['deviceGroup'] == "WATER") {
+								tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="Détecteur d\'eau readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugModel'+j+'">';
+								tr += '</td>';
+								tr += '<td>';					
+								tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="climateDevice" style="display : none;" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugType'+j+'">';
+								tr += '</td>';
+								tr += '</tr>';
+								nbclimate++;
+							}
 							else if (data.result['res'][j]['gui']['deviceGroup'] == "SIREN") {
 								tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="Sirène" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugModel'+j+'">';
 								tr += '</td>';
@@ -468,6 +477,15 @@ function validateDevice(alarmtype, numinstall, username, pwd, code, country, sms
 						}
 						else if (data.result['res'][j]['gui']['deviceGroup'] == "SMOKE") {
 							tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="Détecteur de fumée" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugModel'+j+'">';
+							tr += '</td>';
+							tr += '<td>';					
+							tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="climateDevice" style="display : none;" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugType'+j+'">';
+							tr += '</td>';
+							tr += '</tr>';
+							nbclimate++;
+						}
+						else if (data.result['res'][j]['gui']['deviceGroup'] == "WATER") {
+							tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="Détecteur d\'eau readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugModel'+j+'">';
 							tr += '</td>';
 							tr += '<td>';					
 							tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="climateDevice" style="display : none;" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugType'+j+'">';
