@@ -30,6 +30,7 @@ class verisureAPI2 {
 	private $code;
 	private $authorization;
 	private $giid;
+	private $cookieFileName;
 
 	
 	public function __construct($username, $password, $code) {
@@ -40,6 +41,7 @@ class verisureAPI2 {
 		$this->giid = null;
 		$this->workingDomain = null;
 		$this->authorization = base64_encode(sprintf("%s:%s", $this->username, $this->password));
+		$this->cookieFileName = dirname(__FILE__).'/../data/cookie.txt';
 	}
 
 
@@ -55,11 +57,15 @@ class verisureAPI2 {
 		curl_setopt($curl, CURLOPT_CUSTOMREQUEST,	$method);
 		curl_setopt($curl, CURLOPT_RETURNTRANSFER,	true);
 		curl_setopt($curl, CURLOPT_POSTFIELDS,		$data);
+		curl_setopt($curl, CURLOPT_USERPWD, 		$this->username . ':' . $this->password);
 		curl_setopt($curl, CURLOPT_HEADER, 			true);
 		curl_setopt($curl, CURLOPT_HTTPHEADER, 		$headers);
 		curl_setopt($curl, CURLOPT_VERBOSE, 		false);
-		if ( file_exists(dirname(__FILE__).'/../data/cookie.txt') ) { curl_setopt($curl, CURLOPT_COOKIEFILE, dirname(__FILE__).'/../data/cookie.txt'); }
-		if ( $url == $this->workingDomain.'/auth/login' || $url == $this->workingDomain.'/auth/mfa/validate' ) { curl_setopt($curl, CURLOPT_COOKIEJAR, dirname(__FILE__).'/../data/cookie.txt'); }
+		
+		if ( file_exists($this->cookieFileName) ) { curl_setopt($curl, CURLOPT_COOKIEFILE, $this->cookieFileName); }
+		if ( $url == $this->workingDomain.'/auth/login' || $url == $this->workingDomain.'/auth/token' || $url == $this->workingDomain.'/auth/mfa/validate' || $url == $this->workingDomain.'/auth/trust') {
+			curl_setopt($curl, CURLOPT_COOKIEJAR, $this->cookieFileName);
+		}
 		
 		$result = curl_exec($curl);
 
@@ -81,14 +87,17 @@ class verisureAPI2 {
 	private function setHeaders($operation)   {				//Define headers
 		
 		$headers = array(
-			'Content-Type: application/json',
 			'Accept: application/json',
 			'APPLICATION_ID: PS_PYTHON',
-			'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.5005.124 Safari/537.36 Edg/102.0.1245.41'
 		);
        	
 		if ( $operation == 'login_mfa' ) {				// Login with MFA
 			$headers[] = sprintf('Authorization: Basic %s', $this->authorization);
+			$headers[] = 'Content-Type: application/json';
+		}
+
+		if ($operation == 'login' || $operation == 'mfa_validate') {
+			$headers[] = 'Content-Type: application/json';
 		}
 
 		//log::add('verisure', 'debug', '| Headers = '.str_replace('\\','',json_encode($headers)));
@@ -108,6 +117,16 @@ class verisureAPI2 {
 						'email' => $this->username
 					),
 					'query' => 'query AccountInstallations($email: String!) { account(email: $email) { owainstallations { giid alias type subsidiary dealerId __typename } __typename } }',
+				);
+			break;
+
+			case "fetchAllInstallations":
+				$content = array(
+					'operationName' => 'fetchAllInstallations',
+					'variables' => array(
+						'email' => $this->username
+					),
+					'query' => 'query fetchAllInstallations($email: String!){ account(email: $email) { installations { giid alias customerType dealerId subsidiary pinCodeLength locale address { street city postalNumber __typename } __typename } __typename } }',
 				);
 			break;
 
@@ -271,7 +290,16 @@ class verisureAPI2 {
 	}
 
 
-	public function LoginMFA()  {										// Login to Verisure Cloud with MFA
+	public function Login() {									// Login to Verisure Cloud
+		
+		if (!file_exists($this->cookieFileName)) {
+			log::add('verisure', 'debug', '│ Cookie file not found');
+			log::add('verisure', 'error', '│ Login with MFA is required');
+		}
+		else { $this->RefreshToken(); }
+	}
+	
+	public function LoginMFA()  {								// Login to Verisure Cloud with MFA
 		
 		$method = "POST";
 		$headers = $this->setHeaders('login_mfa');
@@ -288,28 +316,24 @@ class verisureAPI2 {
 			$this->workingDomain = $this->availableDomain[1];
 			$url = $this->workingDomain.'/auth/login';
 			
-			$result2 = $this->doRequest($data, $method, $headers, $url);
-			$httpRespCode2 = $result2[0];
-			$response2 = $result2[1];
-			log::add('verisure', 'debug', '│ Request LoginMFA - Domain => '.$this->workingDomain.' - httpRespCode => '.$httpRespCode2.' - response => '.$response2);
+			$result = $this->doRequest($data, $method, $headers, $url);
+			$httpRespCode = $result[0];
+			$response = $result[1];
+			log::add('verisure', 'debug', '│ Request LoginMFA - Domain => '.$this->workingDomain.' - httpRespCode => '.$httpRespCode.' - response => '.$response);
 			
-			if ($httpRespCode2 != 200)   {
-				return array("Verisure session error", $httpRespCode2, $response2);
-			}
-			else   {
-				return array($this->workingDomain, $httpRespCode2, $response2);
+			if ($httpRespCode != 200)   {
+				return array("Verisure session error", $httpRespCode, $response);
 			}
 		}
-		else   {
-			return array($this->workingDomain, $httpRespCode, $response);
-		}
+
+		return array($this->workingDomain, $httpRespCode, $response);
 	}
 
 
-	public function Login()  {										// Login to Verisure Cloud with cookies
+	/*public function LoginCookie()  {							// Login to Verisure Cloud with cookies
 		
-		$method = "GET";
-		$headers = $this->setHeaders(null);
+		$method = "POST";
+		$headers = $this->setHeaders('login');
 		$data = null;
 		$this->workingDomain = $this->availableDomain[0];
 		$url = $this->workingDomain.'/auth/login';
@@ -317,39 +341,40 @@ class verisureAPI2 {
 		$result = $this->doRequest($data, $method, $headers, $url);
 		$httpRespCode = $result[0];
 		$response = $result[1];
-				
-		if (json_decode($response, false)->errorGroup == "UNAUTHORIZED")   {
-			return $this->RefreshToken();
+		$res = json_decode($response, false);
+
+		//log::add('verisure', 'debug', '│ LoginCookie - '. $result[2]);
+
+		if (isset($res->errorGroup) && $res->errorGroup == "UNAUTHORIZED") {
+			log::add('verisure', 'error', '│ Login with MFA is required');
+			return $this->Logout();
 		}
-		elseif ($httpRespCode != 200)   {
+
+		if ($httpRespCode != 200)   {
 			$this->workingDomain = $this->availableDomain[1];
 			$url = $this->workingDomain.'/auth/login';
 			
-			$result2 = $this->doRequest($data, $method, $headers, $url);
-			$httpRespCode2 = $result2[0];
-			$response2 = $result2[1];
-					
-			if (json_decode($response2, false)->errorGroup == "UNAUTHORIZED")   {
-				return $this->RefreshToken();
+			$result = $this->doRequest($data, $method, $headers, $url);
+			$httpRespCode = $result[0];
+			$response = $result[1];
+			$res = json_decode($response, false);
+
+			if (isset($res->errorGroup) && $res->errorGroup == "UNAUTHORIZED") {
+				log::add('verisure', 'error', '│ Login with MFA is required');
+				return $this->Logout();
 			}
-			elseif ($httpRespCode2 != 200)   {
-				log::add('verisure', 'debug', '│ Request Login - Domain => Verisure session error - httpRespCode => '.$httpRespCode2.' - response => '.$response2);
-				return array("Verisure session error", $httpRespCode2, $response2);
-			}
-			else   {
-				$date = $this->getExpirationDate($result2[2]);
-				log::add('verisure', 'debug', '│ Request Login - Domain => '.$this->workingDomain.' - httpRespCode => '.$httpRespCode2.' - response => '.$response2.'Token refreshed - '.$date);
-				$this->AccountInstallations();
-				return array($this->workingDomain, $httpRespCode2, $response2.'Token refreshed - '.$date);
+			
+			if ($httpRespCode != 200)   {
+				log::add('verisure', 'debug', '│ Request Login - Domain => Verisure session error - httpRespCode => '.$httpRespCode.' - response => '.$response);
+				return array("Verisure session error", $httpRespCode, $response);
 			}
 		}
-		else   {
-			$date = $this->getExpirationDate($result[2]);
-			log::add('verisure', 'debug', '│ Request Login - Domain => '.$this->workingDomain.' - httpRespCode => '.$httpRespCode.' - response => '.$response.'Token refreshed - '.$date);
-			$this->AccountInstallations();
-			return array($this->workingDomain, $httpRespCode, $response.'Token refreshed - '.$date);
-		}
-	}
+		
+		$date = $this->getExpirationDate($result[2]);
+		log::add('verisure', 'debug', '│ Request Login - Domain => '.$this->workingDomain.' - httpRespCode => '.$httpRespCode.' - response => '.$response.'Token valid until: '.$date);
+		$this->AccountInstallations();
+		return array($this->workingDomain, $httpRespCode, $response.'Token valid - '.$date);
+	}*/
 	
 	
 	public function Logout()  {									// Logout to Verisure Cloud
@@ -362,10 +387,15 @@ class verisureAPI2 {
 		$result = $this->doRequest($data, $method, $headers, $url);
 		$httpRespCode = $result[0];
 		$response = $result[1];
-		log::add('verisure', 'debug', '│ Request Logout - httpRespCode => '.$httpRespCode.' - response => '.$response);
+		log::add('verisure', 'debug', '│ Request Logout - httpRespCode => '.$httpRespCode);
 
-		if ( file_exists(dirname(__FILE__).'/../data/cookie.txt') ) { unlink(dirname(__FILE__).'/../data/cookie.txt'); }
-
+		if (file_exists($this->cookieFileName)) {
+			unlink($this->cookieFileName);
+			log::add('verisure', 'debug', '│ Cookie file deleted');
+		}
+		
+		$this->workingDomain = null;
+		$this->giid = null;
 		return array($httpRespCode, $response);
 	}
 	
@@ -387,21 +417,17 @@ class verisureAPI2 {
 			$this->workingDomain = $this->availableDomain[1];
 			$url = $this->workingDomain.'/auth/mfa?type='.$type;
 			
-			$result2 = $this->doRequest($data, $method, $headers, $url);
-			$httpRespCode2 = $result2[0];
-			$response2 = $result2[1];
-			log::add('verisure', 'debug', '│ Request RequestMFA - Domain => '.$this->workingDomain.' - httpRespCode => '.$httpRespCode2.' - response => '.$response2);
+			$result = $this->doRequest($data, $method, $headers, $url);
+			$httpRespCode = $result[0];
+			$response = $result[1];
+			log::add('verisure', 'debug', '│ Request RequestMFA - Domain => '.$this->workingDomain.' - httpRespCode => '.$httpRespCode.' - response => '.$response);
 
-			if ($httpRespCode2 != 200)   {
-				return array("Verisure session error", $httpRespCode2, $response2);
-			}
-			else   {
-				return array($this->workingDomain, $httpRespCode2, $response2);
+			if ($httpRespCode != 200)   {
+				return array("Verisure session error", $httpRespCode, $response);
 			}
 		}
-		else   {
-			return array($this->workingDomain, $httpRespCode, $response);
-		}
+		
+		return array($this->workingDomain, $httpRespCode, $response);
 	}
 
 
@@ -410,7 +436,7 @@ class verisureAPI2 {
 		$method = "POST";
 		$this->workingDomain = $this->availableDomain[0];
 		$url = $this->workingDomain.'/auth/mfa/validate';
-		$headers = $this->setHeaders(null);
+		$headers = $this->setHeaders('mfa_validate');
 		$data = json_encode(array('token' => $code));
 		
 		$result = $this->doRequest($data, $method, $headers, $url);
@@ -422,37 +448,71 @@ class verisureAPI2 {
 			$this->workingDomain = $this->availableDomain[1];
 			$url = $this->workingDomain.'/auth/mfa/validate';
 			
-			$result2 = $this->doRequest($data, $method, $headers, $url);
-			$httpRespCode2 = $result2[0];
-			$response2 = $result2[1];
-			log::add('verisure', 'debug', '│ Request ValidateMFA - Domain => '.$this->workingDomain.' - httpRespCode => '.$httpRespCode2.' - response => '.$response2);
+			$result = $this->doRequest($data, $method, $headers, $url);
+			$httpRespCode = $result[0];
+			$response = $result[1];
+			log::add('verisure', 'debug', '│ Request ValidateMFA - Domain => '.$this->workingDomain.' - httpRespCode => '.$httpRespCode.' - response => '.$response);
 
-			if ($httpRespCode2 != 200)   {
-				return array("Verisure session error", $httpRespCode2, $response2);
-			}
-			else   {
-				return array($this->workingDomain, $httpRespCode2, $response2);
+			if ($httpRespCode != 200)   {
+				return array("Verisure session error", $httpRespCode, $response);
 			}
 		}
-		else   {
-			return array($this->workingDomain, $httpRespCode, $response);
-		}
+
+		$this->AccountInstallations();
+		return array($this->workingDomain, $httpRespCode, $response);
 	}
 
 	
 	public function RefreshToken() {
 
-		log::add('verisure', 'debug', '| Token refresh needed');
-		$this->Logout();
-		$result = $this->LoginMFA();
-		$response = $result[2];
+		//log::add('verisure', 'debug', '│ Token refresh needed');
 
-		if (json_decode($response, false)->refreshToken != "") {
-			$this->AccountInstallations();
+		$method = "GET";
+		$this->workingDomain = $this->availableDomain[0];
+		$url = $this->workingDomain.'/auth/token';
+		$headers = $this->setHeaders('login');
+		$data = null;
+		
+		$result = $this->doRequest($data, $method, $headers, $url);
+		$httpRespCode = $result[0];
+		$response = $result[1];
+		$header = $result[2];
+		$res = json_decode($response, false);
+		log::add('verisure', 'debug', '│ Request RefreshToken - Domain => '.$this->workingDomain.' - httpRespCode => '.$httpRespCode);
+		//log::add('verisure', 'debug', '│ RefreshToken - '. $header);
+
+		if (isset($res->errorGroup) && $res->errorGroup == "UNAUTHORIZED") {
+			log::add('verisure', 'error', '│ Login with MFA is required');
+			return $this->Logout();
+		}
+
+		if ($httpRespCode != 200) {
+			$this->workingDomain = $this->availableDomain[1];
+			$url = $this->workingDomain.'/auth/token';
+			
+			$result = $this->doRequest($data, $method, $headers, $url);
+			$httpRespCode = $result[0];
+			$response = $result[1];
+			$header = $result[2];
+			$res = json_decode($response, false);
+			log::add('verisure', 'debug', '│ Request RefreshToken - Domain => '.$this->workingDomain.' - httpRespCode => '.$httpRespCode);
+			
+			if (isset($res->errorGroup) && $res->errorGroup == "UNAUTHORIZED") {
+				log::add('verisure', 'error', '│ Login with MFA is required');
+				return $this->Logout();
+			}
+			
+			if ($httpRespCode != 200) {
+				return array("Failed to refresh token", $httpRespCode, $response);
+			}
 		}
 		
-		return $result;
-	}
+		$date = $this->getExpirationDate($header);
+		log::add('verisure', 'debug', '│ Token refreshed successfully - Expires: '.$date);
+		
+		$this->AccountInstallations();
+		return array($this->workingDomain, $httpRespCode, 'Token refreshed - '.$date);
+	}	
 	
 	
 	public function AccountInstallations()  {					// Get the giid number
@@ -460,42 +520,35 @@ class verisureAPI2 {
 		$method = "POST";
 		$url = $this->workingDomain.$this->baseUrl;
 		$headers = $this->setHeaders(null);
-		$data = $this->setContent('AccountInstallations', null, null, null);
+		$data = $this->setContent('fetchAllInstallations', null, null, null);
 		$result = $this->doRequest($data, $method, $headers, $url);
 		
 		$httpRespCode = $result[0];
 		$response = $result[1];
 		$res = json_decode($response, false);
-		log::add('verisure', 'debug', '│ Request AccountInstallations - Domain => '.$this->workingDomain.' - httpRespCode => '.$httpRespCode.' - response => '.$response);
+		log::add('verisure', 'debug', '│ Request fetchAllInstallations - Domain => '.$this->workingDomain.' - httpRespCode => '.$httpRespCode.' - response => '.$response);
 
-		if ($res->errors[0]->data->errorGroup == "SERVICE_UNAVAILABLE")  {
+		if (isset($res->errors[0]->data->errorGroup) && $res->errors[0]->data->errorGroup == "SERVICE_UNAVAILABLE") {
 			$this->workingDomain = $this->availableDomain[1];
 			$url = $this->workingDomain.$this->baseUrl;
-			$result2 = $this->doRequest($data, $method, $headers, $url);
+			$result = $this->doRequest($data, $method, $headers, $url);
 
-			$httpRespCode2 = $result2[0];
-			$response2 = $result2[1];
-			$res2 = json_decode($response2, false);
-			log::add('verisure', 'debug', '│ Request AccountInstallations - Domain => '.$this->workingDomain.' - httpRespCode => '.$httpRespCode2.' - response => '.$response2);
-
-			if ($res2->errors[0]->data->errorGroup == "UNAUTHORIZED")  {
-				return $this->RefreshToken();
-			}
-			elseif ($res2->data->account->owainstallations != null)  {
-				$this->giid = $res2->data->account->owainstallations[0]->giid;		// Installation ID 0 by default
-			}
-			
-			return array($httpRespCode2, $response2);
+			$httpRespCode = $result[0];
+			$response = $result[1];
+			$res2 = json_decode($response, false);
+			log::add('verisure', 'debug', '│ Request fetchAllInstallations - Domain => '.$this->workingDomain.' - httpRespCode => '.$httpRespCode.' - response => '.$response);
 		}
 
-		if ($res->errors[0]->data->errorGroup == "UNAUTHORIZED")  {
+		if (isset($res->errors[0]->data->errorGroup) && $res->errors[0]->data->errorGroup == "UNAUTHORIZED") {
 			return $this->RefreshToken();
 		}
-		elseif ($res->data->account->owainstallations != null)  {
-        	$this->giid = $res->data->account->owainstallations[0]->giid;		// Installation ID 0 by default
+
+		if (isset($res->data->account->installations) && $res->data->account->installations != null) {
+        	$this->giid = $res->data->account->installations[0]->giid;
+			log::add('verisure', 'debug', '│ Installation GIID set: '.$this->giid);
 		}
-		      			
-		return array($httpRespCode, $response);
+
+		return array($httpRespCode, $response);		
 	}
   
   
