@@ -292,7 +292,23 @@ class verisure extends eqLogic {
 			$replace['#nb_doorsensor#'] = $this->getConfiguration('nb_doorsensor');
 			$replace['#nb_camera#'] = $this->getConfiguration('nb_camera');
 			$replace['#nb_device#'] = $this->getConfiguration('nb_device');
+
+			$device_array = $this->getConfiguration('devices');
+			$nb_smartplug = $this->getConfiguration('nb_smartplug');
+			$doorWindowIndex = 0;
+			$doorWindowDevices = array();
+
+			for ($j = 0; $j < $nb_smartplug; $j++) {
+				if (($device_array['smartplugType'.$j] ?? null) === "doorWindowDevice") {
+					$doorWindowDevices[] = array(
+						'id' => $device_array['smartplugID'.$j] ?? '',
+						'name' => $device_array['smartplugName'.$j] ?? ''
+					);
+				}
+			}
+			$replace['#doorWindowDevices_json#'] = json_encode($doorWindowDevices);
 		}
+
 		if ( $this->getConfiguration('alarmtype') == 3 )   { 
 			$replace['#connectedLock#'] = $this->getConfiguration('connectedLock');
 		}
