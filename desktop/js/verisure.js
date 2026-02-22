@@ -175,6 +175,7 @@ $('#bt_Authentication_2FA').on('click',function() {
 							else if (data.result['res'][j]['type'] == "JX") { tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="Alarme Sentinel" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugModel'+j+'">'; }
 							else if (data.result['res'][j]['type'] == "FG") { tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="Brouillard anti-cambriolage" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugModel'+j+'">'; }
 							else if (data.result['res'][j]['type'] == "DR") { tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="Serrure connectée" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugModel'+j+'">'; }
+							else if (data.result['res'][j]['type'] == "QP") { tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="Détecteur de mouvements extérieur" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugModel'+j+'">'; }
 							else if (data.result['res'][j]['type'] == "CENT") { tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="Centrale" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugModel'+j+'">'; }
 							else { tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="'+data.result['res'][j]['type']+'" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugModel'+j+'">'; }
 							tr += '</td>';
@@ -248,6 +249,15 @@ $('#bt_Authentication_2FA').on('click',function() {
 							}
 							else if (data.result['res'][j]['gui']['deviceGroup'] == "SMOKE") {
 								tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="Détecteur de fumée" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugModel'+j+'">';
+								tr += '</td>';
+								tr += '<td>';					
+								tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="climateDevice" style="display : none;" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugType'+j+'">';
+								tr += '</td>';
+								tr += '</tr>';
+								nbclimate++;
+							}
+							else if (data.result['res'][j]['gui']['deviceGroup'] == "WATER") {
+								tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="Détecteur d\'eau readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugModel'+j+'">';
 								tr += '</td>';
 								tr += '<td>';					
 								tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="climateDevice" style="display : none;" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugType'+j+'">';
@@ -409,6 +419,7 @@ function validateDevice(alarmtype, numinstall, username, pwd, code, country, sms
 						else if (data.result['res'][j]['type'] == "JX") { tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="Alarme Sentinel" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugModel'+j+'">'; }
 						else if (data.result['res'][j]['type'] == "FG") { tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="Brouillard anti-cambriolage" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugModel'+j+'">'; }
 						else if (data.result['res'][j]['type'] == "DR") { tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="Serrure connectée" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugModel'+j+'">'; }
+						else if (data.result['res'][j]['type'] == "QP") { tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="Détecteur de mouvements extérieur" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugModel'+j+'">'; }
 						else if (data.result['res'][j]['type'] == "CENT") { tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="Centrale" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugModel'+j+'">'; }
 						else { tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="'+data.result['res'][j]['type']+'" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugModel'+j+'">'; }
 						tr += '</td>';
@@ -466,6 +477,15 @@ function validateDevice(alarmtype, numinstall, username, pwd, code, country, sms
 						}
 						else if (data.result['res'][j]['gui']['deviceGroup'] == "SMOKE") {
 							tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="Détecteur de fumée" readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugModel'+j+'">';
+							tr += '</td>';
+							tr += '<td>';					
+							tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="climateDevice" style="display : none;" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugType'+j+'">';
+							tr += '</td>';
+							tr += '</tr>';
+							nbclimate++;
+						}
+						else if (data.result['res'][j]['gui']['deviceGroup'] == "WATER") {
+							tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="Détecteur d\'eau readonly="true" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugModel'+j+'">';
 							tr += '</td>';
 							tr += '<td>';					
 							tr += '<input type="text" class="eqLogicAttr form-control input-sm" value="climateDevice" style="display : none;" data-l1key="configuration" data-l2key="devices" data-l3key="smartplugType'+j+'">';

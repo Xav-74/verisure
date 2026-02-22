@@ -55,6 +55,16 @@ try {
 		ajax::success($result);
 	}
 
+	if (init('action') == 'enableCron') {
+		$result = verisure::manageCron('enable', init('cronPattern'));
+		ajax::success($result);
+	}
+
+	if (init('action') == 'disableCron') {
+		$result = verisure::manageCron('disable');
+		ajax::success($result);
+	}
+
     throw new Exception(__('Aucune méthode correspondante à : ', __FILE__) . init('action'));
     /*     * *********Catch exeption*************** */
 }

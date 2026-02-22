@@ -211,6 +211,25 @@ $eqLogics = eqLogic::byType($plugin->getId());
 										</select>
 									</div>
 								</div>
+								
+								<div id="div_option1" class="form-group" style="height: 26px;">						
+									<label class="col-sm-6 control-label">{{Options}}</label>
+									<div class="col-sm-6">
+										<label class="checkbox-inline help" data-help="{{Pensez à paramétrer et activer le cron personnalisé dans la configuration du plugin}}"><input type="checkbox" class="eqLogicAttr" data-l1key="configuration" data-l2key="refreshHisto"/>{{Raffraichissment via historique}}</label>
+									</div>
+								</div>	
+								<div id="div_option2" class="form-group" style="height: 26px;">						
+									<label class="col-sm-6 control-label"></label>
+									<div class="col-sm-6">
+										<label class="checkbox-inline"><input type="checkbox" class="eqLogicAttr" data-l1key="configuration" data-l2key="externalAlarm"/>{{Présence alarme extérieure}}</label>
+									</div>
+								</div>
+								<div id="div_option3" class="form-group" style="height: 26px;">						
+									<label class="col-sm-6 control-label"></label>
+									<div class="col-sm-6">
+										<label class="checkbox-inline help" data-help="{{Attention ! Cette option permet de forcer l'activation de l'alarme même si une porte ou une fenêtre est restée ouverte. A vos risques et périls !}}"><input type="checkbox" class="eqLogicAttr" data-l1key="configuration" data-l2key="allowForcing"/>{{Armement forcé}}</label>
+									</div>
+								</div>
 							</fieldset>
 						</form>  
                     </div>								
@@ -311,6 +330,9 @@ $eqLogics = eqLogic::byType($plugin->getId());
 					$('#div_pwd').show();
 					$('#div_code').hide();
 					$('#div_country').show();
+					$('#div_option1').show();
+					$('#div_option2').hide();
+					$('#div_option3').hide();
 				}
 
 				if ($('.eqLogicAttr[data-l2key=alarmtype]').value() == "2") {
@@ -322,6 +344,9 @@ $eqLogics = eqLogic::byType($plugin->getId());
 					$('#div_pwd').show();
 					$('#div_code').show();
 					$('#div_country').hide();
+					$('#div_option1').hide();
+					$('#div_option2').hide();
+					$('#div_option3').hide();
 				}
 
 				if ($('.eqLogicAttr[data-l2key=alarmtype]').value() == "3") {
@@ -333,6 +358,10 @@ $eqLogics = eqLogic::byType($plugin->getId());
 					$('#div_pwd').show();
 					$('#div_code').hide();
 					$('#div_country').show();
+					$('#div_option').show();
+					$('#div_option1').show();
+					$('#div_option2').show();
+					$('#div_option3').show();
 				}
 			});
 

@@ -102,17 +102,32 @@
 				$('#devices_table').empty();
 				
 				$.each(json.climateDevice, function (key, val) {
-					var name = "Température "+ val.device.area;
+					var fullName = "Température "+ val.device.area;
+					var name = fullName.length > 31 ? fullName.substring(0, 28) + "..." : fullName;
 					var temp = val.temperatureValue+" °C";
 					if ( val.humidityValue != null ) { temp = temp+" ("+val.humidityValue+" %)"; }
-					$('<tr class="row text-center" style="height: 20px">').append(
-						$('<td class="col-10 text-left" style="font-size: 12px !important">').text(name),
-						$('<td class="col-2"style="font-size: 12px !important">').text(temp),
+					
+					var tdName  = $('<td class="col-10 text-left" style="font-size: 12px !important; height: 20px !important">').text(name);
+    				if (fullName.length > 31) {
+						tdName .attr('title', fullName);
+					}
+					$('<tr class="row text-center">').append(
+						tdName,
+						$('<td class="col-2" style="font-size: 12px !important; height: 20px !important">').text(temp),
 					).appendTo("#devices_table");                    
 				});
 
+				var doorWindowConfig = #doorWindowDevices_json#;
+				var deviceNames = {};
+				doorWindowConfig.forEach(function(device) {
+					deviceNames[device.id] = device.name;
+				});
+				
 				$.each(json.doorWindowDevice, function (key, val) {
-					var name = "Capteur "+val.area;
+					var deviceLabel = val.device.deviceLabel;
+					var fullName = "Capteur " + deviceNames[deviceLabel];
+					var name = fullName.length > 31 ? fullName.substring(0, 28) + "..." : fullName;
+					//var name = "Capteur "+val.area;
 					var icon = "";
 					if (val.state == "OPEN") {
 						icon = '<i class="icon_red jeedomapp-lock-ouvert"></i>';
@@ -120,14 +135,20 @@
 					if (val.state == "CLOSE") {
 						icon = '<i class="icon_green jeedomapp-lock-ferme"></i>';
 					}
-					$('<tr class="row text-center" style="height: 20px">').append(
-						$('<td class="col-10 text-left" style="font-size: 12px !important">').text(name),
-						$('<td class="col-2">').html(icon),
+					
+					var tdName  = $('<td class="col-10 text-left" style="font-size: 12px !important; height: 20px !important">').text(name);
+    				if (fullName.length > 31) {
+						tdName .attr('title', fullName);
+					}
+					$('<tr class="row text-center">').append(
+						tdName,
+						$('<td class="col-2" style="height: 20px !important">').html(icon).attr("title", val.state),
 					).appendTo("#devices_table");                    
 				});
 				
 				$.each(json.smartPlugDevice, function (key, val) {
-					var name = "Smartplug "+val.device.area;
+					var fullName = "Smartplug "+val.device.area;
+					var name = fullName.length > 31 ? fullName.substring(0, 28) + "..." : fullName;
 					var icon = "";
 					if (val.currentState == "OFF") {
 						icon = '<i class="icon_red jeedomapp-prise"></i>';
@@ -135,9 +156,14 @@
 					if (val.currentState == "ON") {
 						icon = '<i class="icon_green jeedomapp-prise"></i>';
 					}
-					$('<tr class="row text-center" style="height: 20px">').append(
-						$('<td class="col-10 text-left" style="font-size: 12px !important">').text(name),
-						$('<td class="col-2">').html(icon),
+					
+					var tdName  = $('<td class="col-10 text-left" style="font-size: 12px !important; height: 20px !important">').text(name);
+    				if (fullName.length > 31) {
+						tdName .attr('title', fullName);
+					}
+					$('<tr class="row text-center">').append(
+						tdName,
+						$('<td class="col-2" style="height: 20px !important">').html(icon).attr("title", val.currentState),
 					).appendTo("#devices_table");                       
 				});
 			}

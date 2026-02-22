@@ -190,7 +190,7 @@ class verisureAPI {
 	}	
 
 
-	private function setContent($operation, $data1, $data2, $data3) {		//Set content for https request to Verisure Cloud
+	private function setContent($operation, $data1 = null, $data2 = null, $data3 = null, $data4 = null, $data5 = null) {		//Set content for https request to Verisure Cloud
 		
 		$content = "";
 		switch($operation) {
@@ -340,9 +340,12 @@ class verisureAPI {
 						'numinst' => $this->numinstall,
 						'panel' => $this->panel,
 						'request' => $data1,
-						'currentStatus' => $data2
+						'currentStatus' => $data2,
+						'armAndLock' => $data3,
+						'forceArmingRemoteId' => $data4,
+						'suid' => $data5
 					),
-					'query' => 'mutation xSArmPanel($numinst: String!, $request: ArmCodeRequest!, $panel: String!, $currentStatus: String) { xSArmPanel(numinst: $numinst, request: $request, panel: $panel, currentStatus: $currentStatus) { res msg referenceId } }',
+					'query' => 'mutation xSArmPanel($numinst: String!, $request: ArmCodeRequest!, $panel: String!, $currentStatus: String, $suid: String, $forceArmingRemoteId: String, $armAndLock: Boolean) { xSArmPanel(numinst: $numinst, request: $request, panel: $panel, currentStatus: $currentStatus, suid: $suid, forceArmingRemoteId: $forceArmingRemoteId, armAndLock: $armAndLock) { res msg referenceId pollingTime} }',
 				);
 			break;
 
@@ -354,9 +357,11 @@ class verisureAPI {
 						'panel' => $this->panel,
 						'request' => $data1,
 						'referenceId' => $data2,
-						'counter' => (int)$data3
+						'counter' => (int)$data3,
+						'armAndLock' => $data4,
+						'forceArmingRemoteId' => $data5
 					),
-					'query' => 'query ArmStatus($numinst: String!, $request: ArmCodeRequest, $panel: String!, $referenceId: String!, $counter: Int!) { xSArmStatus(numinst: $numinst, panel: $panel, referenceId: $referenceId, counter: $counter, request: $request) { res msg status protomResponse protomResponseDate numinst requestId error { code type allowForcing exceptionsNumber referenceId } } }',
+					'query' => 'query ArmStatus($numinst: String!, $request: ArmCodeRequest, $panel: String!, $referenceId: String!, $counter: Int!, $forceArmingRemoteId: String, $armAndLock: Boolean) { xSArmStatus(numinst: $numinst, panel: $panel, referenceId: $referenceId, counter: $counter, request: $request, forceArmingRemoteId: $forceArmingRemoteId, armAndLock: $armAndLock) { res msg status protomResponse protomResponseDate numinst requestId error { code type allowForcing exceptionsNumber referenceId suid } smartlockStatus { state deviceId updatedOnArm } } }',
 				);
 			break;
 
@@ -366,10 +371,10 @@ class verisureAPI {
 					'variables' => array(
 						'numinst' => $this->numinstall,
 						'panel' => $this->panel,
-						'request' => "DARM1",
-						'currentStatus' => $data1
+						'request' => $data1,
+						//'currentStatus' => $data2
 					),
-					'query' => 'mutation xSDisarmPanel($numinst: String!, $request: DisarmCodeRequest!, $panel: String!) { xSDisarmPanel(numinst: $numinst, request: $request, panel: $panel) { res msg referenceId } }',
+					'query' => 'mutation xSDisarmPanel($numinst: String!, $request: DisarmCodeRequest!, $panel: String!) { xSDisarmPanel(numinst: $numinst, request: $request, panel: $panel) { res msg referenceId pollingTime} }',
 				);
 			break;
 
@@ -379,11 +384,26 @@ class verisureAPI {
 					'variables' => array(
 						'numinst' => $this->numinstall,
 						'panel' => $this->panel,
-						'request' => "DARM1",
-						'referenceId' => $data1,
-						'counter' => (int)$data2
+						'request' => $data1,
+						'referenceId' => $data2,
+						'counter' => (int)$data3
 					),
-					'query' => 'query DisarmStatus($numinst: String!, $panel: String!, $referenceId: String!, $counter: Int!, $request: DisarmCodeRequest) { xSDisarmStatus(numinst: $numinst, panel: $panel, referenceId: $referenceId, counter: $counter, request: $request) { res msg status protomResponse protomResponseDate numinst requestId error { code type allowForcing exceptionsNumber referenceId } } }',
+					'query' => 'query DisarmStatus($numinst: String!, $panel: String!, $referenceId: String!, $counter: Int!, $request: DisarmCodeRequest) { xSDisarmStatus(numinst: $numinst, panel: $panel, referenceId: $referenceId, counter: $counter, request: $request) { res msg status protomResponse protomResponseDate numinst requestId error { code type allowForcing exceptionsNumber referenceId suid} } }',
+				);
+			break;
+
+			case "ActV2Timeline":
+				$content = array(
+					'operationName' =>  "ActV2Timeline",
+					'variables' => array(
+						'numinst' => $this->numinstall,
+						'panel' => $this->panel,
+						'numRows' => 10,
+						'offset' => 0,
+						'hasLocksmithRequested' => false,
+						'singleActivityFilter' => $data1
+					),
+					'query' => 'query ActV2Timeline($numinst: String!, $numRows: Int, $offset: Int, $hasLocksmithRequested: Boolean, $singleActivityFilter: [Int], $panel: String) { xSActV2(numinst: $numinst, input: {timeFilter: LASTMONTH, numRows: $numRows, offset: $offset, hasLocksmithRequested: $hasLocksmithRequested, singleActivityFilter: $singleActivityFilter, panel: $panel}) { reg { alias type device source idSignal myVerisureUser time img signalType } } }',
 				);
 			break;
 
@@ -411,7 +431,7 @@ class verisureAPI {
 						'devices' => array( (int)$data1 ),
 						'mediaType' => 1,
 						'resolution' => 0,
-						'deviceType' => 106
+						'deviceType' => (int)$data2
 					),
 					'query' => 'mutation RequestImages($numinst: String!, $panel: String!, $devices: [Int]!, $mediaType: Int, $resolution: Int, $deviceType: Int) { xSRequestImages(numinst: $numinst, panel: $panel, devices: $devices, mediaType: $mediaType, resolution: $resolution, deviceType: $deviceType) { res msg referenceId } }',
 				);
@@ -496,6 +516,20 @@ class verisureAPI {
 				);
 			break;
 
+			case "xSGetExceptions":
+				$content = array(
+					'operationName' =>  "xSGetExceptions",
+					'variables' => array(
+						'numinst' => $this->numinstall,
+						'panel' => $this->panel,
+						'referenceId' => $data1,
+						'suid' => $data2,
+						'counter' => (int)$data3						
+					),
+					'query' => 'query xSGetExceptions($numinst: String!, $panel: String!, $referenceId: String!, $counter: Int!, $suid: String)  { xSGetExceptions(numinst: $numinst, panel: $panel, referenceId: $referenceId, counter: $counter, suid: $suid) { res msg exceptions { status deviceType alias } } }',
+				);
+			break; 
+
 		}
 
 		//log::add('verisure', 'debug', '| Content = '.json_encode($content));
@@ -575,7 +609,7 @@ class verisureAPI {
 		
 		$method = "POST";
 		$headers = $this->setHeaders("mkLoginToken");
-		$content = $this->setContent("mkLoginToken", null, null, null);
+		$content = $this->setContent("mkLoginToken");
 		
 		$result = $this->doRequest($content, $method, $headers);
 		$httpRespCode = $result[0];
@@ -598,7 +632,7 @@ class verisureAPI {
 		
 		$method = "POST";
 		$headers = $this->setHeaders("Logout");
-		$content = $this->setContent("Logout", null, null, null);
+		$content = $this->setContent("Logout");
 		
 		$result = $this->doRequest($content, $method, $headers);
 		$httpRespCode = $result[0];
@@ -616,7 +650,7 @@ class verisureAPI {
 
 		$method = "POST";
 		$headers = $this->setHeaders("mkValidateDevice");
-		$content = $this->setContent("mkValidateDevice", null, null, null);
+		$content = $this->setContent("mkValidateDevice");
 		
 		$result = $this->doRequest($content, $method, $headers);
 		$httpRespCode = $result[0];
@@ -645,7 +679,7 @@ class verisureAPI {
 		
 		$method = "POST";
 		$headers = $this->setHeaders("mkSendOTP");
-		$content = $this->setContent("mkSendOTP", $phone_id, null, null);
+		$content = $this->setContent("mkSendOTP", $phone_id);
 		
 		$result = $this->doRequest($content, $method, $headers);
 		$httpRespCode = $result[0];
@@ -664,7 +698,7 @@ class verisureAPI {
 		
 		$method = "POST";
 		$headers = $this->setHeaders("RefreshLogin");
-		$content = $this->setContent("RefreshLogin", null, null, null);
+		$content = $this->setContent("RefreshLogin");
 		
 		$result = $this->doRequest($content, $method, $headers);
 		$httpRespCode = $result[0];
@@ -688,7 +722,7 @@ class verisureAPI {
 		
 		$method = "POST";
 		$headers = $this->setHeaders("Srv");
-		$content = $this->setContent("Srv", null, null, null);
+		$content = $this->setContent("Srv");
 		
 		$result = $this->doRequest($content, $method, $headers);
 		$httpRespCode = $result[0];
@@ -696,7 +730,7 @@ class verisureAPI {
 		log::add('verisure', 'debug', '│ Request Srv - httpRespCode => '.$httpRespCode.' - response => '.$response);
 
 		$res = json_decode($response, true);
-		if ( $res['data']['xSSrv']['installation']['capabilities'] != "" ) {
+		if ( is_array($res) && isset($res['data']['xSSrv']['installation']['capabilities']) && $res['data']['xSSrv']['installation']['capabilities'] != "" ) {
 			$this->capabilities = $res['data']['xSSrv']['installation']['capabilities'];
 		}
 
@@ -708,7 +742,7 @@ class verisureAPI {
 		
 		$method = "POST";
 		$headers = $this->setHeaders("mkInstallationList");
-		$content = $this->setContent("mkInstallationList", null, null, null);
+		$content = $this->setContent("mkInstallationList");
 		
 		$result = $this->doRequest($content, $method, $headers);
 		$httpRespCode = $result[0];
@@ -732,7 +766,7 @@ class verisureAPI {
 		
 		$method = "POST";
 		$headers = $this->setHeaders("xSDeviceList");
-		$content = $this->setContent("xSDeviceList", null, null, null);
+		$content = $this->setContent("xSDeviceList");
 		
 		$result = $this->doRequest($content, $method, $headers);
 		$httpRespCode = $result[0];
@@ -747,7 +781,7 @@ class verisureAPI {
 
 		$method = "POST";
 		$headers = $this->setHeaders("CheckAlarm");
-		$content = $this->setContent("CheckAlarm", null, null, null);
+		$content = $this->setContent("CheckAlarm");
 		
 		$result = $this->doRequest($content, $method, $headers);
 		$httpRespCode = $result[0];
@@ -764,7 +798,7 @@ class verisureAPI {
 				sleep(2);
 				$method2 = "POST";
 				$headers2 = $this->setHeaders("CheckAlarmStatus");
-				$content2 = $this->setContent("CheckAlarmStatus", $referenceId, $counter, null);
+				$content2 = $this->setContent("CheckAlarmStatus", $referenceId, $counter);
 				
 				$result2 = $this->doRequest($content2, $method2, $headers2);
 				$httpRespCode2 = $result2[0];
@@ -780,12 +814,28 @@ class verisureAPI {
 		return array($httpRespCode, $response, $httpRespCode2, $response2);
 	}
 
+	
+	public function GetStateAlarmFromHistory($filter)  {			// Get the information of last status of the alarm
+		// Filter status alarm
+		if ( $filter == null ) { $filter = [1,2,7,8,9,10,11,12,31,32,38,39,40,44,46,47,70,71,202,203,204,311,312,700,701,702,720,721,722,723,724,730,731,732,733,734,740,741,742,743,744,800,801,802,820,821,822,823,824,830,831,832,833,834,840,841,842,843,844]; }
+		$method = "POST";
+		$headers = $this->setHeaders("ActV2Timeline");
+		$content = $this->setContent("ActV2Timeline", $filter);
+		
+		$result = $this->doRequest($content, $method, $headers);
+		$httpRespCode = $result[0];
+		$response = $result[1];
+		log::add('verisure', 'debug', '│ Request ActV2Timeline - httpRespCode => '.$httpRespCode.' - response => '.$response);
 
-	public function ArmAlarm($mode, $currentStatus)  {			// Arm the alarm in mode total, day, night, peri
+		return array($httpRespCode, $response);
+	}
+
+
+	public function ArmAlarm($mode, $currentStatus, bool $allowForcing = false)  {			// Arm the alarm in mode total, day, night, peri
 
 		$method = "POST";
 		$headers = $this->setHeaders("xSArmPanel");
-		$content = $this->setContent("xSArmPanel", $mode, $currentStatus, null);
+		$content = $this->setContent("xSArmPanel", $mode, $currentStatus, $armAndLock = false);
 		
 		$result = $this->doRequest($content, $method, $headers);
 		$httpRespCode = $result[0];
@@ -802,7 +852,7 @@ class verisureAPI {
 				sleep(1);
 				$method2 = "POST";
 				$headers2 = $this->setHeaders("ArmStatus");
-				$content2 = $this->setContent("ArmStatus", $mode, $referenceId, $counter);
+				$content2 = $this->setContent("ArmStatus", $mode, $referenceId, $counter, $armAndLock = false);
 				
 				$result2 = $this->doRequest($content2, $method2, $headers2);
 				$httpRespCode2 = $result2[0];
@@ -811,19 +861,85 @@ class verisureAPI {
 				$res2 = json_decode($response2, true);
 				$wait = $res2['data']['xSArmStatus']['res'];
 				$counter++;
-			}
+			}			
 		}
-		log::add('verisure', 'debug', '│ Request ArmStatus - httpRespCode => '.$httpRespCode2.' - response => '.$response2);
-		
-		return array($httpRespCode, $response, $httpRespCode2, $response2);
+
+		//----- Mode forcé -----//
+		if ( $res2['data']['xSArmStatus']['res'] == "ERROR" && $res2['data']['xSArmStatus']['error']['code'] == "102" && $allowForcing == true)  {
+			
+			log::add('verisure', 'debug', '│ Request ArmStatus - httpRespCode => '.$httpRespCode2.' - response => '.$response2);
+			$suid = $res2['data']['xSArmStatus']['error']['suid'];
+			
+			$counter = 1;
+			$wait = "WAIT";
+			While ($wait == "WAIT")  {
+				sleep(1);
+				$method3 = "POST";
+				$headers3 = $this->setHeaders("xSGetExceptions");
+				$content3 = $this->setContent("xSGetExceptions", $referenceId, $suid, $counter);
+
+				$result3 = $this->doRequest($content3, $method3, $headers3);
+				$httpRespCode3 = $result3[0];
+				$response3 = $result3[1];
+								
+				$res3 = json_decode($response3, true);
+				$wait = $res3['data']['xSGetExceptions']['res'];
+				$counter++;
+			}
+			log::add('verisure', 'debug', '│ Request xSGetExceptions - httpRespCode => '.$httpRespCode3.' - response => '.$response3);
+
+			$forceArmingRemoteId = $referenceId;
+			if ( $res3['data']['xSGetExceptions']['res'] == "OK" ) {
+
+				$method4 = "POST";
+				$headers4 = $this->setHeaders("xSArmPanel");
+				$content4 = $this->setContent("xSArmPanel", $mode, $currentStatus, $armAndLock = false, $forceArmingRemoteId, $suid);
+				
+				$result4 = $this->doRequest($content4, $method4, $headers4);
+				$httpRespCode4 = $result4[0];
+				$response4 = $result4[1];
+				log::add('verisure', 'debug', '│ Request xSArmPanel - httpRespCode => '.$httpRespCode4.' - response => '.$response4);
+
+				$res4 = json_decode($response4, true);
+				$referenceId = $res4['data']['xSArmPanel']['referenceId'];
+				if ( $res4['data']['xSArmPanel']['res'] == "OK" ) {
+
+					$counter = 1;
+					$wait = "WAIT";
+					While ($wait == "WAIT")  {
+						sleep(1);
+						$method5 = "POST";
+						$headers5 = $this->setHeaders("ArmStatus");
+						$content5 = $this->setContent("ArmStatus", $mode, $referenceId, $counter, $armAndLock = false, $forceArmingRemoteId);
+						
+						$result5 = $this->doRequest($content5, $method5, $headers5);
+						$httpRespCode5 = $result5[0];
+						$response5 = $result5[1];
+						
+						$res5 = json_decode($response5, true);
+						$wait = $res5['data']['xSArmStatus']['res'];
+						$counter++;
+					}			
+				}
+			}
+
+			log::add('verisure', 'debug', '│ Request ArmStatus - httpRespCode => '.$httpRespCode5.' - response => '.$response5);
+			return array($httpRespCode, $response, $httpRespCode5, $response5);
+		}
+		//----- Fin mode forcé -----//
+
+		else {
+			log::add('verisure', 'debug', '│ Request ArmStatus - httpRespCode => '.$httpRespCode2.' - response => '.$response2);
+			return array($httpRespCode, $response, $httpRespCode2, $response2);
+		}
 	}
 
 
-	public function DisarmAlarm($currentStatus)  {			// Disarm the alarm (all mode)
+	public function DisarmAlarm($mode, $currentStatus)  {			// Disarm the alarm (all mode)
 
 		$method = "POST";
 		$headers = $this->setHeaders("xSDisarmPanel");
-		$content = $this->setContent("xSDisarmPanel", $currentStatus, null, null);
+		$content = $this->setContent("xSDisarmPanel", $mode, $currentStatus);
 		
 		$result = $this->doRequest($content, $method, $headers);
 		$httpRespCode = $result[0];
@@ -840,7 +956,7 @@ class verisureAPI {
 				sleep(1);
 				$method2 = "POST";
 				$headers2 = $this->setHeaders("DisarmStatus");
-				$content2 = $this->setContent("DisarmStatus", $referenceId, $counter, null);
+				$content2 = $this->setContent("DisarmStatus", $mode, $referenceId, $counter);
 				
 				$result2 = $this->doRequest($content2, $method2, $headers2);
 				$httpRespCode2 = $result2[0];
@@ -863,7 +979,7 @@ class verisureAPI {
 		
 		$method = "POST";
 		$headers = $this->setHeaders("ActV2Home");
-		$content = $this->setContent("ActV2Home", $filter, null, null);
+		$content = $this->setContent("ActV2Home", $filter);
 		
 		$result = $this->doRequest($content, $method, $headers);
 		$httpRespCode = $result[0];
@@ -872,15 +988,14 @@ class verisureAPI {
 
 		return array($httpRespCode, $response);
 	}
-
 	
-	public function GetPhotosRequest($device)  {			// Photos request
+	public function GetPhotosRequest($device, $code)  {			// Photos request
 		
 		$now = date("Y-m-d H:i:s");
 		
 		$method = "POST";
 		$headers = $this->setHeaders("RequestImages");
-		$content = $this->setContent("RequestImages", $device, null, null);
+		$content = $this->setContent("RequestImages", $device, $code);
 		
 		$result = $this->doRequest($content, $method, $headers);
 		$httpRespCode = $result[0];
@@ -929,7 +1044,7 @@ class verisureAPI {
 				
 				$method4 = "POST";
 				$headers4 = $this->setHeaders("mkGetPhotoImages");
-				$content4 = $this->setContent("mkGetPhotoImages", $idSignal, null, null);
+				$content4 = $this->setContent("mkGetPhotoImages", $idSignal);
 				
 				$result4 = $this->doRequest($content4, $method4, $headers4);
 				$httpRespCode4 = $result4[0];
@@ -949,7 +1064,7 @@ class verisureAPI {
 
 		$method = "POST";
 		$headers = $this->setHeaders("xSGetLockCurrentMode");
-		$content = $this->setContent("xSGetLockCurrentMode", null, null, null);
+		$content = $this->setContent("xSGetLockCurrentMode");
 		
 		$result = $this->doRequest($content, $method, $headers);
 		$httpRespCode = $result[0];
@@ -964,7 +1079,7 @@ class verisureAPI {
 		
 		$method = "POST";
 		$headers = $this->setHeaders("xSChangeSmartlockMode");
-		$content = $this->setContent("xSChangeSmartlockMode", $device, $lock, null);
+		$content = $this->setContent("xSChangeSmartlockMode", $device, $lock);
 		
 		$result = $this->doRequest($content, $method, $headers);
 		$httpRespCode = $result[0];
@@ -996,39 +1111,38 @@ class verisureAPI {
 
 			if ( $res2['data']['xSChangeSmartlockModeStatus']['res'] == "OK" ) {
 
-				$counter = 1;
-				$wait = "WAIT";
-				While ($wait == "WAIT")  {
-					sleep(1);
-					$method3 = "POST";
-					$headers3 = $this->setHeaders("xSGetSignals");
-					$content3 = $this->setContent("xSGetSignals", $device, $referenceId, $counter);
+				$method3 = "POST";
+				$headers3 = $this->setHeaders("xSGetLockCurrentMode");
+				$content3 = $this->setContent("xSGetLockCurrentMode");
+						
+				$result3 = $this->doRequest($content3, $method3, $headers3);
+				$httpRespCode3 = $result3[0];
+				$response3 = $result3[1];
+				log::add('verisure', 'debug', '│ Request xSGetLockCurrentMode - httpRespCode => '.$httpRespCode3.' - response => '.$response3);
+
+				$res3 = json_decode($response3, true);
+				$state = $res3['data']['xSGetLockCurrentMode']['smartlockInfo'][0]['lockStatus'];
+				$retry = 10;
+
+				While ( $retry > 0 ) {
+					sleep(2);
 					
 					$result3 = $this->doRequest($content3, $method3, $headers3);
 					$httpRespCode3 = $result3[0];
 					$response3 = $result3[1];
-					
+					log::add('verisure', 'debug', '│ Request xSGetLockCurrentMode - httpRespCode => '.$httpRespCode3.' - response => '.$response3);
 					$res3 = json_decode($response3, true);
-					$wait = $res3['data']['xSGetSignals']['res'];
-					$counter++;
-				}
-				log::add('verisure', 'debug', '│ Request xSGetSignals - httpRespCode => '.$httpRespCode3.' - response => '.$response3);
-			
-				if ( $res3['data']['xSGetSignals']['res'] == "OK" ) {
+					$newState = $res3['data']['xSGetLockCurrentMode']['smartlockInfo'][0]['lockStatus'];
 
-					$method4 = "POST";
-					$headers4 = $this->setHeaders("xSGetLockCurrentMode");
-					$content4 = $this->setContent("xSGetLockCurrentMode", null, null, null);
-					
-					$result4 = $this->doRequest($content4, $method4, $headers4);
-					$httpRespCode4 = $result4[0];
-					$response4 = $result4[1];
-					log::add('verisure', 'debug', '│ Request xSGetLockCurrentMode - httpRespCode => '.$httpRespCode4.' - response => '.$response4);
+					if ($newState !== $state) {
+						break;
+					}
+					$retry--;
 				}			
 			}
 		}
 
-		return array($httpRespCode, $response, $httpRespCode2, $response2, $httpRespCode3, $response3, $httpRespCode4, $response4);
+		return array($httpRespCode, $response, $httpRespCode2, $response2, $httpRespCode3, $response3);
 	}
 
 }
