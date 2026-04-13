@@ -535,7 +535,7 @@ class verisureAPI2 {
 
 			$httpRespCode = $result[0];
 			$response = $result[1];
-			$res2 = json_decode($response, false);
+			$res = json_decode($response, false);
 			log::add('verisure', 'debug', '│ Request fetchAllInstallations - Domain => '.$this->workingDomain.' - httpRespCode => '.$httpRespCode.' - response => '.$response);
 		}
 
