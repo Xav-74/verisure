@@ -20,10 +20,10 @@ $eqLogics = eqLogic::byType($plugin->getId());
 				<legend><i class="fas fa-cog"></i> {{Gestion}}</legend>
 				<div class="eqLogicThumbnailContainer">
 					
-					<div class="cursor eqLogicAction logoPrimary" style="color:#FB0230" data-action="add">
+					<div class="cursor eqLogicAction logoPrimary" style="color:#3a5a7a" data-action="add">
 						<i class="fas fa-plus-circle"></i>
 						<br/>
-						<span>{{Ajouter}}</span>
+						<span style="color:#3a5a7a">{{Ajouter}}</span>
 					</div>
 					
 					<div class="cursor eqLogicAction logoSecondary" data-action="gotoPluginConf">
