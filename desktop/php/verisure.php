@@ -433,13 +433,13 @@ $eqLogics = eqLogic::byType($plugin->getId());
 						Dernière étape : la création du scénario qui déclenchera le refresh du statut de l'alarme lors de la réception d'un email provenant de Securitas Direct - Verisure.<br/>
 						Pour cela, renddez-vous dans le menu "Outils" de Jeedom puis "Scénarios" et enfin "Ajouter". Renseignez le premier onglet "Général" comme suit :<br/>
 						<br/>
-						<img src="plugins/verisure/core/img/scenario_1.png" height="368" width="1100"/><br/>
+						<img src="plugins/verisure/core/img/scenario_1.png" height="510" width="1100"/><br/>
 						<br/>
 						<i>Dans cet exemple, [Maison][Mail Domotique] représente l'équipement créé dans le plugin Mail Listener.</i><br/>
 						<br/>
 						Passez maintenant à l'onglet "Scénario" :<br/>
 						<br/>
-						<img src="plugins/verisure/core/img/scenario_2.png" height="123" width="1100"/><br/>
+						<img src="plugins/verisure/core/img/scenario_2.png" height="155" width="1100"/><br/>
 						<br/>
 						<i>Dans cet exemple, [Maison][Alarme Verisure] représente l'équipement créé dans le plugin Verisure.</i><br/>
 						<br/>
