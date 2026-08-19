@@ -1,0 +1,61 @@
+.verisure_widget_flat .container-fluid {
+	margin : 3px 3px 3px 3px !important;
+	padding : 0px 0px 0px 0px !important;
+}
+
+.verisure_widget_flat #column {
+	padding: 0px 0px 0px 0px !important;
+	margin: 0px 0px 0px 0px !important;
+}
+
+.verisure_widget_flat #tile {
+	margin : 3px 3px 3px 3px !important;
+	padding : 0px 0px 0px 0px !important;
+	background-color : rgb(var(--bg-color)) !important;
+	filter : contrast(80%);
+	border : solid;
+	border-width : 2px;
+	border-radius : 10px;
+	border-color : rgb(30,30,30);
+}
+
+.verisure_widget_flat .label {
+	margin-bottom: 0px;
+}
+
+.verisure_widget_flat #infos {
+	margin-top: 10px;
+	margin-bottom: 0px;
+}
+
+.verisure_widget_flat #actions {
+	margin-top: 10px;
+	margin-bottom: 20px;
+}
+
+.verisure_widget_flat #images {
+	margin-top: 10px;
+	margin-bottom: 20px;
+}
+
+.verisure_widget_flat .verisure_btn {
+	border : 1px solid var(--txt-color) !important;
+	border-radius : 10px !important;
+	background-color : rgb(var(--bg-color)) !important;
+	filter : contrast(90%);
+	width : 32px; 
+}
+
+.verisure_widget_flat .verisure_select {
+	position : relative;
+	display : inline-block;
+	border : 1px solid var(--txt-color) !important;
+	border-radius : 10px !important;
+	margin : 3px 3px 3px 3px !important;
+    padding : 0px 0px 0px 0px !important;
+	background-color : rgb(var(--bg-color)) !important;
+	filter : contrast(90%);
+	width : 180px;
+	height : 30px;
+	cursor : pointer;
+}

@@ -1,4 +1,4 @@
-<div id="versiure_widget_ID" class="eqLogic-widget eqLogic verisure_widget_#id# verisure" style="text-align:center; min-width:270px; max-width:270px; border:#border#; border-radius:#border-radius#; background-color:#background-color#; color:#color#; #style#;" data-eqType="#eqType#" data-translate-category="#translate_category#" data-category="#category#" data-tags="#tags#" data-eqLogic_id="#id#" data-eqLogic_uid="#uid#" data-version="dashboard">
+<div id="versiure_widget_flat_ID" class="eqLogic-widget eqLogic verisure_widget_flat verisure_widget_flat_#id# verisure" style="text-align:center; min-width:270px; max-width:270px; border:#border#; border-radius:#border-radius#; background-color:#background-color#; color:#color#; #style#;" data-eqType="#eqType#" data-translate-category="#translate_category#" data-category="#category#" data-tags="#tags#" data-eqLogic_id="#id#" data-eqLogic_uid="#uid#" data-version="dashboard">
 	
 	<div class="text-center widget-name" style="padding-left: 0px; margin-bottom: 0px;">
 		<span class="pull-left" style="padding-left: 3px;" title="Qualité du réseau : #networkstate#">
@@ -23,49 +23,49 @@
 
 	<div class="container-fluid">
 		
-		<div class="col-xs-12" id="column" style="width: 260px">
-			<div class="col-xs-6 id_state_#id#" id="tile" style="width: 77px; height: 75px;">
+		<div class="col-xs-12" id="column" style="width: 264px">
+			<div class="col-xs-6 id_state_#id#" id="tile" style="width: 82px; height: 75px;">
 				<div class="col-xs-12 label" style="text-align: center;">Alarme</div>
 				<div class="col-xs-12" id="infos"><i class="iconCmd#state_id#"></i></div>
 			</div>
-			<div class="col-xs-6 id_enable_#id#" id="tile" style="width: 77px; height: 75px;">
+			<div class="col-xs-6 id_enable_#id#" id="tile" style="width: 82px; height: 75px;">
 				<div class="col-xs-12 label" style="text-align: center;">Activation</div>
 				<div class="col-xs-12" id="infos"><i class="iconCmd#enable_id#"></i></div>
 			</div>
-			<div class="col-xs-6 id_lock_#id#" id="tile" style="width: 76px; height: 75px;">
+			<div class="col-xs-6 id_lock_#id#" id="tile" style="width: 82px; height: 75px;">
 				<div class="col-xs-12 label" style="text-align: center;">Serrure</div>
 				<div class="col-xs-12" id="infos"><i class="iconCmd#connectedLockState_id#"></i></div>
 			</div>
 		</div>
 		
-		<div class="col-xs-12" id="column" style="width: 260px">
-			<div class="col-xs-12" id="tile" style="width: 250px; height: 75px;">
+		<div class="col-xs-12" id="column" style="width: 264px">
+			<div class="col-xs-12" id="tile" style="width: 258px; height: 75px;">
 				<div class="col-xs-12 label">Mode Alarme</div>
 				<div class="col-xs-12" id="infos"><span class="iconCmd#mode_id# iconCmd"></span></div>	
 			</div>
 		</div>
 
-		<div class="col-xs-12" id="column" style="width: 260px">
-			<div class="col-xs-12" id="tile" style="width: 250px; height: 80px;">
+		<div class="col-xs-12" id="column" style="width: 264px">
+			<div class="col-xs-12" id="tile" style="width: 258px; height: 80px;">
 				<div class="col-xs-12 label">Actions</div>
 				<div class="col-xs-12" id="actions">
-					<button class="btn cmd action" data-cmd_id="#armed_id#" title="Mode Total" onclick="jeedom.cmd.execute({id: #armed_id#});"><i class="fas fa-lock"></i></button>
-					<button class="btn cmd action" data-cmd_id="#released_id#" title="Désactivation" onclick="jeedom.cmd.execute({id: #released_id#});"><i class="fas fa-lock-open"></i></button>
-					<button id="btn_day_#id#"  class="btn cmd action" data-cmd_id="#armed_day_id#" title="Mode Partiel" onclick="jeedom.cmd.execute({id: #armed_day_id#});"><i class="fas fa-shield-alt"></i></button>
-					<button id="btn_ext_#id#" class="btn cmd action" data-cmd_id="#armed_ext_id#" title="Mode Extérieur" onclick="jeedom.cmd.execute({id: #armed_ext_id#});"><i class="fas fa-home"></i></button>
-					<button id="btn_lock_open_#id#"  class="btn cmd action" data-cmd_id="#connectedLockOpen_id#" title="Ouverture serrure" onclick="jeedom.cmd.execute({id: #connectedLockOpen_id#});"><i class="fas fa-door-open"></i></button>
-					<button id="btn_lock_close_#id#" class="btn cmd action" data-cmd_id="#connectedLockClose_id#" title="Fermeture serrure" onclick="jeedom.cmd.execute({id: #connectedLockClose_id#});"><i class="fas fa-door-closed"></i></button>
+					<button class="btn cmd action verisure_btn" data-cmd_id="#armed_id#" title="Mode Total" onclick="jeedom.cmd.execute({id: #armed_id#});"><i class="fas fa-lock"></i></button>
+					<button class="btn cmd action verisure_btn" data-cmd_id="#released_id#" title="Désactivation" onclick="jeedom.cmd.execute({id: #released_id#});"><i class="fas fa-lock-open"></i></button>
+					<button id="btn_day_#id#"  class="btn cmd action verisure_btn" data-cmd_id="#armed_day_id#" title="Mode Partiel" onclick="jeedom.cmd.execute({id: #armed_day_id#});"><i class="fas fa-shield-alt"></i></button>
+					<button id="btn_ext_#id#" class="btn cmd action verisure_btn" data-cmd_id="#armed_ext_id#" title="Mode Extérieur" onclick="jeedom.cmd.execute({id: #armed_ext_id#});"><i class="fas fa-home"></i></button>
+					<button id="btn_lock_open_#id#"  class="btn cmd action verisure_btn" data-cmd_id="#connectedLockOpen_id#" title="Ouverture serrure" onclick="jeedom.cmd.execute({id: #connectedLockOpen_id#});"><i class="fas fa-door-open"></i></button>
+					<button id="btn_lock_close_#id#" class="btn cmd action verisure_btn" data-cmd_id="#connectedLockClose_id#" title="Fermeture serrure" onclick="jeedom.cmd.execute({id: #connectedLockClose_id#});"><i class="fas fa-door-closed"></i></button>
 				</div>
 			</div>
 		</div>
 
 		<div id="zone_image_#id#">
-			<div class="col-xs-12" id="column" style="width: 260px">
-				<div class="col-xs-12" id="tile" style="width: 250px; height: 80px;">
+			<div class="col-xs-12" id="column" style="width: 264px">
+				<div class="col-xs-12" id="tile" style="width: 258px; height: 80px;">
 					<div class="col-xs-12 label">Images</div>
 					<div class="col-xs-12" id="images">
 						<div class="cmd cmd-widget col-xs-8" data-type="action" data-subtype="select" data-cmd_id="#getpictures_id#">
-							<select class="btn cmd selectCmd action form-control form-control-lg" title="Demande Images">#getpictures_listValue#</select>
+							<select class="btn cmd selectCmd action form-control form-control-lg verisure_select" title="Demande Images">#getpictures_listValue#</select>
 							<script>
 								$('.cmd[data-cmd_id=#getpictures_id#] .selectCmd').on('change', function () {
 									if ($(this).value() != "") {
@@ -84,7 +84,53 @@
 	
 	<script>
         
-		$widget_height = 383;
+		//----- Theme colors
+		function setTheme#id#() {
+			var link = document.createElement('link');
+			link.type = 'text/css';
+			link.rel = 'stylesheet';
+			
+			if ($('body').attr('data-theme').endsWith('Dark')) {
+				link.href = 'plugins/verisure/core/template/dashboard/verisure_dashboard_style_dark.css';
+			}
+			else if ($('body').attr('data-theme').endsWith('Light')) {
+				link.href = 'plugins/verisure/core/template/dashboard/verisure_dashboard_style_light.css';
+			}
+			document.head.appendChild(link);
+		}
+
+		//----- Events
+		$('body').on('changeThemeEvent', function (event,theme) {
+			setTheme#id#();
+		});
+
+		//----- Initialization
+		function timedSetTheme#id#(occurence = 0){
+			if ($('.verisure_widget_flat_#id#').length == 0) {
+				return;
+			}
+			if ( $('body')[0].hasAttribute('data-theme') != true )  {
+				occurence++;
+				if (occurence > 40){
+					return;
+				}
+				setTimeout( () => { timedSetTheme#id#(occurence); }, 500 );
+				return;
+			}
+			setTheme#id#();
+			updateDisplayDashboard#id#();
+		}
+		
+		if ( $('body')[0].hasAttribute('data-theme') == true )  {
+			setTheme#id#();
+			updateDisplayDashboard#id#();
+		}
+		else  {
+			timedSetTheme#id#(0);
+		}
+		
+		//----- Optional parameters
+		$widget_height = 363;
 		
 		if ( #armed_day_visible# == 0 )  {
 			$('#btn_day_#id#').hide();
@@ -96,97 +142,64 @@
 		
 		if ( #getpictures_visible# == 0 )  {
 			$('#zone_image_#id#').hide();
-			$widget_height = $widget_height - 92;
+			$widget_height = $widget_height - 86;
 		}
 
 		if ( #connectedLock# == 0 )  {
-			$('.id_state_#id#').css('width', 120);
-			$('.id_enable_#id#').css('width', 120);
+			$('.id_state_#id#').css('width', 126);
+			$('.id_enable_#id#').css('width', 126);
 			$('.id_lock_#id#').hide();
 			$('#btn_lock_open_#id#').hide();
 			$('#btn_lock_close_#id#').hide();
 		}
 
-		$('.verisure_widget_#id#').css('min-height', $widget_height);
-		$('.verisure_widget_#id#').css('max-height', $widget_height);
+		$('.verisure_widget_flat_#id#').css('min-height', $widget_height);
+		$('.verisure_widget_flat_#id#').css('max-height', $widget_height);
 		
-		jeedom.cmd.update['#enable_id#'] = function(_options) {
-            if ( _options.display_value == 0)  {
-            	$('.iconCmd#enable_id#').empty().append('<i class="fa-2x icon_red jeedomapp-lock-ouvert"></i>');
-            }
-          	if ( _options.display_value == 1)  {
-              	$('.iconCmd#enable_id#').empty().append('<i class="fa-2x icon_green jeedomapp-lock-ferme"></i>');
-            }
-        }
-		jeedom.cmd.update['#enable_id#']({display_value:'#enable#'});
-      	
-      
-		jeedom.cmd.update['#state_id#'] = function(_options) {
-            if ( _options.display_value == 0)  {
-               $('.iconCmd#state_id#').empty().append('<i class="fa-2x icon_green jeedomapp-done"></i>');
-            }
-			if ( _options.display_value == 1)  {
-               $('.iconCmd#state_id#').empty().append('<i class="fa-2x icon_red jeedomapp-alerte2"></i>');
+
+		//----- Dashboard display update
+		function updateDisplayDashboard#id#()  {
+
+			jeedom.cmd.update['#enable_id#'] = function(_options) {
+				if ( _options.display_value == 0)  {
+					$('.iconCmd#enable_id#').empty().append('<i class="fa-2x icon_red jeedomapp-lock-ouvert"></i>');
+				}
+				if ( _options.display_value == 1)  {
+					$('.iconCmd#enable_id#').empty().append('<i class="fa-2x icon_green jeedomapp-lock-ferme"></i>');
+				}
 			}
-		}
-		jeedom.cmd.update['#state_id#']({display_value:'#state#'});
+			jeedom.cmd.update['#enable_id#']({display_value:'#enable#'});
+			
 		
-      
-		jeedom.cmd.update['#mode_id#'] = function(_options) {
-           	$('.iconCmd#mode_id#').empty().append('<span>'+_options.display_value+'</span>');
-        }
-		jeedom.cmd.update['#mode_id#']({display_value:'#mode#'});
+			jeedom.cmd.update['#state_id#'] = function(_options) {
+				if ( _options.display_value == 0)  {
+				$('.iconCmd#state_id#').empty().append('<i class="fa-2x icon_green jeedomapp-done"></i>');
+				}
+				if ( _options.display_value == 1)  {
+				$('.iconCmd#state_id#').empty().append('<i class="fa-2x icon_red jeedomapp-alerte2"></i>');
+				}
+			}
+			jeedom.cmd.update['#state_id#']({display_value:'#state#'});
+			
+		
+			jeedom.cmd.update['#mode_id#'] = function(_options) {
+				$('.iconCmd#mode_id#').empty().append('<span>'+_options.display_value+'</span>');
+			}
+			jeedom.cmd.update['#mode_id#']({display_value:'#mode#'});
 
 
-		jeedom.cmd.update['#connectedLockState_id#'] = function(_options) {
-            console.log('connectedLockState : '+_options.display_value);
-			if ( _options.display_value == 0)  {
-            	$('.iconCmd#connectedLockState_id#').empty().append('<i class="fas fa-2x fa-key icon_red" title="Déverrouillée"></i>');
-            }
-          	if ( _options.display_value == 1)  {
-              	$('.iconCmd#connectedLockState_id#').empty().append('<i class="fas fa-2x fa-key icon_green" title="Verrouillée"></i>');
-            }
-        }
-		jeedom.cmd.update['#connectedLockState_id#']({display_value:'#connectedLockState#'});
+			jeedom.cmd.update['#connectedLockState_id#'] = function(_options) {
+				console.log('connectedLockState : '+_options.display_value);
+				if ( _options.display_value == 0)  {
+					$('.iconCmd#connectedLockState_id#').empty().append('<i class="fas fa-2x fa-key icon_red" title="Déverrouillée"></i>');
+				}
+				if ( _options.display_value == 1)  {
+					$('.iconCmd#connectedLockState_id#').empty().append('<i class="fas fa-2x fa-key icon_green" title="Verrouillée"></i>');
+				}
+			}
+			jeedom.cmd.update['#connectedLockState_id#']({display_value:'#connectedLockState#'});
+		}
       
 	</script>
-
-<style>
-	
-	.verisure_widget_#id# .container-fluid {
-		padding: 5px 5px 5px 5px ! important;
-	}
-
-	.verisure_widget_#id# #column {
-		padding: 0px !important;
-		margin: 0px 0px 0px 0px !important;
-	}
-
-	.verisure_widget_#id# #tile {
-		margin : 5px 5px 5px 5px !important;
-		padding : 0px 0px 0px 0px !important;
-		background-color : rgb(var(--bg-color),0.5);
-	}
-
-	.verisure_widget_#id# .label {
-		margin-bottom: 0px;
-	}
-
-	.verisure_widget_#id# #infos {
-		margin-top: 10px;
-		margin-bottom: 0px;
-	}
-	
-	.verisure_widget_#id# #actions {
-		margin-top: 10px;
-		margin-bottom: 20px;
-	}
-	
-	.verisure_widget_#id# #images {
-		margin-top: 10px;
-		margin-bottom: 20px;
-	}
-	
-	</style>
 	
 </div>
