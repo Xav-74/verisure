@@ -51,7 +51,7 @@ $eqLogics = eqLogic::byType($plugin->getId());
 		</div>
 
 		
-		<legend><i class="fas fa-table"></i> {{Mes équipements}}</legend>
+		<legend><i class="fas fa-table"></i> {{Mes alarmes}}</legend>
 		<div class="input-group" style="margin-bottom:5px;">
 			<input class="form-control roundedLeft" placeholder="{{Rechercher}}" id="in_searchEqlogic"/>
 			<div class="input-group-btn" style="margin-bottom:5px;">
@@ -258,9 +258,9 @@ $eqLogics = eqLogic::byType($plugin->getId());
 								<div class="form-group">		
 									<label class="col-sm-3 control-label" style="margin-left:-10px;">{{Informations}}</label>
 									<div class="col-sm-9">
-										Ce plugin est compatible avec 3 générations de matériels Verisure. Sélectionnez le type d'alarme correspondant à vos matériels (voir image associée).<br/>
-										Les informations de connexion demandées sont celles utilisées pour vous connecter sur le portail web Verisure ou via l'application mobile My Verisure.<br/>
-										<b>Le plugin ne vous demandera jamais les mots de passe utilisés pour vous identifier auprès du personnel Securitas Direct lors du déclenchement de votre alarme.</b><br/>
+										{{Ce plugin est compatible avec 3 générations de matériels Verisure. Sélectionnez le type d'alarme correspondant à vos matériels (voir image associée).}}<br/>
+										{{Les informations de connexion demandées sont celles utilisées pour vous connecter sur le portail web Verisure ou via l'application mobile My Verisure.}}<br/>
+										<b>{{Le plugin ne vous demandera jamais les mots de passe utilisés pour vous identifier auprès du personnel Securitas Direct lors du déclenchement de votre alarme.}}</b><br/>
 									</div>
 								</div>
 
@@ -409,72 +409,72 @@ $eqLogics = eqLogic::byType($plugin->getId());
 			<div role="tabpanel" class="tab-pane" id="notificationsVerisure">
 				<div class="container">
 					<br/>
-                    <h4>Gestion des notifications</h4>
+                    <h4>{{Gestion des notifications}}</h4>
 					<br/>
 					<div class="form-group">
-						Les API Verisure ne permettent pas les remontées d'informations et notifications automatiques directes, telles que l'activation/désactivation depuis un badge ou une télécommande ou encore le déclenchement de l'alarme.
+						{{Les API Verisure ne permettent pas les remontées d'informations et notifications automatiques directes, telles que l'activation/désactivation depuis un badge ou une télécommande ou encore le déclenchement de l'alarme.}}
 						<br/><br/>
-						Pour palier à cela, il est nécessaire de récupérer les informations depuis :<br/>
+						{{Pour palier à cela, il est nécessaire de récupérer les informations depuis :}}<br/>
 						<ul>
-							<li>les notifications Mail pour l'activation/désactivation de l'alarme</li>
-							<li>les notifications SMS pour l'activation/désactivation de l'alarme</li>
+							<li>{{les notifications Mail pour l'activation/désactivation de l'alarme}}</li>
+							<li>{{les notifications SMS pour l'activation/désactivation de l'alarme}}</li>
 						</ul>
 						<br/>
 						<label class="control-label">{{1. Notifications Mail}}</label>
 						<br/><br/>
-						Actuellement seul le plugin suivant a été testé et est officiellement supporté pour recevoir de façon automatisée les alertes :<br/>
+						{{Actuellement seul le plugin suivant a été testé et est officiellement supporté pour recevoir de façon automatisée les alertes :}}<br/>
 						<ul>
-							<li><a href="https://market.jeedom.com/index.php?v=d&p=market&type=plugin&&name=maillistener">Plugin  Mail Listener de Lunarok </a></li>
+							<li><a href="https://market.jeedom.com/index.php?v=d&p=market&type=plugin&&name=maillistener">{{Plugin  Mail Listener de Lunarok}}</a></li>
 						</ul>
-						<i>Pour supporter d'autres plugins n'hésitez pas à contacter le développeur en ouvrant <a href="https://github.com/Xav-74/verisure/issues/new"> une "demande d'évolution" sur le Github du plugin</a></i>
+						<i>{{Pour supporter d'autres plugins n'hésitez pas à contacter le développeur en ouvrant }}<a href="https://github.com/Xav-74/verisure/issues/new">{{ une "demande d'évolution" sur le Github du plugin}}</a></i>
 						<br/><br/>
-						Pour mettre en place cette fonctionnalité, assurez-vous que les notifications mails sont bien activées sur votre compte Verisure et que l'option "Contrôle d'accès" est bien validée pour l'ensemble de vos badges et télécommandes !<br/>
-						Installez ensuite le plugin Mail Listener, puis configurez le avec les paramètres de votre compte mail qui reçoit les notifications Verisure. Reportez-vous à la documentation du plugin pour de plus amples informations.<br/>
-						Dernière étape : la création du scénario qui déclenchera le refresh du statut de l'alarme lors de la réception d'un email provenant de Securitas Direct - Verisure.<br/>
-						Pour cela, renddez-vous dans le menu "Outils" de Jeedom puis "Scénarios" et enfin "Ajouter". Renseignez le premier onglet "Général" comme suit :<br/>
+						{{Pour mettre en place cette fonctionnalité, assurez-vous que les notifications mails sont bien activées sur votre compte Verisure et que l'option "Contrôle d'accès" est bien validée pour l'ensemble de vos badges et télécommandes !}}<br/>
+						{{Installez ensuite le plugin Mail Listener, puis configurez le avec les paramètres de votre compte mail qui reçoit les notifications Verisure. Reportez-vous à la documentation du plugin pour de plus amples informations.}}<br/>
+						{{Dernière étape : la création du scénario qui déclenchera le refresh du statut de l'alarme lors de la réception d'un email provenant de Securitas Direct - Verisure.}}<br/>
+						{{Pour cela, renddez-vous dans le menu "Outils" de Jeedom puis "Scénarios" et enfin "Ajouter". Renseignez le premier onglet "Général" comme suit :}}<br/>
 						<br/>
 						<img src="plugins/verisure/core/img/scenario_1.png" height="510" width="1100"/><br/>
 						<br/>
-						<i>Dans cet exemple, [Maison][Mail Domotique] représente l'équipement créé dans le plugin Mail Listener.</i><br/>
+						<i>{{Dans cet exemple, [Maison][Mail Domotique] représente l'équipement créé dans le plugin Mail Listener.}}</i><br/>
 						<br/>
-						Passez maintenant à l'onglet "Scénario" :<br/>
+						{{Passez maintenant à l'onglet "Scénario" :}}<br/>
 						<br/>
 						<img src="plugins/verisure/core/img/scenario_2.png" height="155" width="1100"/><br/>
 						<br/>
-						<i>Dans cet exemple, [Maison][Alarme Verisure] représente l'équipement créé dans le plugin Verisure.</i><br/>
+						<i>{{Dans cet exemple, [Maison][Alarme Verisure] représente l'équipement créé dans le plugin Verisure.}}</i><br/>
 						<br/>
-						N'oubliez pas de sauvegarder !<br/>
-						Voilà, maintenant, chaque mail provenant de l'adresse "serviceclient@securitasdirect.fr" déclenchera automatiquement un refresh du statut de l'alarme.<br/>
+						{{N'oubliez pas de sauvegarder !}}<br/>
+						{{Voilà, maintenant, chaque mail provenant de l'adresse "serviceclient@verisure.fr" ou "noreply@verisure.fr" déclenchera automatiquement un refresh du statut de l'alarme.}}<br/>
 						<br/>
 						<label class="control-label">{{2. Notifications SMS}}</label>
 						<br/><br/>
-						Actuellement seul le plugin suivant a été testé et est officiellement supporté pour recevoir de façon automatisée les alertes :<br/>
+						{{Actuellement seul le plugin suivant a été testé et est officiellement supporté pour recevoir de façon automatisée les alertes :}}<br/>
 						<ul>
-							<li><a href="https://market.jeedom.com/index.php?v=d&p=market_display&id=16">Plugin SMS officiel de Jeedom SAS </a></li>
+							<li><a href="https://market.jeedom.com/index.php?v=d&p=market_display&id=16">{{Plugin SMS officiel de Jeedom SAS}}</a></li>
 						</ul>
-						<i>Pour supporter d'autres plugins n'hésitez pas à contacter le développeur en ouvrant <a href="https://github.com/Xav-74/verisure/issues/new"> une "demande d'évolution" sur le Github du plugin</a></i>
+						<i>{{Pour supporter d'autres plugins n'hésitez pas à contacter le développeur en ouvrant }}<a href="https://github.com/Xav-74/verisure/issues/new">{{ une "demande d'évolution" sur le Github du plugin}}</a></i>
 						<br/><br/>
-						Pour mettre en place cette fonctionnalité, vous devez disposer d'une clé 3G/4G compatible ainsi que d'un forfait SMS chez un opérateur mobile. Assurez-vous que les notifications SMS sont bien activées sur votre compte Verisure et que l'option "Contrôle d'accès" est bien validée pour l'ensemble de vos badges et télécommandes !<br/>
-						Installez ensuite le plugin SMS, puis configurez un nouvel équipement en désactivant les interactions. Ajoutez ensuite un nouveau numéro dans l'onglet commande comme sur cet exemple :<br/>
+						{{Pour mettre en place cette fonctionnalité, vous devez disposer d'une clé 3G/4G compatible ainsi que d'un forfait SMS chez un opérateur mobile. Assurez-vous que les notifications SMS sont bien activées sur votre compte Verisure et que l'option "Contrôle d'accès" est bien validée pour l'ensemble de vos badges et télécommandes !}}<br/>
+						{{Installez ensuite le plugin SMS, puis configurez un nouvel équipement en désactivant les interactions. Ajoutez ensuite un nouveau numéro dans l'onglet commande comme sur cet exemple :}}<br/>
 						<br/>
 						<img src="plugins/verisure/core/img/config_plugin_SMS.png" height="225" width="1100"/><br/>
 						<br/>
-						Reportez-vous à la documentation du plugin pour de plus amples informations.<br/>
-						Dernière étape : la création du scénario qui déclenchera le refresh du statut de l'alarme lors de la réception d'un SMS provenant de Securitas Direct - Verisure.<br/>
-						Pour cela, renddez-vous dans le menu "Outils" de Jeedom puis "Scénarios" et enfin "Ajouter". Renseignez le premier onglet "Général" comme suit :<br/>
+						{{Reportez-vous à la documentation du plugin pour de plus amples informations.}}<br/>
+						{{Dernière étape : la création du scénario qui déclenchera le refresh du statut de l'alarme lors de la réception d'un SMS provenant de Securitas Direct - Verisure.}}<br/>
+						{{Pour cela, renddez-vous dans le menu "Outils" de Jeedom puis "Scénarios" et enfin "Ajouter". Renseignez le premier onglet "Général" comme suit :}}<br/>
 						<br/>
 						<img src="plugins/verisure/core/img/scenario_3.png" height="411" width="1100"/><br/>
 						<br/>
-						<i>Dans cet exemple, [Maison][SMS Free] représente l'équipement créé dans le plugin SMS.</i><br/>
+						<i>{{Dans cet exemple, [Maison][SMS Free] représente l'équipement créé dans le plugin SMS.}}</i><br/>
 						<br/>
-						Passez maintenant à l'onglet "Scénario" :<br/>
+						{{Passez maintenant à l'onglet "Scénario" :}}<br/>
 						<br/>
 						<img src="plugins/verisure/core/img/scenario_4.png" height="122" width="1100"/><br/>
 						<br/>
-						<i>Dans cet exemple, [Maison][Alarme Verisure] représente l'équipement créé dans le plugin Verisure.</i><br/>
+						<i>{{Dans cet exemple, [Maison][Alarme Verisure] représente l'équipement créé dans le plugin Verisure.}}</i><br/>
 						<br/>
-						N'oubliez pas de sauvegarder !<br/>
-						Voilà, maintenant, chaque SMS provenant du numéro "VERISURE" déclenchera automatiquement un refresh du statut de l'alarme.<br/>
+						{{N'oubliez pas de sauvegarder !}}<br/>
+						{{Voilà, maintenant, chaque SMS provenant du numéro "VERISURE" déclenchera automatiquement un refresh du statut de l'alarme.}}<br/>
 						<br/><br/>
 					</div>
 				</div>	

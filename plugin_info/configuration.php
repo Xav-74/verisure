@@ -31,10 +31,10 @@ if (!isConnect()) {
 		<legend><i class="fas fa-exclamation-triangle"></i> {{ Informations importantes}}</legend>
         <div class="form-group">
            	<div class="col-sm-8" style="margin-left: 50px;">
-                Ce plugin utilise les API de Verisure Europe (Securitas Direct) pour obtenir les informations de votre alarme.<br/>
-				NOTE : CE PLUGIN N'EST EN AUCUN CAS ASSOCIÉ OU LIÉ AUX SOCIÉTÉS DU GROUPE SECURITAS DIRECT - VERISURE.<br/>
-				L'usage de ce plugin est destiné à des fins strictement personnelles et privées.<br/>
-				Par conséquent, le développeur n'approuve ni ne tolère aucune utilisation inappropriée, et n'assume aucune responsabilité légale pour la fonctionnalité ou la sécurité de vos alarmes et appareils.<br/> <br/>
+                {{Ce plugin utilise les API de Verisure Europe (Securitas Direct) pour obtenir les informations de votre alarme.}}<br/>
+				{{NOTE : CE PLUGIN N'EST EN AUCUN CAS ASSOCIÉ OU LIÉ AUX SOCIÉTÉS DU GROUPE SECURITAS DIRECT - VERISURE.}}<br/>
+				{{L'usage de ce plugin est destiné à des fins strictement personnelles et privées.}}<br/>
+				{{Par conséquent, le développeur n'approuve ni ne tolère aucune utilisation inappropriée, et n'assume aucune responsabilité légale pour la fonctionnalité ou la sécurité de vos alarmes et appareils.}}<br/> <br/>
 			</div>
         </div>
 
