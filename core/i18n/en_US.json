@@ -44,10 +44,10 @@
     },
     "plugins\/verisure\/core\/template\/dashboard\/verisure_dashboard_v4_type1.html": {
         "Actions": "Actions",
+        "Activation": "Activation",
+        "Alarme": "Alarm",
         "Demande Images": "Request Images",
         "Désactivation": "Deactivation",
-        "Etat Activation": "Status: Enabled",
-        "Etat Alarme": "Alarm Status",
         "Images": "Pictures",
         "Mode Alarme": "Alarm Mode",
         "Mode Extérieur": "Outdoor Mode",
@@ -59,11 +59,11 @@
     },
     "plugins\/verisure\/core\/template\/dashboard\/verisure_dashboard_v4_type2.html": {
         "Actions": "Actions",
+        "Activation": "Activation",
+        "Alarme": "Alarm",
         "Capteur": "Sensor",
         "Demande Images": "Request Images",
         "Désactivation": "Deactivation",
-        "Etat Activation": "Status: Enabled",
-        "Etat Alarme": "Alarm Status",
         "Images": "Pictures",
         "Mode Alarme": "Alarm Mode",
         "Mode Partiel": "Partial Mode",
@@ -95,6 +95,7 @@
         "Authentification 2FA terminée avec succès": "2FA authentication completed successfully",
         "Authentification en cours": "Authenticating...",
         "Choisissez la méthode pour l'authentification :": "Select the authentication method:",
+        "Choisissez le téléphone pour l'authentification par SMS :": "Select the phone number for SMS authentication:",
         "Envoi du code en cours": "Sending the code...",
         "Erreur lors de l\\'authentification 2FA": "Error during 2FA authentication",
         "Erreur lors de la suppression du token": "Error deleting the token",
@@ -102,6 +103,7 @@
         "Inverser": "Invert",
         "Journal d'activité": "Activity Log",
         "Nom de la commande": "Command Name",
+        "Saisissez le code reçu :": "Enter the code you received:",
         "Suppression du token réalisée avec succès": "Token successfully deleted",
         "Synchronisation terminée avec succès": "Synchronization completed successfully",
         "Tapez": "Type",
@@ -222,5 +224,10 @@
         "L'usage de ce plugin est destiné à des fins strictement personnelles et privées.": "This plugin is intended for strictly personal and private use.",
         "NOTE : CE PLUGIN N'EST EN AUCUN CAS ASSOCIÉ OU LIÉ AUX SOCIÉTÉS DU GROUPE SECURITAS DIRECT - VERISURE.": "NOTE: THIS PLUGIN IS IN NO WAY AFFILIATED WITH OR LINKED TO THE COMPANIES OF THE SECURITAS DIRECT - VERISURE GROUP.",
         "Par conséquent, le développeur n'approuve ni ne tolère aucune utilisation inappropriée, et n'assume aucune responsabilité légale pour la fonctionnalité ou la sécurité de vos alarmes et appareils.": "Consequently, the developer neither endorses nor condones any improper use, and assumes no legal liability for the functionality or safety of your alarms and devices."
+    },
+    "plugins\/verisure\/plugin_info\/install.php": {
+        "Le plugin Verisure a été correctement désinstallé. N\\'hésitez pas à laisser un avis sur le Market Jeedom !": "The Verisure plugin has been successfully uninstalled. Feel free to leave a review on the Jeedom Market!",
+        "Merci pour l\\'installation du plugin Verisure. Lisez bien la documentation avant utilisation et n\\'hésitez pas à laisser un avis sur le Market Jeedom !": "Thank you for installing the Verisure plugin. Be sure to read the documentation carefully before using it, and feel free to leave a review on the Jeedom Market!",
+        "Merci pour la mise à jour du plugin Verisure. Consultez les notes de version avant utilisation et n\\'hésitez pas à laisser un avis sur le Market Jeedom !": "Thank you for updating the Verisure plugin. Please review the release notes before using it, and feel free to leave a review on the Jeedom Market!"
     }
 }
