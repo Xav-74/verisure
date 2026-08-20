@@ -44,10 +44,10 @@
     },
     "plugins\/verisure\/core\/template\/dashboard\/verisure_dashboard_v4_type1.html": {
         "Actions": "Stock",
+        "Activation": "Attivazione",
+        "Alarme": "Allarme",
         "Demande Images": "Richiesta immagini",
         "Désactivation": "Disattivazione",
-        "Etat Activation": "Stato Attivazione",
-        "Etat Alarme": "Stato allarme",
         "Images": "Immagini",
         "Mode Alarme": "Modalità allarme",
         "Mode Extérieur": "Modalità Esterno",
@@ -59,11 +59,11 @@
     },
     "plugins\/verisure\/core\/template\/dashboard\/verisure_dashboard_v4_type2.html": {
         "Actions": "Stock",
+        "Activation": "Attivazione",
+        "Alarme": "Allarme",
         "Capteur": "Sensore",
         "Demande Images": "Richiesta immagini",
         "Désactivation": "Disattivazione",
-        "Etat Activation": "Stato Attivazione",
-        "Etat Alarme": "Stato allarme",
         "Images": "Immagini",
         "Mode Alarme": "Modalità allarme",
         "Mode Partiel": "Modalità parziale",
@@ -95,6 +95,7 @@
         "Authentification 2FA terminée avec succès": "Autenticazione 2FA completata con successo",
         "Authentification en cours": "Autenticazione in corso",
         "Choisissez la méthode pour l'authentification :": "Scegliere il metodo di autenticazione:",
+        "Choisissez le téléphone pour l'authentification par SMS :": "Scegli il numero di telefono per l'autenticazione tramite SMS:",
         "Envoi du code en cours": "Invio del codice in corso",
         "Erreur lors de l\\'authentification 2FA": "Errore durante l'autenticazione 2FA",
         "Erreur lors de la suppression du token": "Errore durante l'eliminazione del token",
@@ -102,6 +103,7 @@
         "Inverser": "Inverti",
         "Journal d'activité": "Registro delle attività",
         "Nom de la commande": "Nome del comando",
+        "Saisissez le code reçu :": "Inserisci il codice ricevuto:",
         "Suppression du token réalisée avec succès": "Token rimosso con successo",
         "Synchronisation terminée avec succès": "Sincronizzazione completata con successo",
         "Tapez": "Digita",
@@ -222,5 +224,10 @@
         "L'usage de ce plugin est destiné à des fins strictement personnelles et privées.": "L'uso di questo plugin è destinato esclusivamente a fini personali e privati.",
         "NOTE : CE PLUGIN N'EST EN AUCUN CAS ASSOCIÉ OU LIÉ AUX SOCIÉTÉS DU GROUPE SECURITAS DIRECT - VERISURE.": "NOTA: QUESTO PLUGIN NON È IN ALCUN MODO ASSOCIATO O COLLEGATO ALLE SOCIETÀ DEL GRUPPO SECURITAS DIRECT - VERISURE.",
         "Par conséquent, le développeur n'approuve ni ne tolère aucune utilisation inappropriée, et n'assume aucune responsabilité légale pour la fonctionnalité ou la sécurité de vos alarmes et appareils.": "Di conseguenza, lo sviluppatore non approva né tollera alcun utilizzo improprio e non si assume alcuna responsabilità legale per la funzionalità o la sicurezza dei vostri allarmi e dispositivi."
+    },
+    "plugins\/verisure\/plugin_info\/install.php": {
+        "Le plugin Verisure a été correctement désinstallé. N\\'hésitez pas à laisser un avis sur le Market Jeedom !": "Il plugin Verisure è stato disinstallato correttamente. Non esitate a lasciare una recensione sul Market Jeedom!",
+        "Merci pour l\\'installation du plugin Verisure. Lisez bien la documentation avant utilisation et n\\'hésitez pas à laisser un avis sur le Market Jeedom !": "Grazie per aver installato il plugin Verisure. Leggete attentamente la documentazione prima dell'uso e non esitate a lasciare una recensione sul Market Jeedom!",
+        "Merci pour la mise à jour du plugin Verisure. Consultez les notes de version avant utilisation et n\\'hésitez pas à laisser un avis sur le Market Jeedom !": "Grazie per l'aggiornamento del plugin Verisure. Consultate le note di versione prima dell'uso e non esitate a lasciare una recensione sul Market Jeedom!"
     }
 }
