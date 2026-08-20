@@ -199,11 +199,11 @@ $('#bt_Authentication_2FA').on('click',function() {
 				else  {
 					if ( data.result['type'] == "OTP" ) {
 						var nb_type = data.result['res'].length;
-						var message = "{{\n Vérification de l'identité (2FA) \n Choisissez la méthode pour l'authentification :\n\n}}";
+						var message = "\n"+"{{Vérification de l'identité (2FA)}}"+"\n"+"{{Choisissez la méthode pour l'authentification :}}"+"\n\n";
 						for(i = 0; i < nb_type ; i++) {
 							var id = i + 1;
-							if ( data.result['res'][i] == 'phone' ) { message = message + "Tapez " + id + " pour utiliser votre téléphone (recommandé)" + "\n";}
-							if ( data.result['res'][i] == 'email' ) { message = message + "Tapez " + id + " pour utiliser votre email" + "\n";}
+							if ( data.result['res'][i] == 'phone' ) { message = message + "{{Tapez}}" + " " + id + " " + "{{pour utiliser votre téléphone (recommandé)}}" + "\n";}
+							if ( data.result['res'][i] == 'email' ) { message = message + "{{Tapez}}" + " " + id + " " + "{{pour utiliser votre email}}" + "\n";}
 						}
 						var result = prompt(message, "");
 						if ( parseInt(result - 1) == 0 ) { var type = 'phone'; }
