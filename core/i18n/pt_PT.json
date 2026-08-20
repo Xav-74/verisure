@@ -94,6 +94,7 @@
         "Afficher": "Mostrar",
         "Authentification 2FA terminée avec succès": "Autenticação 2FA concluída com sucesso",
         "Authentification en cours": "Autenticação em curso",
+        "Choisissez la méthode pour l'authentification :": "Escolha o método de autenticação:",
         "Envoi du code en cours": "Envio do código em curso",
         "Erreur lors de l\\'authentification 2FA": "Erro durante a autenticação 2FA",
         "Erreur lors de la suppression du token": "Erro ao eliminar o token",
@@ -103,10 +104,13 @@
         "Nom de la commande": "Nome do comando",
         "Suppression du token réalisée avec succès": "A eliminação do token foi realizada com sucesso",
         "Synchronisation terminée avec succès": "Sincronização concluída com sucesso",
+        "Tapez": "Digite",
         "Tester": "Testar",
         "Valeur": "Valor",
         "Validation de l\\'équipement": "Validação do equipamento",
-        "\\n Vérification de l'identité (2FA) \\n Choisissez la méthode pour l'authentification :\\n\\n": "\\n Verificação de identidade (2FA) \\n Escolha o método de autenticação:\\n\\n"
+        "Vérification de l'identité (2FA)": "Verificação de identidade (2FA)",
+        "pour utiliser votre email": "para utilizar o seu e-mail",
+        "pour utiliser votre téléphone (recommandé)": "para utilizar o seu telemóvel (recomendado)"
     },
     "plugins\/verisure\/desktop\/modal\/pictures.verisure.php": {
         "401 - Accès non autorisé": "401 - Acesso não autorizado"
