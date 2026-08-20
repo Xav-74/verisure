@@ -144,10 +144,10 @@ $('#bt_Authentication_2FA').on('click',function() {
 				else  {
 					if ( data.result['type'] == "OTP" ) {
 						var nb_phones = data.result['res'].length;
-						var message = "\n Vérification de l'identité (2FA) \n Choisissez le téléphone pour l'authentification par SMS :\n\n";
+						var message = "\n"+"Vérification de l'identité (2FA)"+"\n"+"{{Choisissez le téléphone pour l'authentification par SMS :}}"+"\n\n";
 						for(i = 0; i < nb_phones ; i++) {
 							var id = parseInt(data.result['res'][i]['id']) + 1;
-							message = message + "Tapez " + id + " pour le " + data.result['res'][i]['phone'] + "\n";
+							message = message + "{{Tapez}}" + " " + id + " " +"pour le" + " " + data.result['res'][i]['phone'] + "\n";
 						}
 						var result = prompt(message, "");
 						var phone_id = parseInt(result - 1);
@@ -360,7 +360,7 @@ function sendOTP(alarmtype, numinstall, username, pwd, code, country, phone_id)
 				return;
 			}
 			else  {
-				var message = "\n Vérification de l'identité (2FA) \n Saisissez le code reçu :\n";
+				var message = "\n" + "{{Vérification de l'identité (2FA)}}" + "\n" + "{{Saisissez le code reçu :}}"+ "\n";
 				var result = prompt(message, "");
 				validateDevice(alarmtype, numinstall, username, pwd, code, country, result);
 			}
