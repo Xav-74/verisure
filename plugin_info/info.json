@@ -11,13 +11,18 @@
 	},
 	"licence": "AGPL",
 	"author": "Xav-74",
-	"require": "4.0",
+	"require": "4.4",
+	"os": {
+		"min": 11
+	},
 	"category": "security",
 	"hasDependency": false,
 	"hasOwnDeamon": false,
 	"maxDependancyInstallTime": 0,
 	"changelog": "https://xav-74.github.io/Documentation/verisure/#language#/changelog",
+	"changelog_beta": "https://xav-74.github.io/Documentation/verisure/#language#/changelog",
 	"documentation": "https://xav-74.github.io/Documentation/verisure/#language#/",
+	"documentation_beta": "https://xav-74.github.io/Documentation/verisure/#language#/",
 	"link": {
 		"forum": "https://community.jeedom.com/t/plugin-verisure-presentation-actualites/31921",
 		"video": ""
@@ -33,6 +38,8 @@
 	"compatibility": [
 		"miniplus",
 		"smart",
+		"atlas",
+		"luna",
 		"rpi",
 		"docker",
 		"diy",
