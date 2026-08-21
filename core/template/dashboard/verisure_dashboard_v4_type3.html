@@ -189,7 +189,6 @@
 
 
 			jeedom.cmd.update['#connectedLockState_id#'] = function(_options) {
-				console.log('connectedLockState : '+_options.display_value);
 				if ( _options.display_value == 0)  {
 					$('.iconCmd#connectedLockState_id#').empty().append('<i class="fas fa-2x fa-key icon_red" title="{{Déverrouillée}}"></i>');
 				}

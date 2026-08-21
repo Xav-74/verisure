@@ -27,10 +27,10 @@ function verisure_install() {
 function verisure_update() {
 
 	// Mise à jour de l'ensemble des commandes pour chaque équipement
-    log::add('verisure', 'debug', 'Mise à jour en cours des commandes du Plugin Verisure');
+    log::add('verisure', 'debug', 'Updating verisure plugin commands');
     foreach (eqLogic::byType('verisure') as $eqLogic) {
         $eqLogic->save();
-        log::add('verisure', 'debug', 'Mise à jour des commandes effectuée pour l\'équipement '. $eqLogic->getHumanName());
+        log::add('verisure', 'debug', 'Verisure plugin commands successfully updated for the equipment '. $eqLogic->getHumanName());
     }
 	message::add('verisure', __('Merci pour la mise à jour du plugin Verisure. Consultez les notes de version avant utilisation et n\'hésitez pas à laisser un avis sur le Market Jeedom !', __FILE__));
 	
