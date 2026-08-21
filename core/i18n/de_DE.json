@@ -119,11 +119,13 @@
         "401 - Accès non autorisé": "401 - Nicht autorisierter Zugriff"
     },
     "plugins\/verisure\/desktop\/modal\/report.verisure.php": {
+        "(Les demandes de statut ne sont pas incluses dans ce rapport)": "(Statusanfragen sind in diesem Bericht nicht enthalten)",
         "401 - Accès non autorisé": "401 - Nicht autorisierter Zugriff",
         "Activité": "Tätigkeit",
+        "Catégorie": "Kategorie",
         "Date": "Datum",
         "ID": "Identifikation",
-        "Type": "Typ"
+        "Journal d'activité - Verisure": "Aktivitätsprotokoll – Verisure"
     },
     "plugins\/verisure\/desktop\/php\/verisure.php": {
         " une \"demande d'évolution\" sur le Github du plugin": " ein „Feature-Request“ auf dem GitHub-Repository des Plugins",

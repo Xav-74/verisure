@@ -50,7 +50,7 @@
         "Désactivation": "Deactivation",
         "Images": "Pictures",
         "Mode Alarme": "Alarm Mode",
-        "Mode Extérieur": "Outdoor Mode",
+        "Mode Extérieur": "External Mode",
         "Mode Jour": "Day Mode",
         "Mode Nuit": "Night Mode",
         "Mode Total": "Total Mode",
@@ -82,7 +82,7 @@
         "Fermeture serrure": "Lock closure",
         "Images": "Pictures",
         "Mode Alarme": "Alarm Mode",
-        "Mode Extérieur": "Outdoor Mode",
+        "Mode Extérieur": "External Mode",
         "Mode Partiel": "Partial Mode",
         "Mode Total": "Total Mode",
         "Ouverture serrure": "Unlocking the lock",
@@ -119,11 +119,13 @@
         "401 - Accès non autorisé": "401 - Unauthorized access"
     },
     "plugins\/verisure\/desktop\/modal\/report.verisure.php": {
+        "(Les demandes de statut ne sont pas incluses dans ce rapport)": "(Status requests are not included in this report)",
         "401 - Accès non autorisé": "401 - Unauthorized access",
         "Activité": "Activity",
+        "Catégorie": "Category",
         "Date": "Date",
         "ID": "ID",
-        "Type": "Kind"
+        "Journal d'activité - Verisure": "Activity Log - Verisure"
     },
     "plugins\/verisure\/desktop\/php\/verisure.php": {
         " une \"demande d'évolution\" sur le Github du plugin": " a \"feature request\" on the plugin's GitHub",

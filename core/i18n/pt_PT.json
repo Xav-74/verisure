@@ -119,11 +119,13 @@
         "401 - Accès non autorisé": "401 - Acesso não autorizado"
     },
     "plugins\/verisure\/desktop\/modal\/report.verisure.php": {
+        "(Les demandes de statut ne sont pas incluses dans ce rapport)": "(Os pedidos de estatuto não estão incluídos neste relatório)",
         "401 - Accès non autorisé": "401 - Acesso não autorizado",
         "Activité": "Atividade",
+        "Catégorie": "Categoria",
         "Date": "Data",
         "ID": "EU IRIA",
-        "Type": "Tipo"
+        "Journal d'activité - Verisure": "Registo de atividades - Verisure"
     },
     "plugins\/verisure\/desktop\/php\/verisure.php": {
         " une \"demande d'évolution\" sur le Github du plugin": " um «pedido de alteração» no GitHub do plugin",
