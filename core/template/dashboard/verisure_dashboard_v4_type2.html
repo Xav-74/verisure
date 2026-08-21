@@ -1,4 +1,4 @@
-<div id="versiure_widget_ID" class="eqLogic-widget eqLogic verisure_widget_#id# verisure" style="text-align:center; min-width:350px; max-width:350px; border:#border#; border-radius:#border-radius#; background-color:#background-color#; color:#color#; #style#;" data-eqType="#eqType#" data-translate-category="#translate_category#" data-category="#category#" data-tags="#tags#" data-eqLogic_id="#id#" data-eqLogic_uid="#uid#" data-version="dashboard">
+<div id="versiure_widget_flat_ID" class="eqLogic-widget eqLogic verisure_widget_flat verisure_widget_flat_#id# verisure" style="text-align:center; min-width:350px; max-width:350px; border:#border#; border-radius:#border-radius#; background-color:#background-color#; color:#color#; #style#;" data-eqType="#eqType#" data-translate-category="#translate_category#" data-category="#category#" data-tags="#tags#" data-eqLogic_id="#id#" data-eqLogic_uid="#uid#" data-version="dashboard">
 	
 	<div class="text-center widget-name" style="padding-left: 0px; margin-bottom: 0px;">
 		<span class="reportModeVisible">#name_display# <span class="object_name">#object_name#</span></span>
@@ -10,56 +10,56 @@
 	
 	<div class="container-fluid">
 		
-		<div class="col-xs-12" id="column" style="width: 340px">
-			<div class="col-xs-6" id="tile" style="width: 160px; height: 75px;">
-				<div class="col-xs-12 label" style="text-align: center;">Etat Alarme</div>
+		<div class="col-xs-12" id="column" style="width: 344px">
+			<div class="col-xs-6" id="tile" style="width: 166px; height: 75px;">
+				<div class="col-xs-12 label" style="text-align: center;">{{Alarme}}</div>
 				<div class="col-xs-12" id="infos" style="height: 45px;"><i class="iconCmd#state_id#"></i></div>
 			</div>
-			<div class="col-xs-6" id="tile" style="width: 160px; height: 75px;">
-				<div class="col-xs-12 label" style="text-align: center;">Etat Activation</div>
+			<div class="col-xs-6" id="tile" style="width: 166px; height: 75px;">
+				<div class="col-xs-12 label" style="text-align: center;">{{Activation}}</div>
 				<div class="col-xs-12" id="infos"><i class="iconCmd#enable_id#"></i></div>
 			</div>
         </div>
 		
-		<div class="col-xs-12" id="column" style="width: 340px">
-			<div class="col-xs-12" id="tile" style="width: 330px; height: 75px;">
-				<div class="col-xs-12 label" style="text-align: center;">Mode Alarme</div>
+		<div class="col-xs-12" id="column" style="width: 344px">
+			<div class="col-xs-12" id="tile" style="width: 338px; height: 75px;">
+				<div class="col-xs-12 label" style="text-align: center;">{{Mode Alarme}}</div>
 				<div class="col-xs-12" id="infos"><span class="iconCmd#mode_id# iconCmd"></span></div>	
 			</div>
 		</div>
 
-		<div class="col-xs-12" id="column" style="width: 340px">
-			<div class="col-xs-12" id="tile" style="width: 330px">
-				<div class="col-xs-12 label">Modules</div>
+		<div class="col-xs-12" id="column" style="width: 344px">
+			<div class="col-xs-12" id="tile" style="width: 338px;">
+				<div class="col-xs-12 label">{{Modules}}</div>
 				<div class="col-xs-12" id="devices">
 						<table class="table" id="devices_table"></table>
 				</div>
 			</div>
 		</div>
 		
-		<div class="col-xs-12" id="column" style="width: 340px">
-			<div class="col-xs-12" id="tile" style="width: 330px; height: 80px;">
-				<div class="col-xs-12 label">Actions</div>
+		<div class="col-xs-12" id="column" style="width: 344px">
+			<div class="col-xs-12" id="tile" style="width: 338px; height: 80px;">
+				<div class="col-xs-12 label">{{Actions}}</div>
 				<div class="col-xs-12" id="actions">
-					<button class="btn cmd action" data-cmd_id="#armed_id#" title="Mode Total" onclick="jeedom.cmd.execute({id: #armed_id#});"><i class="fas fa-lock"></i></button>
-					<button class="btn cmd action" data-cmd_id="#released_id#" title="Désactivation" onclick="jeedom.cmd.execute({id: #released_id#});"><i class="fas fa-lock-open"></i></button>
-					<button class="btn cmd action" data-cmd_id="#armed_home_id#" title="Mode Partiel" onclick="jeedom.cmd.execute({id: #armed_home_id#});"><i class="fas fa-shield-alt"></i></button>
-					<!-- <button class="btn cmd action" data-cmd_id="#getstate_id#" title="Rafraichir" onclick="jeedom.cmd.execute({id: #getstate_id#});"><i class="fas fa-sync"></i></button> -->
+					<button class="btn cmd action verisure_btn" data-cmd_id="#armed_id#" title="{{Mode Total}}" onclick="jeedom.cmd.execute({id: #armed_id#});"><i class="fas fa-lock"></i></button>
+					<button class="btn cmd action verisure_btn" data-cmd_id="#released_id#" title="{{Désactivation}}" onclick="jeedom.cmd.execute({id: #released_id#});"><i class="fas fa-lock-open"></i></button>
+					<button class="btn cmd action verisure_btn" data-cmd_id="#armed_home_id#" title="{{Mode Partiel}}" onclick="jeedom.cmd.execute({id: #armed_home_id#});"><i class="fas fa-shield-alt"></i></button>
+					<!-- <button class="btn cmd action verisure_btn" data-cmd_id="#getstate_id#" title="{{Rafraichir}}" onclick="jeedom.cmd.execute({id: #getstate_id#});"><i class="fas fa-sync"></i></button> -->
 				</div>
 			</div>
 		</div>
 
 		<div id="zone_image_#id#">
-			<div class="col-xs-12" id="column" style="width: 340px">
-				<div class="col-xs-12" id="tile" style="width: 330px;  height: 80px;">
-					<div class="col-xs-12 label">Images</div>
+			<div class="col-xs-12" id="column" style="width: 344px">
+				<div class="col-xs-12" id="tile" style="width: 338px;  height: 80px;">
+					<div class="col-xs-12 label">{{Images}}</div>
 					<div class="col-xs-12" id="images">
 						<div class="cmd cmd-widget col-xs-8" data-type="action" data-subtype="select" data-cmd_id="#getpictures_id#">
-							<select class="btn cmd selectCmd action form-control form-control-lg" title="Demande Images">#getpictures_listValue#</select>
+							<select class="btn cmd selectCmd action form-control form-control-lg verisure_select" title="{{Demande Images}}">#getpictures_listValue#</select>
 							<script>
 								$('.cmd[data-cmd_id=#getpictures_id#] .selectCmd').on('change', function () {
 									if ($(this).value() != "") {
-										$('#md_modal').dialog({title: "Demande Images"});
+										$('#md_modal').dialog({title: "{{Demande Images}}"});
 										$('#md_modal').load('index.php?v=d&plugin=verisure&modal=pictures.verisure&eqLogic_id='+'#id#'+'&device='+$(this).value()).dialog('open');
 									}  
 								});
@@ -74,18 +74,65 @@
 	
 	<script>
         
-      	var nbsp = #nb_climate# + #nb_doorsensor# + #nb_device#;
+      	//----- Theme colors
+		function setTheme#id#() {
+			var link = document.createElement('link');
+			link.type = 'text/css';
+			link.rel = 'stylesheet';
+			
+			if ($('body').attr('data-theme').endsWith('Dark')) {
+				link.href = 'plugins/verisure/core/template/dashboard/verisure_dashboard_style_dark.css';
+			}
+			else if ($('body').attr('data-theme').endsWith('Light')) {
+				link.href = 'plugins/verisure/core/template/dashboard/verisure_dashboard_style_light.css';
+			}
+			document.head.appendChild(link);
+		}
+
+		//----- Events
+		$('body').on('changeThemeEvent', function (event,theme) {
+			setTheme#id#();
+		});
+
+		//----- Initialization
+		function timedSetTheme#id#(occurence = 0){
+			if ($('.verisure_widget_flat_#id#').length == 0) {
+				return;
+			}
+			if ( $('body')[0].hasAttribute('data-theme') != true )  {
+				occurence++;
+				if (occurence > 40){
+					return;
+				}
+				setTimeout( () => { timedSetTheme#id#(occurence); }, 500 );
+				return;
+			}
+			setTheme#id#();
+			updateDisplayDashboard#id#();
+		}
+		
+		if ( $('body')[0].hasAttribute('data-theme') == true )  {
+			setTheme#id#();
+			updateDisplayDashboard#id#();
+		}
+		else  {
+			timedSetTheme#id#(0);
+		}
+		
+		//----- Optional parameters
+		var nbsp = #nb_climate# + #nb_doorsensor# + #nb_device#;
 		
 		if ( #getpictures_visible# == 1)  {
-			$('.verisure_widget_#id#').css('min-height', 448 + nbsp * 20);
-			$('.verisure_widget_#id#').css('max-height', 448 + nbsp * 20);
+			$('.verisure_widget_flat_#id#').css('min-height', 428 + nbsp * 20);
+			$('.verisure_widget_flat_#id#').css('max-height', 428 + nbsp * 20);
 		}		
 		else if ( #getpictures_visible# == 0)  {
 			$('#zone_image_#id#').hide();
-			$('.verisure_widget_#id#').css('min-height', 448 + nbsp * 20 - 92);
-			$('.verisure_widget_#id#').css('max-height', 448 + nbsp * 20 - 92);
+			$('.verisure_widget_flat_#id#').css('min-height', 428 + nbsp * 20 - 86);
+			$('.verisure_widget_flat_#id#').css('max-height', 428 + nbsp * 20 - 86);
 		}
 		
+		//----- Devices display
 		$.ajax({
 			type: "POST",
 			url: "plugins/verisure/core/ajax/verisure.ajax.php",
@@ -102,7 +149,7 @@
 				$('#devices_table').empty();
 				
 				$.each(json.climateDevice, function (key, val) {
-					var fullName = "Température "+ val.device.area;
+					var fullName = "{{Température}}" + " " + val.device.area;
 					var name = fullName.length > 31 ? fullName.substring(0, 28) + "..." : fullName;
 					var temp = val.temperatureValue+" °C";
 					if ( val.humidityValue != null ) { temp = temp+" ("+val.humidityValue+" %)"; }
@@ -125,7 +172,7 @@
 				
 				$.each(json.doorWindowDevice, function (key, val) {
 					var deviceLabel = val.device.deviceLabel;
-					var fullName = "Capteur " + deviceNames[deviceLabel];
+					var fullName = "{{Capteur}}" + " " + deviceNames[deviceLabel];
 					var name = fullName.length > 31 ? fullName.substring(0, 28) + "..." : fullName;
 					//var name = "Capteur "+val.area;
 					var icon = "";
@@ -169,77 +216,37 @@
 			}
 		});
 		
-		
-		jeedom.cmd.update['#enable_id#'] = function(_options) {
-            if ( _options.display_value == 0)  {
-            	$('.iconCmd#enable_id#').empty().append('<i class="fa-2x icon_red jeedomapp-lock-ouvert"></i>');
-            }
-          	if ( _options.display_value == 1)  {
-              	$('.iconCmd#enable_id#').empty().append('<i class="fa-2x icon_green jeedomapp-lock-ferme"></i>');
-            }
-        }
-		jeedom.cmd.update['#enable_id#']({display_value:'#enable#'});
-      	
-      
-		jeedom.cmd.update['#state_id#'] = function(_options) {
-            if ( _options.display_value == 0)  {
-               $('.iconCmd#state_id#').empty().append('<i class="fa-2x icon_green jeedomapp-done"></i>');
-            }
-			if ( _options.display_value == 1)  {
-               $('.iconCmd#state_id#').empty().append('<i class="fa-2x icon_red jeedomapp-alerte2"></i>');
+		//----- Dashboard display update
+		function updateDisplayDashboard#id#()  {
+
+			jeedom.cmd.update['#enable_id#'] = function(_options) {
+				if ( _options.display_value == 0)  {
+					$('.iconCmd#enable_id#').empty().append('<i class="fa-2x icon_red jeedomapp-lock-ouvert"></i>');
+				}
+				if ( _options.display_value == 1)  {
+					$('.iconCmd#enable_id#').empty().append('<i class="fa-2x icon_green jeedomapp-lock-ferme"></i>');
+				}
 			}
-		}
-		jeedom.cmd.update['#state_id#']({display_value:'#state#'});
+			jeedom.cmd.update['#enable_id#']({display_value:'#enable#'});
+			
 		
-      
-		jeedom.cmd.update['#mode_id#'] = function(_options) {
-           	$('.iconCmd#mode_id#').empty().append('<span>'+_options.display_value+'</span>');
-        }
-		jeedom.cmd.update['#mode_id#']({display_value:'#mode#'});
+			jeedom.cmd.update['#state_id#'] = function(_options) {
+				if ( _options.display_value == 0)  {
+				$('.iconCmd#state_id#').empty().append('<i class="fa-2x icon_green jeedomapp-done"></i>');
+				}
+				if ( _options.display_value == 1)  {
+				$('.iconCmd#state_id#').empty().append('<i class="fa-2x icon_red jeedomapp-alerte2"></i>');
+				}
+			}
+			jeedom.cmd.update['#state_id#']({display_value:'#state#'});
+			
+		
+			jeedom.cmd.update['#mode_id#'] = function(_options) {
+				$('.iconCmd#mode_id#').empty().append('<span>'+_options.display_value+'</span>');
+			}
+			jeedom.cmd.update['#mode_id#']({display_value:'#mode#'});
+		}
       
 	</script>
-
-	<style>
-	
-	.verisure_widget_#id# .container-fluid {
-		padding: 5px 5px 5px 5px ! important;
-	}
-
-	.verisure_widget_#id# #column {
-		padding: 0px !important;
-		margin: 0px 0px 0px 0px !important;
-	}
-
-	.verisure_widget_#id# #tile {
-		margin : 5px 5px 5px 5px !important;
-		padding : 0px 0px 0px 0px !important;
-		background-color : rgb(var(--bg-color),0.5);
-	}
-
-	.verisure_widget_#id# .label {
-		margin-bottom: 0px;
-	}
-
-	.verisure_widget_#id# #infos {
-		margin-top: 10px;
-		margin-bottom: 0px;
-	}
-	
-	.verisure_widget_#id# #devices {
-		margin-top: 15px;
-		margin-bottom: 0px;
-	}
-
-	.verisure_widget_#id# #actions {
-		margin-top: 10px;
-		margin-bottom: 20px;
-	}
-	
-	.verisure_widget_#id# #images {
-		margin-top: 10px;
-		margin-bottom: 20px;
-	}
-	
-	</style>
 	
 </div>

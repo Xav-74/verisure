@@ -20,19 +20,19 @@ require_once dirname(__FILE__) . '/../../../core/php/core.inc.php';
 
 function verisure_install() {
 
-	message::add('verisure', 'Merci pour l\'installation du plugin Verisure. Lisez bien la documentation avant utilisation et n\'hésitez pas à laisser un avis sur le Market Jeedom !');
+	message::add('verisure', __('Merci pour l\'installation du plugin Verisure. Lisez bien la documentation avant utilisation et n\'hésitez pas à laisser un avis sur le Market Jeedom !', __FILE__));
 	
 }
 
 function verisure_update() {
 
 	// Mise à jour de l'ensemble des commandes pour chaque équipement
-    log::add('verisure', 'debug', 'Mise à jour en cours des commandes du Plugin Verisure');
+    log::add('verisure', 'debug', 'Updating verisure plugin commands');
     foreach (eqLogic::byType('verisure') as $eqLogic) {
         $eqLogic->save();
-        log::add('verisure', 'debug', 'Mise à jour des commandes effectuée pour l\'équipement '. $eqLogic->getHumanName());
+        log::add('verisure', 'debug', 'Verisure plugin commands successfully updated for the equipment '. $eqLogic->getHumanName());
     }
-	message::add('verisure', 'Merci pour la mise à jour du plugin Verisure. Consultez les notes de version avant utilisation et n\'hésitez pas à laisser un avis sur le Market Jeedom !');
+	message::add('verisure', __('Merci pour la mise à jour du plugin Verisure. Consultez les notes de version avant utilisation et n\'hésitez pas à laisser un avis sur le Market Jeedom !', __FILE__));
 	
  }
 
@@ -45,7 +45,7 @@ function verisure_remove() {
         log::add('verisure', 'debug', 'Remove cron pullHisto');
     }
     
-    message::add('verisure', 'Le plugin Verisure a été correctement désinstallé. N\'hésitez pas à laisser un avis sur le Market Jeedom !');
+    message::add('verisure', __('Le plugin Verisure a été correctement désinstallé. N\'hésitez pas à laisser un avis sur le Market Jeedom !', __FILE__));
 
 }
 

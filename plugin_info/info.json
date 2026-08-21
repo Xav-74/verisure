@@ -1,20 +1,48 @@
 {
-	"id" : "verisure",
-	"name" : "Alarme Verisure",
-	"description" : "Ce plugin vous permet d'interagir avec votre alarme Verisure au même titre que l’application officielle “My Verisure”. Il est compatible avec 3 générations de matériels Verisure. Voir la documentation ! Vous retrouverez les principales fonctionnalités de l'application : détail de votre installation / journal d'activité / activation de l'alarme (avec les différents modes : total, jour, nuit, partiel et extérieur) / désactivation de l'alarme / demande d'images. Ce plugin est également compatible avec le plugin Homebridge afin de piloter votre alarme depuis l'application Home d'Apple et/ou depuis Siri.",
-	"licence" : "AGPL",
-	"author" : "Xav-74",
-	"require" : "4.0",
-	"category" : "security",
-	"hasDependency" : false,
-	"hasOwnDeamon" : false,
-	"maxDependancyInstallTime" : 0,
-	"changelog" : "https://xav-74.github.io/Documentation/verisure/#language#/changelog",
-	"documentation" : "https://xav-74.github.io/Documentation/verisure/#language#/",
-	"link" : {
-		"forum" : "https://community.jeedom.com/t/plugin-verisure-presentation-actualites/31921",
-		"video" : ""
+	"id": "verisure",
+	"name": "Alarme Verisure",
+	"description": {
+		"fr_FR": "Ce plugin vous permet d'interagir avec votre alarme Verisure au même titre que l’application officielle “My Verisure”. Il est compatible avec 3 générations de matériels Verisure. Voir la documentation ! Vous retrouverez les principales fonctionnalités de l'application : détail de votre installation / journal d'activité / activation de l'alarme (avec les différents modes : total, jour, nuit, partiel et extérieur) / désactivation de l'alarme / demande d'images. Ce plugin est également compatible avec le plugin Homebridge afin de piloter votre alarme depuis l'application Home d'Apple et/ou depuis Siri.",
+		"en_US": "This plugin lets you interact with your Verisure alarm system just like the official “My Verisure” app. It’s compatible with three generations of Verisure hardware. See the documentation! You’ll find the app’s main features here: installation details / activity log / arming the alarm (with different modes: full, day, night, partial, and outdoor) / disarming the alarm / requesting images. This plugin is also compatible with the Homebridge plugin, allowing you to control your alarm from the Apple Home app and/or via Siri.",
+		"es_ES": "Este complemento te permite interactuar con tu alarma Verisure de la misma forma que la aplicación oficial «My Verisure». Es compatible con tres generaciones de dispositivos Verisure. ¡Consulta la documentación! Encontrarás las principales funciones de la aplicación: detalles de tu instalación, registro de actividad, activación de la alarma (con los distintos modos: total, diurno, nocturno, parcial y exterior), desactivación de la alarma y solicitud de imágenes. Este complemento también es compatible con el complemento Homebridge para controlar tu alarma desde la aplicación Home de Apple y/o desde Siri.",
+		"de_DE": "Mit diesem Plugin können Sie genauso mit Ihrer Verisure-Alarmanlage interagieren wie mit der offiziellen App „My Verisure“. Es ist mit drei Generationen von Verisure-Geräten kompatibel. Siehe Dokumentation! Sie finden hier die wichtigsten Funktionen der App: Details zu Ihrer Anlage / Aktivitätsprotokoll / Aktivierung der Alarmanlage (mit den verschiedenen Modi: Vollalarm, Tag, Nacht, Teilalarm und Außenalarm) / Deaktivierung der Alarmanlage / Bildabfrage. Dieses Plugin ist außerdem mit dem Homebridge-Plugin kompatibel, sodass Sie Ihre Alarmanlage über die Apple Home-App und/oder über Siri steuern können.",
+		"it_IT": "Questo plugin vi permette di interagire con il vostro sistema di allarme Verisure proprio come l'app ufficiale “My Verisure”. È compatibile con 3 generazioni di dispositivi Verisure. Consultate la documentazione! Troverai le principali funzionalità dell’app: dettagli del tuo impianto / registro delle attività / attivazione dell’allarme (con le diverse modalità: totale, giorno, notte, parziale ed esterno) / disattivazione dell’allarme / richiesta di immagini. Questo plugin è inoltre compatibile con il plugin Homebridge per controllare il tuo allarme dall’app Home di Apple e/o tramite Siri.",
+		"pt_PT": "Este plugin permite-lhe interagir com o seu alarme Verisure da mesma forma que a aplicação oficial «My Verisure». É compatível com três gerações de equipamentos Verisure. Consulte a documentação! Encontrará as principais funcionalidades da aplicação: detalhes da sua instalação / registo de atividades / ativação do alarme (com os diferentes modos: total, dia, noite, parcial e exterior) / desativação do alarme / pedido de imagens. Este plugin também é compatível com o plugin Homebridge, para que possa controlar o seu alarme a partir da aplicação Home da Apple e/ou da Siri."
 	},
-	"language" : ["fr_FR"],
-	"compatibility" : ["miniplus","smart","rpi","docker","diy","v4"]
+	"licence": "AGPL",
+	"author": "Xav-74",
+	"require": "4.4",
+	"os": {
+		"min": 11
+	},
+	"category": "security",
+	"hasDependency": false,
+	"hasOwnDeamon": false,
+	"maxDependancyInstallTime": 0,
+	"changelog": "https://xav-74.github.io/Documentation/verisure/#language#/changelog",
+	"changelog_beta": "https://xav-74.github.io/Documentation/verisure/#language#/changelog",
+	"documentation": "https://xav-74.github.io/Documentation/verisure/#language#/",
+	"documentation_beta": "https://xav-74.github.io/Documentation/verisure/#language#/",
+	"link": {
+		"forum": "https://community.jeedom.com/t/plugin-verisure-presentation-actualites/31921",
+		"video": ""
+	},
+	"language": [
+		"de_DE",
+		"en_US",
+		"es_ES",
+		"fr_FR",
+		"it_IT",
+		"pt_PT"
+	],
+	"compatibility": [
+		"miniplus",
+		"smart",
+		"atlas",
+		"luna",
+		"rpi",
+		"docker",
+		"diy",
+		"v4"
+	]
 }
