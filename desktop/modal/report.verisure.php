@@ -26,8 +26,8 @@
 ?>
 
 <div class="container">
-	<h2>Journal d'activité - Verisure</h2>
-	<h6>(Les demandes de statut ne sont pas incluses dans ce rapport)</h6>
+	<h2>{{Journal d'activité - Verisure}}</h2>
+	<h6>{{(Les demandes de statut ne sont pas incluses dans ce rapport)}}</h6>
 	<br/><br/> 
 	<form class="form-horizontal">
 		<fieldset>
@@ -39,7 +39,7 @@
 						<tr>
 							<th style="width: 10%;">{{ID}}</th>
 							<th style="width: 20%;">{{Date}}</th>
-							<th style="width: 10%;">{{Type}}</th>
+							<th style="width: 10%;">{{Catégorie}}</th>
 							<th style="width: 60%;">{{Activité}}</th>
 						</tr>
 					</thead>

@@ -1271,23 +1271,23 @@ class verisure extends eqLogic {
 	public function GetAlarmStatus() {		//Type 1 & 3
 
 		$mode = $this->getCmd(null, 'mode')->execCmd();
-		if ( $mode == "Désactivée" ) { return "D"; }
-		elseif ( $mode == "Total" ) { return "T"; }
-		elseif ( $mode == "Nuit" ) { return "Q"; }
-		elseif ( $mode == "Jour" || $mode =="Partiel" ) { return "P"; }
-		elseif ( $mode == "Extérieur" || $mode == "Total + Ext" || $mode == "Nuit + Ext" || $mode == "Jour + Ext" || $mode == "Partiel + Ext") { return "E"; }
+		if ( $mode == __('Désactivée', __FILE__) ) { return "D"; }
+		elseif ( $mode == __('Total', __FILE__) ) { return "T"; }
+		elseif ( $mode == __('Nuit', __FILE__) ) { return "Q"; }
+		elseif ( $mode == __('Jour', __FILE__) || $mode == __('Partiel', __FILE__) ) { return "P"; }
+		elseif ( $mode == __('Extérieur', __FILE__) || $mode == __('Total + Ext', __FILE__) || $mode == __('Nuit + Ext', __FILE__) || $mode == __('Jour + Ext', __FILE__) || $mode == __('Partiel + Ext', __FILE__) ) { return "E"; }
 		else { return "D"; }
 	}
 	
 	public function GetDisarmMode() {		//Type 1 & 3
 
 		$mode = $this->getCmd(null, 'mode')->execCmd();
-		if ( $mode == "Désactivée" ) { return "DARM1"; }
-		elseif ( $mode == "Total" ) { return "DARM1"; }
-		elseif ( $mode == "Nuit" ) { return "DARM1"; }
-		elseif ( $mode == "Jour" || $mode =="Partiel" ) { return "DARM1"; }
-		elseif ( $mode == "Extérieur" ) { return "DARMPERI"; }
-		elseif ( $mode == "Total + Ext" || $mode == "Nuit + Ext" || $mode == "Jour + Ext" || $mode == "Partiel + Ext") { return "DARM1DARMPERI"; }
+		if ( $mode == __('Désactivée', __FILE__) ) { return "DARM1"; }
+		elseif ( $mode == __('Total', __FILE__) ) { return "DARM1"; }
+		elseif ( $mode == __('Nuit', __FILE__) ) { return "DARM1"; }
+		elseif ( $mode == __('Jour', __FILE__) || $mode == __('Partiel', __FILE__) ) { return "DARM1"; }
+		elseif ( $mode == __('Extérieur', __FILE__) ) { return "DARMPERI"; }
+		elseif ( $mode == __('Total + Ext', __FILE__) || $mode == __('Nuit + Ext', __FILE__) || $mode == __('Jour + Ext', __FILE__) || $mode == __('Partiel + Ext', __FILE__) ) { return "DARM1DARMPERI"; }
 		else { return "DARM1"; }
 
 		return $mode;
@@ -1347,8 +1347,8 @@ class verisureCmd extends cmd {
 						break;
 						case 'E':
 							$eqlogic->checkAndUpdateCmd('enable', "1");
-							$eqlogic->checkAndUpdateCmd('mode', __('Externe', __FILE__));
-							$eqlogic->checkAndUpdateCmd('mode_basic', __('Externe', __FILE__));
+							$eqlogic->checkAndUpdateCmd('mode', __('Extérieur', __FILE__));
+							$eqlogic->checkAndUpdateCmd('mode_basic', __('Extérieur', __FILE__));
 							$eqlogic->checkAndUpdateCmd('networkstate', $eqlogic->SetNetworkState(1));
 						break;
 						case 'A':
@@ -1420,8 +1420,8 @@ class verisureCmd extends cmd {
 						break;
 						case 'E':
 							$eqlogic->checkAndUpdateCmd('enable', "1");
-							$eqlogic->checkAndUpdateCmd('mode', __('Externe', __FILE__));
-							$eqlogic->checkAndUpdateCmd('mode_basic', __('Externe', __FILE__));
+							$eqlogic->checkAndUpdateCmd('mode', __('Extérieur', __FILE__));
+							$eqlogic->checkAndUpdateCmd('mode_basic', __('Extérieur', __FILE__));
 							log::add('verisure', 'debug', '└───────── Mise à jour statut via historique OK ─────────');
 							$eqlogic->checkAndUpdateCmd('networkstate', $eqlogic->SetNetworkState(1));
 						break;
@@ -1530,8 +1530,8 @@ class verisureCmd extends cmd {
 					switch ($state)  {
 						case 'E':
 							$eqlogic->checkAndUpdateCmd('enable', "1");
-							$eqlogic->checkAndUpdateCmd('mode', __('Externe', __FILE__));
-							$eqlogic->checkAndUpdateCmd('mode_basic', __('Externe', __FILE__));
+							$eqlogic->checkAndUpdateCmd('mode', __('Extérieur', __FILE__));
+							$eqlogic->checkAndUpdateCmd('mode_basic', __('Extérieur', __FILE__));
 							$eqlogic->checkAndUpdateCmd('networkstate', $eqlogic->SetNetworkState(1));
 						break;
 						case 'A':
