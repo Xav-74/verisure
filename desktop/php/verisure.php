@@ -293,7 +293,7 @@ $eqLogics = eqLogic::byType($plugin->getId());
 												<tr>
 													<th style="width: 15%;">{{ID}}</th>
 													<th style="width: 42.5%;">{{Nom}}</th>
-													<th style="width: 42.5%;">{{Type}}</th>
+													<th style="width: 42.5%;">{{Catégorie}}</th>
 												</tr>
 											</thead>
 											<tbody>
