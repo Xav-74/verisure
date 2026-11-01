@@ -311,6 +311,9 @@ class verisure extends eqLogic {
 
 		if ( $this->getConfiguration('alarmtype') == 3 )   { 
 			$replace['#connectedLock#'] = $this->getConfiguration('connectedLock');
+			// Commandes optionnelles : valeurs par défaut si elles n'existent pas
+    		$replace['#armed_ext_id#'] = "''";
+    		$replace['#armed_ext_visible#'] = 0;
 		}
 			
 		$this->emptyCacheWidget(); 		//vide le cache. Pratique pour le développement
@@ -341,6 +344,10 @@ class verisure extends eqLogic {
 				}
 				$replace['#' . $logicalId . '_listValue#'] = $listValue;
 			}
+		}
+
+		if (!is_numeric($replace['#networkstate#'] ?? null)) {
+			$replace['#networkstate#'] = 1;
 		}
 			
 		// On definit le template à appliquer par rapport à la version Jeedom utilisée
